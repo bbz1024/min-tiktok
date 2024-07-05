@@ -1,0 +1,41 @@
+syntax = "v1"
+
+type (
+	//     douyin/user/register
+	RegisterReq {
+		UserName string `json:"username" form:"username"`
+		Password string `json:"password" form:"password"`
+	}
+	//     douyin/user/login
+	LoginReq {
+		UserName string `json:"username" form:"username"`
+		Password string `json:"password" form:"password"`
+	}
+	LoginResp {
+		Token      string `json:"token"`
+		UserID     int64  `json:"user_id"`
+		StatusCode int32  `json:"status_code"`
+		StatusMsg  string `json:"status_msg"`
+	}
+	RegisterResp {
+		Token      string `json:"token"`
+		UserID     int64  `json:"user_id"`
+		StatusCode int32  `json:"status_code"`
+		StatusMsg  string `json:"status_msg"`
+	}
+)
+
+@server (
+	// 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
+	group: auth
+	// 定义路由前缀为 "/v1"
+	prefix: /douyin/user
+)
+service auths-api {
+	@handler RegisterHandler
+	post /register (RegisterReq) returns (RegisterResp)
+
+	@handler LoginHandler
+	post /login (LoginReq) returns (LoginResp)
+}
+

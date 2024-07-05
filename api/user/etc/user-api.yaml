@@ -1,0 +1,10 @@
+Name: user-api
+Host: 0.0.0.0
+Port: 8889
+AuthsRpc: # 需要与config保持一致
+  Target: consul://192.168.241.131:8500/auths.rpc?wait=14s
+UserRpc:
+  Target: consul://192.168.241.131:8500/user.rpc?wait=14s
+Consul:
+  Host: 192.168.241.131:8500
+  Key: user.rpc
