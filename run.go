@@ -32,5 +32,4 @@ func main() {
 		}(api)
 	}
 	wg.Wait()
-	fmt.Println("test")
 }
