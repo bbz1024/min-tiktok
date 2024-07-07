@@ -25,22 +25,21 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 }
 
 func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err error) {
+
 	// call rpc
 	res, err := l.svcCtx.AuthsRpc.Login(l.ctx, &auths.LoginRequest{
 		Username: req.UserName,
 		Password: req.Password,
 	})
+	resp = new(types.LoginResp)
+	resp.StatusMsg = res.StatusMsg
+	resp.StatusCode = res.StatusCode
 	if err != nil {
-		return &types.LoginResp{
-			StatusCode: res.StatusCode,
-			StatusMsg:  res.StatusMsg,
-		}, err
+		l.Errorw("call rpc AuthsRpc.Login error ", logx.Field("err", err))
+		return
 	}
+	resp.Token = res.Token
+	resp.UserID = res.UserId
+	return
 
-	return &types.LoginResp{
-		Token:      res.Token,
-		UserID:     int64(res.UserId),
-		StatusCode: res.StatusCode,
-		StatusMsg:  res.StatusMsg,
-	}, nil
 }

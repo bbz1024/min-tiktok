@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-
 	"min-tiktok/api/auths/internal/config"
 	"min-tiktok/api/auths/internal/handler"
 	"min-tiktok/api/auths/internal/svc"
@@ -25,7 +24,6 @@ func main() {
 
 	ctx := svc.NewServiceContext(c)
 	handler.RegisterHandlers(server, ctx)
-
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 	server.Start()
 }

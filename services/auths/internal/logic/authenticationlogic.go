@@ -41,12 +41,14 @@ func (l *AuthenticationLogic) Authentication(in *auths.AuthsRequest) (*auths.Aut
 	key := fmt.Sprintf(keys.UserTokenKey, in.Token)
 	userId, err := l.svcCtx.Rdb.GetCtx(l.ctx, key)
 	if userId == "" {
+
 		goto authErr
 	}
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
 			goto authErr
 		}
+		l.Errorw("redis get error", logx.Field("err", err))
 		return nil, err
 	}
 	id, err = strconv.ParseUint(userId, 10, 32)
@@ -56,6 +58,7 @@ func (l *AuthenticationLogic) Authentication(in *auths.AuthsRequest) (*auths.Aut
 		}, nil
 	}
 authErr:
+	l.Infow("auth failed", logx.Field("token", in.Token))
 	return &auths.AuthsResponse{
 		StatusCode: code.AuthErrorCode,
 		StatusMsg:  code.AuthErrorMsg,

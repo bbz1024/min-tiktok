@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"min-tiktok/common/consts/code"
 	"min-tiktok/common/response"
 	"net/http"
 
@@ -16,7 +15,7 @@ func RegisterHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		var req types.RegisterReq
 		// param valid
 		if err := httpx.ParseForm(r, &req); err != nil {
-			httpx.OkJsonCtx(r.Context(), w, response.NewResponse(code.ParamError, code.ParamErrorMsg))
+			response.NewParamError(r.Context(), w, err)
 			return
 		}
 		// logic

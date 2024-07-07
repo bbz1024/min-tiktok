@@ -63,21 +63,20 @@ services:
     networks:
       - Tiktok
     environment:
-      MYSQL_ROOT_USER : 'lzb200244'
-      MYSQL_ROOT_PASSWORD : 'lzb200244'
+      MYSQL_ROOT_USER: 'lzb200244'
+      MYSQL_ROOT_PASSWORD: 'lzb200244'
     healthcheck:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
       interval: 10s
       timeout: 5s
       retries: 3
   nginx:
-    image: nginx:1.14-alpine
+    image: nginx
     restart: unless-stopped
     ports:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./logs/nginx:/var/log/nginx
     networks:
       - Tiktok
 networks:

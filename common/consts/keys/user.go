@@ -12,4 +12,6 @@ const (
 	WorkCount     = "work_count"     // 作品数量
 	FavoriteCount = "favorite_count" // 点赞数量
 
+	UserWorkKey = "user_work:%d" // set
+
 )

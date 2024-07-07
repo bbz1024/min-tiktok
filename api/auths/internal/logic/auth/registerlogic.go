@@ -31,19 +31,17 @@ func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.RegisterRe
 		Username: req.UserName,
 		Password: req.Password,
 	})
+	resp = new(types.RegisterResp)
+	resp.StatusMsg = res.StatusMsg
+	resp.StatusCode = res.StatusCode
 	if err != nil {
-		return &types.RegisterResp{
-			StatusCode: res.StatusCode,
-			StatusMsg:  res.StatusMsg,
-		}, err
+		l.Errorw("call rpc AuthsRpc.Register error ", logx.Field("err", err))
+		return
 	}
 
 	// register success before put in bloom
 	l.svcCtx.UserFilter.Add([]byte(req.UserName))
-	return &types.RegisterResp{
-		Token:      res.Token,
-		UserID:     int64(res.UserId),
-		StatusCode: res.StatusCode,
-		StatusMsg:  res.StatusMsg,
-	}, nil
+	resp.Token = res.Token
+	resp.UserID = res.UserId
+	return
 }

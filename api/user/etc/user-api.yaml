@@ -8,3 +8,14 @@ UserRpc:
 Consul:
   Host: 192.168.241.131:8500
   Key: user.rpc
+Telemetry:
+  Name: user-api
+  Endpoint: http://192.168.241.131:14268/api/traces
+  Batcher: jaeger
+  Sampler: 1.0
+Log:
+  ServiceName: "user-api"
+  Mode: 'console'
+  Encoding: "plain"
+  Level: "info"
+  Path: "C:/logs/user-api"

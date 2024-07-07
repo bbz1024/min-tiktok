@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"github.com/zeromicro/go-zero/core/logx"
 	"min-tiktok/common/consts/code"
 	"min-tiktok/common/response"
 	"net/http"
@@ -16,11 +17,12 @@ func LoginHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		var req types.LoginReq
 		// param valid
 		if err := httpx.ParseForm(r, &req); err != nil {
-			httpx.OkJsonCtx(r.Context(), w, response.NewResponse(code.ParamError, code.ParamErrorMsg))
+			response.NewParamError(r.Context(), w, err)
 			return
 		}
 		// bloom filter
 		if !svcCtx.UserFilter.TestString(req.UserName) {
+			logx.WithContext(r.Context()).Infow("user not found", logx.Field("userName", req.UserName))
 			httpx.OkJsonCtx(r.Context(), w, response.NewResponse(code.UserNotFoundCode, code.UserNotFoundMsg))
 			return
 		}

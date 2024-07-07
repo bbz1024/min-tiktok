@@ -3,7 +3,7 @@ package types
 
 type GetUserInfoRequest struct {
 	UserID  int64 `json:"user_id" form:"user_id"`   // 用户id
-	ActorID int64 `json:"actor_id" form:"actor_id"` // 操作者id
+	ActorID int64 `json:"actor_id" form:"actor_id,optional"` // 操作者id
 }
 
 type GetUserInfoResponse struct {

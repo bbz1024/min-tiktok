@@ -15,12 +15,13 @@ type ServiceContext struct {
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	mysqlConn := sqlx.NewMysql(c.MySQL.DataSource)
+	rdb, err := redis.NewRedis(c.RedisConf)
+	if err != nil {
+		panic(err)
+	}
 	return &ServiceContext{
 		Config:    c,
 		UserModel: user.NewUsersModel(mysqlConn),
-		Rdb: redis.New(c.RedisConf.Host, func(r *redis.Redis) {
-			r.Type = c.RedisConf.Type
-			r.Pass = c.RedisConf.Pass
-		}),
+		Rdb:       rdb,
 	}
 }

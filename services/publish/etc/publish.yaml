@@ -1,0 +1,48 @@
+Name: publish.rpc
+ListenOn: 0.0.0.0:10003
+MaxBytes: 52428800
+Verbose: false
+Consul:
+  Host: 192.168.241.131:8500 # consul endpoint
+  Key: publish.rpc
+  Meta:
+    Protocol: grpc
+  Tag:
+    - tag
+    - rpc
+#Telemetry:
+#  Name: publish.rpc
+#  Endpoint: http://192.168.241.131:14268/api/traces
+#  Batcher: jaeger
+#  Sampler: 1.0
+Mysql:
+  DataSource: lzb200244:lzb200244@tcp(192.168.241.131:3306)/tiktok?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+CacheRedis:
+  - Host: 192.168.241.131:6379
+    Type: node
+    Pass: lzb200244
+# Redis配置
+RedisConf:
+  Host: 192.168.241.131:6379
+  Type: node
+  Pass: lzb200244
+  Tls: false
+DevServer:
+  Enabled: true
+  Port: 6471
+  MetricsPath: /metrics
+
+QiNiu:
+  AccessKey: JfDRw6TYF7B-MXNjIivW1zxcZ6PrSHAHYksBcZOt
+  SecretKey: ubXESZ4C3bpTh9P0yKTXmzOPXEbpaBgvzFkecWIu
+  VideoDomain: sg89iek10.hn-bkt.clouddn.com
+  Bucket: min-tiktok-video
+Log:
+  ServiceName: "publish-rpc"
+  Mode: 'file'
+  Encoding: "plain"
+  Level: "error"
+  Path: "C:/logs/publish-rpc"
+#rpc
+FeedRpc:
+  Target: consul://192.168.241.131:8500/feed.rpc?wait=14s

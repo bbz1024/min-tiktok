@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/zeromicro/go-zero/core/stores/redis"
 	"github.com/zeromicro/go-zero/zrpc"
 	"github.com/zeromicro/zero-contrib/zrpc/registry/consul"
 )
@@ -11,10 +12,5 @@ type Config struct {
 	MySQL  struct {
 		DataSource string
 	}
-	RedisConf struct {
-		Host string
-		Type string `json:",default=node,options=node|cluster"`
-		Pass string `json:",optional"`
-		Tls  bool   `json:",optional"`
-	}
+	RedisConf redis.RedisConf
 }

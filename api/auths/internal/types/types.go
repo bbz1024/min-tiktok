@@ -8,8 +8,8 @@ type LoginReq struct {
 
 type LoginResp struct {
 	Token      string `json:"token"`
-	UserID     int64  `json:"user_id"`
-	StatusCode int32  `json:"status_code"`
+	UserID     uint32 `json:"user_id"`
+	StatusCode uint32 `json:"status_code"`
 	StatusMsg  string `json:"status_msg"`
 }
 
@@ -20,7 +20,7 @@ type RegisterReq struct {
 
 type RegisterResp struct {
 	Token      string `json:"token"`
-	UserID     int64  `json:"user_id"`
-	StatusCode int32  `json:"status_code"`
+	UserID     uint32 `json:"user_id"`
+	StatusCode uint32 `json:"status_code"`
 	StatusMsg  string `json:"status_msg"`
 }

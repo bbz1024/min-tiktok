@@ -21,6 +21,13 @@ var WhitePath = []string{
 	"/douyin/favorite/list",
 }
 
+// OptionPath 可能携带token的path
+var OptionPath = []string{
+	"/douyin/feed/",
+	"/douyin/user/",
+	"/douyin/relation/follow/list/",
+	"/douyin/relation/follower/list/",
+}
 var once sync.Once
 var authRpc authsclient.Auths
 
@@ -28,26 +35,25 @@ func WrapperAuthMiddleware(rpcConf zrpc.RpcClientConf) func(next http.HandlerFun
 	return func(next http.HandlerFunc) http.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request) {
 			// white path
-			if slices.Index(WhitePath, r.URL.Path) != -1 {
+			if slices.Contains(WhitePath, r.URL.Path) {
+				//
 				next(w, r)
 				return
 			}
-			//fmt.Println(r.RequestURI) == r.URL.Path
-			// get query param
 			var token = r.PostFormValue("token")
 			if r.Method == http.MethodGet {
 				token = r.FormValue("token")
 			}
-
-			if token == "" {
-				http.Error(w, "token is empty", http.StatusUnauthorized)
+			// optional token
+			if token == "" && slices.Contains(OptionPath, r.URL.Path) {
+				next(w, r)
 				return
 			}
-
 			// init rpc
 			once.Do(func() {
 				authRpc = authsclient.NewAuths(zrpc.MustNewClient(rpcConf))
 			})
+			// auth
 			res, err := authRpc.Authentication(r.Context(), &auths.AuthsRequest{
 				Token: token,
 			})
@@ -62,12 +68,7 @@ func WrapperAuthMiddleware(rpcConf zrpc.RpcClientConf) func(next http.HandlerFun
 				httpx.OkJsonCtx(r.Context(), w, response.NewResponse(int(res.StatusCode), res.StatusMsg))
 				return
 			}
-			/*
-				actorID := res.UserId
-				// write actorID to context  => r.Context().Value(keys.ActorID)
-				ctx := context.WithValue(r.Context(), keys.ActorID, actorID)
-				r = r.WithContext(ctx)
-			*/
+			// with actor_id
 			r.Form.Set("actor_id", strconv.Itoa(int(res.UserId)))
 			next(w, r)
 		}

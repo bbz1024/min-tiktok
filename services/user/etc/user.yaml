@@ -26,3 +26,9 @@ RedisConf:
   Type: node
   Pass: lzb200244
   Tls: false
+Log:
+  ServiceName: "user-rpc"
+  Mode: 'console'
+  Encoding: "plain"
+  Level: "info"
+  Path: "C:/logs/user-rpc"

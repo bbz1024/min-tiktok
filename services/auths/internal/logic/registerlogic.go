@@ -44,18 +44,27 @@ func (l *RegisterLogic) Register(in *auths.RegisterRequest) (*auths.RegisterResp
 				Updatedat: now,
 			})
 			if err != nil {
-				return nil, err
+				return &auths.RegisterResponse{
+					StatusCode: code.ServerError,
+					StatusMsg:  code.ServerErrorMsg,
+				}, err
 			}
 			userID, err := userinfo.LastInsertId()
 			if err != nil {
-				return nil, err
+				return &auths.RegisterResponse{
+					StatusCode: code.ServerError,
+					StatusMsg:  code.ServerErrorMsg,
+				}, err
 			}
 			// gen token & set
 			// 生成token，使用session（这里简单的使用uuid）,存储在redis
 			token := uid.GenUid(l.ctx, int(userID))
 			key := fmt.Sprintf(keys.UserTokenKey, token)
 			if err := l.svcCtx.Rdb.SetCtx(l.ctx, key, strconv.FormatUint(uint64(userID), 10)); err != nil {
-				return nil, err
+				return &auths.RegisterResponse{
+					StatusCode: code.ServerError,
+					StatusMsg:  code.ServerErrorMsg,
+				}, err
 			}
 			return &auths.RegisterResponse{
 				UserId: uint32(userID),
@@ -69,5 +78,5 @@ func (l *RegisterLogic) Register(in *auths.RegisterRequest) (*auths.RegisterResp
 	return &auths.RegisterResponse{
 		StatusCode: code.UserExistedCode,
 		StatusMsg:  code.UserExistedMsg,
-	}, nil
+	}, errors.New(code.UserExistedMsg)
 }

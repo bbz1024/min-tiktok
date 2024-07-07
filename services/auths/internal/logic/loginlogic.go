@@ -40,20 +40,29 @@ func (l *LoginLogic) Login(in *auths.LoginRequest) (*auths.LoginResponse, error)
 				StatusMsg:  code.UserNotFoundMsg,
 			}, nil
 		}
+		l.Errorw("get user info error ", logx.Field("err", err))
 		// other err
-		return nil, err
+		return &auths.LoginResponse{
+			StatusCode: code.ServerError,
+			StatusMsg:  code.ServerErrorMsg,
+		}, err
 	}
 	if !cryptx.PasswordVerify(in.Password, userinfo.Password) {
+		l.Infow("password error", logx.Field("username", in.Username))
 		return &auths.LoginResponse{
 			StatusCode: code.UserPasswordErrorCode,
 			StatusMsg:  code.UserPasswordErrorMsg,
-		}, nil
+		}, errors.New("password error")
 	}
 	// 生成token，使用session（这里简单的使用uuid）,存储在redis
 	token := uid.GenUid(l.ctx, int(userinfo.Id))
 	key := fmt.Sprintf(keys.UserTokenKey, token)
 	if err := l.svcCtx.Rdb.SetCtx(l.ctx, key, strconv.FormatUint(userinfo.Id, 10)); err != nil {
-		return nil, err
+		l.Errorw("set token error", logx.Field("err", err))
+		return &auths.LoginResponse{
+			StatusCode: code.ServerError,
+			StatusMsg:  code.ServerErrorMsg,
+		}, err
 	}
 	return &auths.LoginResponse{
 		UserId: uint32(userinfo.Id),
