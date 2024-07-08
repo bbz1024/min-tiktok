@@ -8,6 +8,8 @@ Consul:
   Tag:
     - tag
     - rpc
+DevServer:
+  Port: 20001
 
 Telemetry:
   Name: user.rpc
@@ -28,7 +30,7 @@ RedisConf:
   Tls: false
 Log:
   ServiceName: "user-rpc"
-  Mode: 'console'
-  Encoding: "plain"
-  Level: "info"
-  Path: "C:/logs/user-rpc"
+  Mode: 'file'
+  Encoding: "json"
+  Level: "error"
+  Path: "./logs/user-rpc"

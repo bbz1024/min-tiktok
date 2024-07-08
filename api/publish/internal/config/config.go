@@ -12,5 +12,4 @@ type Config struct {
 	// -------------------- rpc --------------------
 	AuthsRpc   zrpc.RpcClientConf
 	PublishRpc zrpc.RpcClientConf
-	UserRpc    zrpc.RpcClientConf
 }

@@ -26,13 +26,12 @@ RedisConf:
   Type: node
   Pass: lzb200244
   Tls: false
+# 健康检查和指标收集
 DevServer:
-  Enabled: true
-  Port: 6471
-  MetricsPath: /metrics
+  Port: 20000
 Log:
   ServiceName: "auths-rpc"
-  Mode: 'console'
-  Encoding: "plain"
-  Level: "info"
-  Path: "C:/logs/auths-rpc"
+  Mode: 'file'
+  Encoding: "json"
+  Level: "error"
+  Path: "./logs/auths-rpc"

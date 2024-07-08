@@ -1,0 +1,116 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: feed-service
+  namespace: tiktok
+  labels:
+    app: feed-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: feed-service
+  template:
+    metadata:
+      name: feed-service
+      labels:
+        app: feed-service
+    spec:
+      containers:
+        - name: feed-service
+          image: min-tiktok
+          imagePullPolicy: Never
+          command:
+            - ./services/FeedService
+          ports:
+            - containerPort: 10002
+              protocol: TCP
+          volumeMounts:
+            - name: project-etc-volume
+              mountPath: /project/etc
+            - name: project-logs-volume
+              mountPath: /project/logs
+      volumes:
+        - name: project-etc-volume
+          hostPath:
+            path: /data/etc
+            type: DirectoryOrCreate
+        - name: project-logs-volume
+          hostPath:
+            path: /data/logs
+            type: DirectoryOrCreate
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: feed-service
+  namespace: tiktok
+spec:
+  selector:
+    app: feed-service
+  ports:
+    - name: service-10002
+      port: 10002
+      targetPort: 10002
+      protocol: TCP
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: feed-api
+  namespace: tiktok
+  labels:
+    app: feed-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: feed-api
+  template:
+    metadata:
+      name: feed-api
+      labels:
+        app: feed-api
+    spec:
+      containers:
+        - name: feed-api
+          image: min-tiktok
+          imagePullPolicy: Never
+          command:
+            - ./apis/FeedApi
+          ports:
+            - containerPort: 8890
+              protocol: TCP
+          volumeMounts:
+            - name: project-etc-volume
+              mountPath: /project/etc
+            - name: project-logs-volume
+              mountPath: /project/logs
+      volumes:
+        - name: project-etc-volume
+          hostPath:
+            path: /data/etc
+            type: DirectoryOrCreate
+        - name: project-logs-volume
+          hostPath:
+            path: /data/logs
+            type: DirectoryOrCreate
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: feed-api
+  namespace: tiktok
+spec:
+  selector:
+    app: feed-api
+  ports:
+    - name: api-8890
+      port: 8890
+      targetPort: 8890
+      protocol: TCP
+  type: ClusterIP

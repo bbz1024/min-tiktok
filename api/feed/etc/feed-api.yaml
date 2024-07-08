@@ -6,33 +6,37 @@ Mode: dev
 Consul:
   Host: 192.168.241.131:8500
   Key: feed.rpc
+
 Middlewares:
   Metrics: true
+
+
 #  trace
 Telemetry:
   Name: feed.api
   Endpoint: http://192.168.241.131:14268/api/traces
   Batcher: jaeger
   Sampler: 1.0
+
 Mysql:
   DataSource: lzb200244:lzb200244@tcp(192.168.241.131:3306)/tiktok?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+
 # metrics
 DevServer:
-  Enabled: true
-  Port: 6470
-  MetricsPath: /metrics
-#  EnableMetrics: true
+  Port: 30002
 
 # log
 Log:
   ServiceName: "feed-api"
-  Mode: 'console'
-  Encoding: "plain"
-  Level: "info"
-  Path: "C:/logs/feed-api"
+  Mode: 'file'
+  Encoding: "json"
+  Level: "error"
+  Path: "./logs/feed-api"
 
-################# rpc
+# rpc
 FeedRpc: # 需要与config保持一致
   Target: consul://192.168.241.131:8500/feed.rpc?wait=14s
+  NonBlock: true # 启动时是否阻塞 , 即使rpc服务没有启动也不会影响客户端的启动
 AuthsRpc: # 需要与config保持一致
   Target: consul://192.168.241.131:8500/auths.rpc?wait=14s
+  NonBlock: true # 启动时是否阻塞 , 即使rpc服务没有启动也不会影响客户端的启动

@@ -3,7 +3,6 @@ Host: 0.0.0.0
 Port: 8891
 Mode: dev
 MaxBytes: 52428800
-Verbose: false
 Consul:
   Host: 192.168.241.131:8500
   Key: publish.rpc
@@ -15,25 +14,24 @@ Telemetry:
   Sampler: 1.0
 Mysql:
   DataSource: lzb200244:lzb200244@tcp(192.168.241.131:3306)/tiktok?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+
 # metrics
 DevServer:
-  Enabled: true
-  Port: 6470
-  MetricsPath: /metrics
-#  EnableMetrics: true
+  Port: 30003
+
 
 # log
 Log:
   ServiceName: "publish-api"
   Mode: 'file'
-  Encoding: "plain"
+  Encoding: "json"
   Level: "error"
-  Path: "C:/logs/publish-api"
+  Path: "./logs/publish-api"
 
 ################# rpc
 PublishRpc: # 需要与config保持一致
   Target: consul://192.168.241.131:8500/publish.rpc?wait=14s
+  NonBlock: true # 启动时是否阻塞 , 即使rpc服务没有启动也不会影响客户端的启动
 AuthsRpc: # 需要与config保持一致
   Target: consul://192.168.241.131:8500/auths.rpc?wait=14s
-UserRpc: # 需要与config保持一致
-  Target: consul://192.168.241.131:8500/user.rpc?wait=14s
+  NonBlock: true # 启动时是否阻塞 , 即使rpc服务没有启动也不会影响客户端的启动

@@ -27,15 +27,14 @@ RedisConf:
   Pass: lzb200244
   Tls: false
 DevServer:
-  Enabled: true
-  Port: 6471
-  MetricsPath: /metrics
+  Port: 20002
 Log:
   ServiceName: "feed-rpc"
-  Mode: 'console'
-  Encoding: "plain"
-  Level: "info"
-  Path: "C:/logs/feed-rpc"
+  Mode: 'file'
+  Encoding: "json"
+  Level: "error"
+  Path: "./logs/feed-rpc"
 # rcp
 UserRpc: # 需要与config保持一致
   Target: consul://192.168.241.131:8500/user.rpc?wait=14s
+  NonBlock: true

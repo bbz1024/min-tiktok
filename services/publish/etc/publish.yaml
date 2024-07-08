@@ -10,11 +10,11 @@ Consul:
   Tag:
     - tag
     - rpc
-#Telemetry:
-#  Name: publish.rpc
-#  Endpoint: http://192.168.241.131:14268/api/traces
-#  Batcher: jaeger
-#  Sampler: 1.0
+Telemetry:
+  Name: publish.rpc
+  Endpoint: http://192.168.241.131:14268/api/traces
+  Batcher: jaeger
+  Sampler: 1.0
 Mysql:
   DataSource: lzb200244:lzb200244@tcp(192.168.241.131:3306)/tiktok?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
 CacheRedis:
@@ -28,9 +28,7 @@ RedisConf:
   Pass: lzb200244
   Tls: false
 DevServer:
-  Enabled: true
-  Port: 6471
-  MetricsPath: /metrics
+  Port: 20003
 
 QiNiu:
   AccessKey: JfDRw6TYF7B-MXNjIivW1zxcZ6PrSHAHYksBcZOt
@@ -40,9 +38,10 @@ QiNiu:
 Log:
   ServiceName: "publish-rpc"
   Mode: 'file'
-  Encoding: "plain"
+  Encoding: "json"
   Level: "error"
-  Path: "C:/logs/publish-rpc"
+  Path: "./logs/publish-rpc"
 #rpc
 FeedRpc:
   Target: consul://192.168.241.131:8500/feed.rpc?wait=14s
+  NonBlock: true
