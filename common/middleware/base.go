@@ -51,6 +51,10 @@ func WrapperAuthMiddleware(rpcConf zrpc.RpcClientConf) func(next http.HandlerFun
 				next(w, r)
 				return
 			}
+			if token == "" {
+				httpx.OkJsonCtx(r.Context(), w, response.NewResponse(code.AuthErrorCode, code.AuthErrorMsg))
+				return
+			}
 			// init rpc
 			once.Do(func() {
 				authRpc = authsclient.NewAuths(zrpc.MustNewClient(rpcConf))

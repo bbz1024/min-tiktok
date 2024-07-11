@@ -13,28 +13,16 @@ import (
 )
 
 type (
-	CountFavoriteRequest            = favorite.CountFavoriteRequest
-	CountFavoriteResponse           = favorite.CountFavoriteResponse
-	CountUserFavoriteRequest        = favorite.CountUserFavoriteRequest
-	CountUserFavoriteResponse       = favorite.CountUserFavoriteResponse
-	CountUserTotalFavoritedRequest  = favorite.CountUserTotalFavoritedRequest
-	CountUserTotalFavoritedResponse = favorite.CountUserTotalFavoritedResponse
-	FavoriteListRequest             = favorite.FavoriteListRequest
-	FavoriteListResponse            = favorite.FavoriteListResponse
-	FavoriteRequest                 = favorite.FavoriteRequest
-	FavoriteResponse                = favorite.FavoriteResponse
-	IsFavoriteRequest               = favorite.IsFavoriteRequest
-	IsFavoriteResponse              = favorite.IsFavoriteResponse
-	UserInfo                        = favorite.UserInfo
-	Video                           = favorite.Video
+	FavoriteListRequest  = favorite.FavoriteListRequest
+	FavoriteListResponse = favorite.FavoriteListResponse
+	FavoriteRequest      = favorite.FavoriteRequest
+	FavoriteResponse     = favorite.FavoriteResponse
+	UserInfo             = favorite.UserInfo
+	Video                = favorite.Video
 
 	Favorite interface {
 		FavoriteAction(ctx context.Context, in *FavoriteRequest, opts ...grpc.CallOption) (*FavoriteResponse, error)
 		FavoriteList(ctx context.Context, in *FavoriteListRequest, opts ...grpc.CallOption) (*FavoriteListResponse, error)
-		IsFavorite(ctx context.Context, in *IsFavoriteRequest, opts ...grpc.CallOption) (*IsFavoriteResponse, error)
-		CountFavorite(ctx context.Context, in *CountFavoriteRequest, opts ...grpc.CallOption) (*CountFavoriteResponse, error)
-		CountUserFavorite(ctx context.Context, in *CountUserFavoriteRequest, opts ...grpc.CallOption) (*CountUserFavoriteResponse, error)
-		CountUserTotalFavorited(ctx context.Context, in *CountUserTotalFavoritedRequest, opts ...grpc.CallOption) (*CountUserTotalFavoritedResponse, error)
 	}
 
 	defaultFavorite struct {
@@ -56,24 +44,4 @@ func (m *defaultFavorite) FavoriteAction(ctx context.Context, in *FavoriteReques
 func (m *defaultFavorite) FavoriteList(ctx context.Context, in *FavoriteListRequest, opts ...grpc.CallOption) (*FavoriteListResponse, error) {
 	client := favorite.NewFavoriteClient(m.cli.Conn())
 	return client.FavoriteList(ctx, in, opts...)
-}
-
-func (m *defaultFavorite) IsFavorite(ctx context.Context, in *IsFavoriteRequest, opts ...grpc.CallOption) (*IsFavoriteResponse, error) {
-	client := favorite.NewFavoriteClient(m.cli.Conn())
-	return client.IsFavorite(ctx, in, opts...)
-}
-
-func (m *defaultFavorite) CountFavorite(ctx context.Context, in *CountFavoriteRequest, opts ...grpc.CallOption) (*CountFavoriteResponse, error) {
-	client := favorite.NewFavoriteClient(m.cli.Conn())
-	return client.CountFavorite(ctx, in, opts...)
-}
-
-func (m *defaultFavorite) CountUserFavorite(ctx context.Context, in *CountUserFavoriteRequest, opts ...grpc.CallOption) (*CountUserFavoriteResponse, error) {
-	client := favorite.NewFavoriteClient(m.cli.Conn())
-	return client.CountUserFavorite(ctx, in, opts...)
-}
-
-func (m *defaultFavorite) CountUserTotalFavorited(ctx context.Context, in *CountUserTotalFavoritedRequest, opts ...grpc.CallOption) (*CountUserTotalFavoritedResponse, error) {
-	client := favorite.NewFavoriteClient(m.cli.Conn())
-	return client.CountUserTotalFavorited(ctx, in, opts...)
 }

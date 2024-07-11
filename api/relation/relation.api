@@ -1,0 +1,79 @@
+syntax = "v1"
+
+type RealtionActionReuqest {
+	UserID  uint32 `form:"to_user_id" json:"to_user_id"`
+	ActorID uint32 `json:"actor_id" form:"actor_id"`
+	//action_type
+	ActionType uint32 `json:"action_type" form:"action_type"`
+}
+
+type RealtionActionResponse {
+	StatusCode uint32 `json:"status_code"` // 状态码，0-成功，其他值-失败
+	StatusMsg  string `json:"status_msg"` // 返回状态描述
+}
+
+type RelationFollowListRequest {
+	UserID  uint32 `form:"user_id" json:"user_id"`
+	ActorID uint32 `json:"actor_id" form:"actor_id"`
+}
+
+type User {
+	ID              uint32 `json:"id"` // 用户id
+	Name            string `json:"name"` // 用户名称
+	FollowCount     uint32 `json:"follow_count"` // 关注总数
+	FollowerCount   uint32 `json:"follower_count"` // 粉丝总数
+	IsFollow        bool   `json:"is_follow"` // true-已关注，false-未关注
+	Avatar          string `json:"avatar"` // 用户头像
+	BackgroundImage string `json:"background_image"` // 用户个人页顶部大图
+	Signature       string `json:"signature"` // 个人简介
+	TotalFavorited  uint32 `json:"total_favorited"` // 获赞数量
+	WorkCount       uint32 `json:"work_count"` // 作品数量
+	FavoriteCount   uint32 `json:"favorite_count"` // 点赞数量
+}
+
+type RelationFollowListResponse {
+	StatusCode uint32  `json:"status_code"` // 状态码，0-成功，其他值-失败
+	StatusMsg  string  `json:"status_msg"` // 返回状态描述
+	UserList   []*User `json:"user_list"`
+}
+
+type RelationFollowerListRequest {
+	UserID  uint32 `form:"user_id" json:"user_id"`
+	ActorID uint32 `json:"actor_id" form:"actor_id"`
+}
+
+type RelationFollowerListResponse {
+	StatusCode uint32  `json:"status_code"` // 状态码，0-成功，其他值-失败
+	StatusMsg  string  `json:"status_msg"` // 返回状态描述
+	UserList   []*User `json:"user_list"`
+}
+
+type RelationFriendListRequest {
+	UserID  uint32 `form:"user_id" json:"user_id"`
+	ActorID uint32 `json:"actor_id" form:"actor_id"`
+}
+
+type RelationFriendListResponse {
+	StatusCode uint32  `json:"status_code"` // 状态码，0-成功，其他值-失败
+	StatusMsg  string  `json:"status_msg"` // 返回状态描述
+	UserList   []*User `json:"user_list"`
+}
+
+@server (
+	prefix:     /douyin/relation
+	middleware: WithMiddleware,AuthMiddleware
+)
+service relation-api {
+	@handler RelationActionHandler
+	post /action (RealtionActionReuqest) returns (RealtionActionResponse)
+
+	@handler RelationFollowListHandler
+	get /follow/list (RelationFollowListRequest) returns (RelationFollowListResponse)
+
+	@handler RelationFollowerListHandler
+	get /follower/list (RelationFollowerListRequest) returns (RelationFollowerListResponse)
+
+	@handler RelationFriendListHandler
+	get /friend/list (RelationFriendListRequest) returns (RelationFriendListResponse)
+}
+

@@ -25,6 +25,12 @@ const (
 	//	-------------------- favorite --------------------
 	FavoriteRepeatCode   = 40001
 	FavoriteNotFoundCode = 40002
+
+	// -------------------- relation --------------------
+
+	IsFollowCode     = 50001
+	IsNotFollowCode  = 50002
+	ForbidFollowSelf = 50003
 )
 
 // msg
@@ -53,4 +59,10 @@ const (
 
 	FavoriteRepeatMsg   = "重复点赞"
 	FavoriteNotFoundMsg = "未找到点赞记录"
+
+	// -------------------- relation --------------------
+
+	IsFollowMsg         = "你已关注不可再次关注"
+	IsNotFollowMsg      = "你未关注不可取消关注"
+	ForbidFollowSelfMsg = "不能关注自己"
 )

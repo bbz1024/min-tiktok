@@ -69,8 +69,19 @@ func (l *GetUserInfoLogic) GetUserInfo(in *user.UserRequest) (*user.UserResponse
 		userInfo.WorkCount = uint32(workCount)
 		userInfo.FavoriteCount = uint32(favoriteCount)
 		// authed user
-		if in.ActorId != 0 {
-			//	TODO 是否互相关注
+		if in.ActorId != 0 && in.ActorId != in.UserId {
+			// check exist in user follow list
+			userFollowKey := fmt.Sprintf(keys.UserFollow, in.ActorId)
+			exist, err := l.svcCtx.Rdb.SismemberCtx(l.ctx, userFollowKey, in.UserId)
+			if err != nil {
+				if errors.Is(err, redis.Nil) {
+					userInfo.IsFollow = false
+					return nil
+				}
+				l.Errorw("get user is follow error", logx.Field("err", err))
+				return err
+			}
+			userInfo.IsFollow = exist
 		}
 		return nil
 	})

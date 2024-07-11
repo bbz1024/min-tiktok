@@ -1,12 +1,11 @@
-Name: favorite-api
+Name: relation-api
 Host: 0.0.0.0
-Port: 8892
-Mode: dev
+Port: 8894
 
 # register center
 Consul:
   Host: 192.168.241.131:8500
-  Key: favorite.rpc
+  Key: relation.rpc
 
 # middle
 Middlewares:
@@ -14,7 +13,7 @@ Middlewares:
 
 #  trace
 Telemetry:
-  Name: favorite.api
+  Name: relation.api
   Endpoint: http://192.168.241.131:14268/api/traces
   Batcher: jaeger
   Sampler: 1.0
@@ -25,15 +24,20 @@ Mysql:
 
 # metrics
 DevServer:
-  Port: 30004
+  Port: 30006
 
 # log
 Log:
-  ServiceName: "favorite-api"
+  ServiceName: "relation-api"
   Mode: 'console'
   Encoding: "json"
   Level: "error" # info==warn ,server==error
-  Path: "./logs/favorite-api"
-FavoriteRpc:
-  Target: consul://192.168.241.131:8500/favorite.rpc?wait=14s
-  NonBlock: true # 启动时是否阻塞 , 即使rpc服务没有启动也不会影响客户端的启动
+  Path: "./logs/relation-api"
+
+# rpc
+AuthsRpc: # 需要与config保持一致
+  Target: consul://192.168.241.131:8500/auths.rpc?wait=14s
+  NonBlock: true
+RelationRpc:
+  Target: consul://192.168.241.131:8500/relation.rpc?wait=14s
+  NonBlock: true

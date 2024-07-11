@@ -27,3 +27,8 @@ comment-api=8893
 comment-service=10005
 comment-service-health=20005
 comment-api-health=30005
+
+relation-api=8894
+relation-service=10006
+relation-service-health=20006
+relation-api-health=30006

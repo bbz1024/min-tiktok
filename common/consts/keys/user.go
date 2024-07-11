@@ -16,4 +16,7 @@ const (
 
 	UserFavoriteKey = "user_favorite:%d" // set
 
+	UserFollow    = "user_follow:%d"
+	UserFollower  = "user_follower:%d"
+	UserFriendKey = "user_friend:%d"
 )

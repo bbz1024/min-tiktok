@@ -19,12 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion8
 
 const (
-	Favorite_FavoriteAction_FullMethodName          = "/favorite.Favorite/FavoriteAction"
-	Favorite_FavoriteList_FullMethodName            = "/favorite.Favorite/FavoriteList"
-	Favorite_IsFavorite_FullMethodName              = "/favorite.Favorite/IsFavorite"
-	Favorite_CountFavorite_FullMethodName           = "/favorite.Favorite/CountFavorite"
-	Favorite_CountUserFavorite_FullMethodName       = "/favorite.Favorite/CountUserFavorite"
-	Favorite_CountUserTotalFavorited_FullMethodName = "/favorite.Favorite/CountUserTotalFavorited"
+	Favorite_FavoriteAction_FullMethodName = "/favorite.Favorite/FavoriteAction"
+	Favorite_FavoriteList_FullMethodName   = "/favorite.Favorite/FavoriteList"
 )
 
 // FavoriteClient is the client API for Favorite service.
@@ -33,10 +29,6 @@ const (
 type FavoriteClient interface {
 	FavoriteAction(ctx context.Context, in *FavoriteRequest, opts ...grpc.CallOption) (*FavoriteResponse, error)
 	FavoriteList(ctx context.Context, in *FavoriteListRequest, opts ...grpc.CallOption) (*FavoriteListResponse, error)
-	IsFavorite(ctx context.Context, in *IsFavoriteRequest, opts ...grpc.CallOption) (*IsFavoriteResponse, error)
-	CountFavorite(ctx context.Context, in *CountFavoriteRequest, opts ...grpc.CallOption) (*CountFavoriteResponse, error)
-	CountUserFavorite(ctx context.Context, in *CountUserFavoriteRequest, opts ...grpc.CallOption) (*CountUserFavoriteResponse, error)
-	CountUserTotalFavorited(ctx context.Context, in *CountUserTotalFavoritedRequest, opts ...grpc.CallOption) (*CountUserTotalFavoritedResponse, error)
 }
 
 type favoriteClient struct {
@@ -67,56 +59,12 @@ func (c *favoriteClient) FavoriteList(ctx context.Context, in *FavoriteListReque
 	return out, nil
 }
 
-func (c *favoriteClient) IsFavorite(ctx context.Context, in *IsFavoriteRequest, opts ...grpc.CallOption) (*IsFavoriteResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(IsFavoriteResponse)
-	err := c.cc.Invoke(ctx, Favorite_IsFavorite_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *favoriteClient) CountFavorite(ctx context.Context, in *CountFavoriteRequest, opts ...grpc.CallOption) (*CountFavoriteResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CountFavoriteResponse)
-	err := c.cc.Invoke(ctx, Favorite_CountFavorite_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *favoriteClient) CountUserFavorite(ctx context.Context, in *CountUserFavoriteRequest, opts ...grpc.CallOption) (*CountUserFavoriteResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CountUserFavoriteResponse)
-	err := c.cc.Invoke(ctx, Favorite_CountUserFavorite_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *favoriteClient) CountUserTotalFavorited(ctx context.Context, in *CountUserTotalFavoritedRequest, opts ...grpc.CallOption) (*CountUserTotalFavoritedResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CountUserTotalFavoritedResponse)
-	err := c.cc.Invoke(ctx, Favorite_CountUserTotalFavorited_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // FavoriteServer is the server API for Favorite service.
 // All implementations must embed UnimplementedFavoriteServer
 // for forward compatibility
 type FavoriteServer interface {
 	FavoriteAction(context.Context, *FavoriteRequest) (*FavoriteResponse, error)
 	FavoriteList(context.Context, *FavoriteListRequest) (*FavoriteListResponse, error)
-	IsFavorite(context.Context, *IsFavoriteRequest) (*IsFavoriteResponse, error)
-	CountFavorite(context.Context, *CountFavoriteRequest) (*CountFavoriteResponse, error)
-	CountUserFavorite(context.Context, *CountUserFavoriteRequest) (*CountUserFavoriteResponse, error)
-	CountUserTotalFavorited(context.Context, *CountUserTotalFavoritedRequest) (*CountUserTotalFavoritedResponse, error)
 	mustEmbedUnimplementedFavoriteServer()
 }
 
@@ -129,18 +77,6 @@ func (UnimplementedFavoriteServer) FavoriteAction(context.Context, *FavoriteRequ
 }
 func (UnimplementedFavoriteServer) FavoriteList(context.Context, *FavoriteListRequest) (*FavoriteListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FavoriteList not implemented")
-}
-func (UnimplementedFavoriteServer) IsFavorite(context.Context, *IsFavoriteRequest) (*IsFavoriteResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method IsFavorite not implemented")
-}
-func (UnimplementedFavoriteServer) CountFavorite(context.Context, *CountFavoriteRequest) (*CountFavoriteResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CountFavorite not implemented")
-}
-func (UnimplementedFavoriteServer) CountUserFavorite(context.Context, *CountUserFavoriteRequest) (*CountUserFavoriteResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CountUserFavorite not implemented")
-}
-func (UnimplementedFavoriteServer) CountUserTotalFavorited(context.Context, *CountUserTotalFavoritedRequest) (*CountUserTotalFavoritedResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CountUserTotalFavorited not implemented")
 }
 func (UnimplementedFavoriteServer) mustEmbedUnimplementedFavoriteServer() {}
 
@@ -191,78 +127,6 @@ func _Favorite_FavoriteList_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Favorite_IsFavorite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(IsFavoriteRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FavoriteServer).IsFavorite(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Favorite_IsFavorite_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FavoriteServer).IsFavorite(ctx, req.(*IsFavoriteRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Favorite_CountFavorite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CountFavoriteRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FavoriteServer).CountFavorite(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Favorite_CountFavorite_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FavoriteServer).CountFavorite(ctx, req.(*CountFavoriteRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Favorite_CountUserFavorite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CountUserFavoriteRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FavoriteServer).CountUserFavorite(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Favorite_CountUserFavorite_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FavoriteServer).CountUserFavorite(ctx, req.(*CountUserFavoriteRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Favorite_CountUserTotalFavorited_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CountUserTotalFavoritedRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FavoriteServer).CountUserTotalFavorited(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Favorite_CountUserTotalFavorited_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FavoriteServer).CountUserTotalFavorited(ctx, req.(*CountUserTotalFavoritedRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // Favorite_ServiceDesc is the grpc.ServiceDesc for Favorite service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -277,22 +141,6 @@ var Favorite_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FavoriteList",
 			Handler:    _Favorite_FavoriteList_Handler,
-		},
-		{
-			MethodName: "IsFavorite",
-			Handler:    _Favorite_IsFavorite_Handler,
-		},
-		{
-			MethodName: "CountFavorite",
-			Handler:    _Favorite_CountFavorite_Handler,
-		},
-		{
-			MethodName: "CountUserFavorite",
-			Handler:    _Favorite_CountUserFavorite_Handler,
-		},
-		{
-			MethodName: "CountUserTotalFavorited",
-			Handler:    _Favorite_CountUserTotalFavorited_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
