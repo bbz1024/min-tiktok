@@ -4,6 +4,7 @@ import (
 	"context"
 	"min-tiktok/api/publish/internal/svc"
 	"min-tiktok/api/publish/internal/types"
+	"min-tiktok/common/consts/code"
 	"min-tiktok/services/publish/publish"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -29,10 +30,16 @@ func (l *PublishListLogic) PublishList(req *types.PublishListReq) (resp *types.P
 		UserId:  req.UserId,
 	})
 	resp = new(types.PublishListResp)
-	resp.StatusMsg = res.StatusMsg
-	resp.StatusCode = res.StatusCode
+
 	if err != nil {
+		resp.StatusMsg = code.ServerErrorMsg
+		resp.StatusCode = code.ServerError
 		l.Errorw("call rpc PublishRpc.PublishList error ", logx.Field("err", err))
+		return
+	}
+	if res.StatusCode != code.OK {
+		resp.StatusMsg = res.StatusMsg
+		resp.StatusCode = res.StatusCode
 		return
 	}
 	var videoList = make([]types.Video, 0, len(res.VideoList))

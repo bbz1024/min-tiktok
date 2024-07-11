@@ -22,6 +22,9 @@ const (
 
 	VideoOverSizeCode = 30001
 	VideoTypeCode     = 30002
+	//	-------------------- favorite --------------------
+	FavoriteRepeatCode   = 40001
+	FavoriteNotFoundCode = 40002
 )
 
 // msg
@@ -45,4 +48,9 @@ const (
 
 	VideoOverSizeMsg = "视频大小超过限制"
 	VideoTypeMsg     = "视频类型错误"
+
+	// -------------------- favorite --------------------
+
+	FavoriteRepeatMsg   = "重复点赞"
+	FavoriteNotFoundMsg = "未找到点赞记录"
 )

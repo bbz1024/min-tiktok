@@ -12,6 +12,7 @@ type ServiceContext struct {
 	Config config.Config
 	// middleware
 	AuthMiddleware rest.Middleware
+	WithMiddleware rest.Middleware
 	// rpc
 	FeedRpc feedclient.Feed
 }
@@ -20,6 +21,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
 		Config:         c,
 		AuthMiddleware: middleware.WrapperAuthMiddleware(c.AuthsRpc),
+		WithMiddleware: middleware.WithMiddleware,
 		FeedRpc:        feedclient.NewFeed(zrpc.MustNewClient(c.FeedRpc)),
 	}
 }

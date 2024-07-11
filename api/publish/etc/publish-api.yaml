@@ -3,6 +3,8 @@ Host: 0.0.0.0
 Port: 8891
 Mode: dev
 MaxBytes: 52428800
+Timeout: 30000
+
 Consul:
   Host: 192.168.241.131:8500
   Key: publish.rpc
@@ -20,18 +22,19 @@ DevServer:
   Port: 30003
 
 
-# log
 Log:
   ServiceName: "publish-api"
-  Mode: 'file'
+  Mode: 'console'
   Encoding: "json"
-  Level: "error"
+  Level: error
   Path: "./logs/publish-api"
+
 
 ################# rpc
 PublishRpc: # 需要与config保持一致
   Target: consul://192.168.241.131:8500/publish.rpc?wait=14s
   NonBlock: true # 启动时是否阻塞 , 即使rpc服务没有启动也不会影响客户端的启动
+  Timeout: 30000
 AuthsRpc: # 需要与config保持一致
   Target: consul://192.168.241.131:8500/auths.rpc?wait=14s
   NonBlock: true # 启动时是否阻塞 , 即使rpc服务没有启动也不会影响客户端的启动

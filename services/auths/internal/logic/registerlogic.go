@@ -2,12 +2,17 @@ package logic
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/zhenghaoz/gorse/client"
+	"io"
 	"min-tiktok/common/consts/code"
 	"min-tiktok/common/consts/keys"
 	"min-tiktok/common/cryptx"
 	"min-tiktok/common/uid"
+	"net/http"
+	"net/url"
 	"strconv"
 	"time"
 
@@ -37,34 +42,49 @@ func (l *RegisterLogic) Register(in *auths.RegisterRequest) (*auths.RegisterResp
 		// user not exist
 		now := time.Now()
 		if errors.Is(err, user.ErrNotFound) {
-			userinfo, err := l.svcCtx.UserModel.Insert(l.ctx, &user.Users{
+			u := &user.Users{
 				Username:  in.Username,
 				Password:  cryptx.PasswordEncrypt(in.Password),
 				Createdat: now,
 				Updatedat: now,
-			})
+			}
+			// signature
+			resp, err := http.Get(l.svcCtx.Config.UserInfo.SignatureUrl)
+			if err != nil || resp.StatusCode != http.StatusOK {
+				u.Signature = sql.NullString{String: u.Username, Valid: true}
+			}
+			body, err := io.ReadAll(resp.Body)
 			if err != nil {
-				return &auths.RegisterResponse{
-					StatusCode: code.ServerError,
-					StatusMsg:  code.ServerErrorMsg,
-				}, err
+				u.Signature = sql.NullString{String: u.Username, Valid: true}
+			}
+			u.Signature = sql.NullString{String: string(body), Valid: true}
+			u.Avatar = sql.NullString{
+				String: fmt.Sprintf("%s/%s.png", l.svcCtx.Config.UserInfo.AvatarUrl, url.QueryEscape(u.Username)),
+				Valid:  true,
+			}
+			u.Backgroundimage = sql.NullString{String: l.svcCtx.Config.UserInfo.BackImageUrl, Valid: true}
+			userinfo, err := l.svcCtx.UserModel.Insert(l.ctx, u)
+			if err != nil {
+				return nil, err
 			}
 			userID, err := userinfo.LastInsertId()
 			if err != nil {
-				return &auths.RegisterResponse{
-					StatusCode: code.ServerError,
-					StatusMsg:  code.ServerErrorMsg,
-				}, err
+				return nil, err
 			}
 			// gen token & set
 			// 生成token，使用session（这里简单的使用uuid）,存储在redis
 			token := uid.GenUid(l.ctx, int(userID))
 			key := fmt.Sprintf(keys.UserTokenKey, token)
 			if err := l.svcCtx.Rdb.SetCtx(l.ctx, key, strconv.FormatUint(uint64(userID), 10)); err != nil {
-				return &auths.RegisterResponse{
-					StatusCode: code.ServerError,
-					StatusMsg:  code.ServerErrorMsg,
-				}, err
+				logx.Errorw("set token error: %s", logx.Field("err", err))
+				return nil, err
+			}
+			if _, err := l.svcCtx.GorseClient.InsertUser(l.ctx, client.User{
+				UserId:  fmt.Sprintf("%d", userID),
+				Comment: in.Username,
+			}); err != nil {
+				logx.Errorw("insert user error: %s", logx.Field("err", err))
+				return nil, err
 			}
 			return &auths.RegisterResponse{
 				UserId: uint32(userID),
@@ -78,5 +98,5 @@ func (l *RegisterLogic) Register(in *auths.RegisterRequest) (*auths.RegisterResp
 	return &auths.RegisterResponse{
 		StatusCode: code.UserExistedCode,
 		StatusMsg:  code.UserExistedMsg,
-	}, errors.New(code.UserExistedMsg)
+	}, nil
 }

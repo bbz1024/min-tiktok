@@ -46,10 +46,22 @@ message ListVideosByUserIDResponse {
   string status_msg = 2;
   repeated Video video_list = 3;
 }
+
+message ListVideosBySetRequest {
+  uint32 actor_id = 2;
+  repeated string video_id_set = 3;
+}
+message ListVideosBySetResponse {
+  uint32 status_code = 1;
+  string status_msg = 2;
+  repeated Video video_list = 3;
+}
 service Feed {
   //  rpc ListVideosByRecommend(ListFeedRequest) returns (ListFeedResponse);
   //  query by created_at
   rpc ListVideos(ListFeedRequest) returns (ListFeedResponse);
   //  query by user_id 获取某个用户的视频列表
   rpc ListVideosByUserID(ListVideosByUserIDRequest) returns (ListVideosByUserIDResponse);
+  // query by set of video_id
+  rpc ListVideosBySet(ListVideosBySetRequest) returns (ListVideosBySetResponse);
 }

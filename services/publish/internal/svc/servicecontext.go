@@ -17,14 +17,16 @@ type ServiceContext struct {
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
+
 	mysqlConn := sqlx.NewMysql(c.MySQL.DataSource)
+	videoModel := video.NewVideoModel(mysqlConn)
 	rdb, err := redis.NewRedis(c.RedisConf)
 	if err != nil {
 		panic(err)
 	}
 	return &ServiceContext{
 		Config:     c,
-		VideoModel: video.NewVideoModel(mysqlConn),
+		VideoModel: videoModel,
 		FeedRpc:    feedclient.NewFeed(zrpc.MustNewClient(c.FeedRpc)),
 		Rdb:        rdb,
 	}

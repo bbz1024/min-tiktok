@@ -17,3 +17,13 @@ publish-api=8891
 publish-service=10003
 publish-service-health=20003
 publish-api-health=30003
+
+favorite-api=8892
+favorite-service=10004
+favorite-service-health=20004
+favorite-api-health=30004
+
+comment-api=8893
+comment-service=10005
+comment-service-health=20005
+comment-api-health=30005

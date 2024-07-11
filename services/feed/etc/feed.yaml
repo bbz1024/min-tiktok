@@ -30,7 +30,7 @@ DevServer:
   Port: 20002
 Log:
   ServiceName: "feed-rpc"
-  Mode: 'file'
+  Mode: 'console'
   Encoding: "json"
   Level: "error"
   Path: "./logs/feed-rpc"

@@ -9,6 +9,7 @@ Consul:
     - tag
     - rpc
 
+
 Telemetry:
   Name: auths.rpc
   Endpoint: http://192.168.241.131:14268/api/traces
@@ -31,7 +32,14 @@ DevServer:
   Port: 20000
 Log:
   ServiceName: "auths-rpc"
-  Mode: 'file'
+  Mode: 'console'
   Encoding: "json"
   Level: "error"
   Path: "./logs/auths-rpc"
+Gorse:
+  GorseAddr: http://192.168.241.131:8088
+  GorseApikey: 5105502fc46a411c896aa5b50c31e951
+UserInfo:
+  SignatureUrl: https://v1.hitokoto.cn/?c=b&encode=text
+  AvatarUrl: https://api.multiavatar.com
+  BackImageUrl: https://wallpaperaccess.com/full/8540106.jpg

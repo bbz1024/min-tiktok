@@ -22,5 +22,9 @@ func NewResponse(statusCode int, statusMsg string) *Response {
 func NewParamError(ctx context.Context, w http.ResponseWriter, err error) {
 	logx.Infow("params invalid", logx.Field("err", err))
 	httpx.OkJsonCtx(ctx, w, NewResponse(code.ParamError, code.ParamErrorMsg))
-
+}
+func NewBackError(ctx context.Context, w http.ResponseWriter, err error) {
+	logx.Errorw("back error", logx.Field("err", err))
+	httpx.OkJsonCtx(ctx, w, NewResponse(code.ServerError, code.ServerErrorMsg))
+	
 }

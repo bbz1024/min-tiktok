@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"min-tiktok/common/consts/code"
 	"min-tiktok/services/feed/feedclient"
 
 	"min-tiktok/api/feed/internal/svc"
@@ -45,11 +46,17 @@ func (l *ListVideosLogic) ListVideos(req *types.ListVideosReq) (resp *types.List
 			},
 		)
 	}
+
 	resp = new(types.ListVideosResp)
-	resp.StatusMsg = res.StatusMsg
-	resp.StatusCode = res.StatusCode
 	if err != nil {
+		resp.StatusMsg = code.ServerErrorMsg
+		resp.StatusCode = code.ServerError
 		l.Errorw("call rpc FeedRpc.ListVideos error ", logx.Field("err", err))
+		return
+	}
+	if res.StatusCode != code.OK {
+		resp.StatusMsg = res.StatusMsg
+		resp.StatusCode = res.StatusCode
 		return
 	}
 	var videoList []*types.Video

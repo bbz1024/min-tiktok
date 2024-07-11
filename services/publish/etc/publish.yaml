@@ -1,7 +1,8 @@
 Name: publish.rpc
 ListenOn: 0.0.0.0:10003
 MaxBytes: 52428800
-Verbose: false
+Timeout: 30000
+
 Consul:
   Host: 192.168.241.131:8500 # consul endpoint
   Key: publish.rpc
@@ -10,38 +11,67 @@ Consul:
   Tag:
     - tag
     - rpc
+
+
 Telemetry:
   Name: publish.rpc
   Endpoint: http://192.168.241.131:14268/api/traces
   Batcher: jaeger
   Sampler: 1.0
+
 Mysql:
   DataSource: lzb200244:lzb200244@tcp(192.168.241.131:3306)/tiktok?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+
 CacheRedis:
   - Host: 192.168.241.131:6379
     Type: node
     Pass: lzb200244
 # Redis配置
+
 RedisConf:
   Host: 192.168.241.131:6379
   Type: node
   Pass: lzb200244
   Tls: false
+
 DevServer:
   Port: 20003
+
 
 QiNiu:
   AccessKey: JfDRw6TYF7B-MXNjIivW1zxcZ6PrSHAHYksBcZOt
   SecretKey: ubXESZ4C3bpTh9P0yKTXmzOPXEbpaBgvzFkecWIu
   VideoDomain: sg89iek10.hn-bkt.clouddn.com
   Bucket: min-tiktok-video
+
 Log:
   ServiceName: "publish-rpc"
-  Mode: 'file'
+  Mode: 'console'
   Encoding: "json"
   Level: "error"
   Path: "./logs/publish-rpc"
 #rpc
+
 FeedRpc:
   Target: consul://192.168.241.131:8500/feed.rpc?wait=14s
   NonBlock: true
+
+RabbitMQ:
+  Host: 192.168.241.131
+  Port: 5672
+  User: admin
+  Pass: admin
+  VHost: /
+AlibabaNsl:
+  AccessKeyId: LTAI5tHNGUZvcSEJc1YMJvkL
+  AccessKeySecret: gLjRTfHJctev5WD4mHAv1SDjPyZ6bM
+  AppKey: 2FebCdIPD3vb073T
+Gpt:
+  ApiKey: 116d0a63-2b52-4bde-a625-062e1dc227df
+  ModelID: ep-20240709002919-5d65n
+Gorse:
+  GorseAddr: http://192.168.241.131:8088
+  GorseApikey: 5105502fc46a411c896aa5b50c31e951
+
+Middlewares:
+  Stat: false

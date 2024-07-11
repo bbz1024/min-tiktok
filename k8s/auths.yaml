@@ -33,8 +33,10 @@ spec:
               mountPath: /project/logs
       volumes:
         - name: project-etc-volume
-          configMap:
-            name: auths-service
+          hostPath:
+            path: /data/etc
+#            不存在就创建
+            type: DirectoryOrCreate
         - name: project-logs-volume
           hostPath:
             path: /data/logs

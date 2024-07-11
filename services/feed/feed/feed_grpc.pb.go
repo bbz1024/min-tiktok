@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion8
 const (
 	Feed_ListVideos_FullMethodName         = "/feed.Feed/ListVideos"
 	Feed_ListVideosByUserID_FullMethodName = "/feed.Feed/ListVideosByUserID"
+	Feed_ListVideosBySet_FullMethodName    = "/feed.Feed/ListVideosBySet"
 )
 
 // FeedClient is the client API for Feed service.
@@ -32,6 +33,8 @@ type FeedClient interface {
 	ListVideos(ctx context.Context, in *ListFeedRequest, opts ...grpc.CallOption) (*ListFeedResponse, error)
 	// query by user_id 获取某个用户的视频列表
 	ListVideosByUserID(ctx context.Context, in *ListVideosByUserIDRequest, opts ...grpc.CallOption) (*ListVideosByUserIDResponse, error)
+	// query by set of video_id
+	ListVideosBySet(ctx context.Context, in *ListVideosBySetRequest, opts ...grpc.CallOption) (*ListVideosBySetResponse, error)
 }
 
 type feedClient struct {
@@ -62,6 +65,16 @@ func (c *feedClient) ListVideosByUserID(ctx context.Context, in *ListVideosByUse
 	return out, nil
 }
 
+func (c *feedClient) ListVideosBySet(ctx context.Context, in *ListVideosBySetRequest, opts ...grpc.CallOption) (*ListVideosBySetResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListVideosBySetResponse)
+	err := c.cc.Invoke(ctx, Feed_ListVideosBySet_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FeedServer is the server API for Feed service.
 // All implementations must embed UnimplementedFeedServer
 // for forward compatibility
@@ -71,6 +84,8 @@ type FeedServer interface {
 	ListVideos(context.Context, *ListFeedRequest) (*ListFeedResponse, error)
 	// query by user_id 获取某个用户的视频列表
 	ListVideosByUserID(context.Context, *ListVideosByUserIDRequest) (*ListVideosByUserIDResponse, error)
+	// query by set of video_id
+	ListVideosBySet(context.Context, *ListVideosBySetRequest) (*ListVideosBySetResponse, error)
 	mustEmbedUnimplementedFeedServer()
 }
 
@@ -83,6 +98,9 @@ func (UnimplementedFeedServer) ListVideos(context.Context, *ListFeedRequest) (*L
 }
 func (UnimplementedFeedServer) ListVideosByUserID(context.Context, *ListVideosByUserIDRequest) (*ListVideosByUserIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListVideosByUserID not implemented")
+}
+func (UnimplementedFeedServer) ListVideosBySet(context.Context, *ListVideosBySetRequest) (*ListVideosBySetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListVideosBySet not implemented")
 }
 func (UnimplementedFeedServer) mustEmbedUnimplementedFeedServer() {}
 
@@ -133,6 +151,24 @@ func _Feed_ListVideosByUserID_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Feed_ListVideosBySet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListVideosBySetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FeedServer).ListVideosBySet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Feed_ListVideosBySet_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FeedServer).ListVideosBySet(ctx, req.(*ListVideosBySetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Feed_ServiceDesc is the grpc.ServiceDesc for Feed service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -147,6 +183,10 @@ var Feed_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListVideosByUserID",
 			Handler:    _Feed_ListVideosByUserID_Handler,
+		},
+		{
+			MethodName: "ListVideosBySet",
+			Handler:    _Feed_ListVideosBySet_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

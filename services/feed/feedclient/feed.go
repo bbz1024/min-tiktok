@@ -15,6 +15,8 @@ import (
 type (
 	ListFeedRequest            = feed.ListFeedRequest
 	ListFeedResponse           = feed.ListFeedResponse
+	ListVideosBySetRequest     = feed.ListVideosBySetRequest
+	ListVideosBySetResponse    = feed.ListVideosBySetResponse
 	ListVideosByUserIDRequest  = feed.ListVideosByUserIDRequest
 	ListVideosByUserIDResponse = feed.ListVideosByUserIDResponse
 	UserInfo                   = feed.UserInfo
@@ -25,6 +27,8 @@ type (
 		ListVideos(ctx context.Context, in *ListFeedRequest, opts ...grpc.CallOption) (*ListFeedResponse, error)
 		// query by user_id 获取某个用户的视频列表
 		ListVideosByUserID(ctx context.Context, in *ListVideosByUserIDRequest, opts ...grpc.CallOption) (*ListVideosByUserIDResponse, error)
+		// query by set of video_id
+		ListVideosBySet(ctx context.Context, in *ListVideosBySetRequest, opts ...grpc.CallOption) (*ListVideosBySetResponse, error)
 	}
 
 	defaultFeed struct {
@@ -48,4 +52,10 @@ func (m *defaultFeed) ListVideos(ctx context.Context, in *ListFeedRequest, opts 
 func (m *defaultFeed) ListVideosByUserID(ctx context.Context, in *ListVideosByUserIDRequest, opts ...grpc.CallOption) (*ListVideosByUserIDResponse, error) {
 	client := feed.NewFeedClient(m.cli.Conn())
 	return client.ListVideosByUserID(ctx, in, opts...)
+}
+
+// query by set of video_id
+func (m *defaultFeed) ListVideosBySet(ctx context.Context, in *ListVideosBySetRequest, opts ...grpc.CallOption) (*ListVideosBySetResponse, error) {
+	client := feed.NewFeedClient(m.cli.Conn())
+	return client.ListVideosBySet(ctx, in, opts...)
 }

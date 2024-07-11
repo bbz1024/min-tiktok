@@ -2,16 +2,12 @@ Name: auths-api
 Host: 0.0.0.0
 Port: 8888
 Mode: dev
-
-
 # register center
 Consul:
   Host: 192.168.241.131:8500
   Key: auths.rpc
 
-# middle
-Middlewares:
-  Metrics: true
+
 
 #  trace
 Telemetry:
@@ -31,7 +27,7 @@ DevServer:
 # log
 Log:
   ServiceName: "auths-api"
-  Mode: 'file'
+  Mode: 'console'
   Encoding: "json"
   Level: "error" # info==warn ,server==error
   Path: "./logs/auths-api"
@@ -40,3 +36,4 @@ Log:
 AuthsRpc: # 需要与config保持一致
   Target: consul://192.168.241.131:8500/auths.rpc?wait=14s
   NonBlock: true # 启动时是否阻塞 , 即使rpc服务没有启动也不会影响客户端的启动
+  Timeout: 60000

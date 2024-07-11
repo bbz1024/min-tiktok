@@ -2,7 +2,6 @@ package logic
 
 import (
 	"context"
-	"min-tiktok/common/consts/code"
 	"min-tiktok/services/feed/feed"
 	"min-tiktok/services/publish/internal/svc"
 	"min-tiktok/services/publish/publish"
@@ -32,10 +31,7 @@ func (l *ListVideoLogic) ListVideo(in *publish.ListVideoReq) (*publish.ListVideo
 	})
 	if err != nil {
 		logx.Errorw("query feed error", logx.Field("err", err))
-		return &publish.ListVideoResp{
-			StatusCode: code.ServerError,
-			StatusMsg:  code.ServerErrorMsg,
-		}, err
+		return nil, err
 	}
 	var videos = make([]*publish.Video, 0, len(res.VideoList))
 	for _, v := range res.VideoList {

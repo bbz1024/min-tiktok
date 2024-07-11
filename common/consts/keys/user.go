@@ -14,4 +14,6 @@ const (
 
 	UserWorkKey = "user_work:%d" // set
 
+	UserFavoriteKey = "user_favorite:%d" // set
+
 )

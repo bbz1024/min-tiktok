@@ -11,13 +11,16 @@ import (
 type ServiceContext struct {
 	Config         config.Config
 	AuthMiddleware rest.Middleware
-	UserRpc        userclient.User
+	WithMiddleware rest.Middleware
+
+	UserRpc userclient.User
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
 		Config:         c,
 		AuthMiddleware: middleware.WrapperAuthMiddleware(c.AuthsRpc),
+		WithMiddleware: middleware.WithMiddleware,
 		UserRpc:        userclient.NewUser(zrpc.MustNewClient(c.UserRpc)),
 	}
 }

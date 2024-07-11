@@ -28,7 +28,7 @@ DevServer:
 # log
 Log:
   ServiceName: "feed-api"
-  Mode: 'file'
+  Mode: 'console'
   Encoding: "json"
   Level: "error"
   Path: "./logs/feed-api"

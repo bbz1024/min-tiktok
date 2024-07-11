@@ -79,5 +79,44 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf
     networks:
       - Tiktok
+  rabbitmq:
+    image: rabbitmq:3.8-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - Tiktok
+    environment:
+      RABBITMQ_DEFAULT_USER: 'admin'
+      RABBITMQ_DEFAULT_PASS: 'admin'
+      RABBITMQ_DEFAULT_VHOST: '/'
+      TZ: 'Asia/Shanghai'
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "rabbitmqctl status" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  gorse:
+    image: zhenghaoz/gorse-in-one
+    restart: unless-stopped
+    ports:
+      - 8086:8086
+      - 8087:8087
+      - 8088:8088
+    command: >
+      -c /etc/gorse/config.toml
+      --log-path /var/log/gorse/master.log
+      --cache-path /var/lib/gorse/master_cache.data
+    volumes:
+      - ./config.toml:/etc/gorse/config.toml
+    depends_on:
+      redis:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+
+    networks:
+      Tiktok:
 networks:
   Tiktok:

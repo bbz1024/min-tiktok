@@ -30,7 +30,7 @@ RedisConf:
   Tls: false
 Log:
   ServiceName: "user-rpc"
-  Mode: 'file'
+  Mode: 'console'
   Encoding: "json"
   Level: "error"
   Path: "./logs/user-rpc"

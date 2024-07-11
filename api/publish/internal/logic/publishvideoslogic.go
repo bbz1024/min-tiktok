@@ -5,6 +5,7 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 	"min-tiktok/api/publish/internal/svc"
 	"min-tiktok/api/publish/internal/types"
+	"min-tiktok/common/consts/code"
 	"min-tiktok/services/publish/publish"
 )
 
@@ -28,12 +29,19 @@ func (l *PublishVideosLogic) PublishVideos(req *types.PublishActionReq) (resp *t
 		Data:    req.Data,
 		Title:   req.Title,
 	})
-	resp = new(types.PublishActionResp)
-	resp.StatusMsg = res.StatusMsg
-	resp.StatusCode = res.StatusCode
 	if err != nil {
+		resp.StatusMsg = code.ServerErrorMsg
+		resp.StatusCode = code.ServerError
 		l.Errorw("call rpc PublishRpc.PublishVideos error ", logx.Field("err", err))
 		return
 	}
+	if res.StatusCode != code.OK {
+		resp.StatusMsg = res.StatusMsg
+		resp.StatusCode = res.StatusCode
+		return
+	}
+	resp = new(types.PublishActionResp)
+	resp.StatusMsg = res.StatusMsg
+	resp.StatusCode = res.StatusCode
 	return
 }

@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/zeromicro/zero-contrib/zrpc/registry/consul"
-
 	"min-tiktok/services/auths/auths"
 	"min-tiktok/services/auths/internal/config"
 	"min-tiktok/services/auths/internal/server"
@@ -27,7 +26,6 @@ func main() {
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
 		auths.RegisterAuthsServer(grpcServer, server.NewAuthsServer(ctx))
-
 		if c.Mode == service.DevMode || c.Mode == service.TestMode {
 			reflection.Register(grpcServer)
 		}

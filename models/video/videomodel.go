@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
+	"strings"
 	"time"
 )
 
@@ -18,6 +19,7 @@ type (
 		withSession(session sqlx.Session) VideoModel
 		ListVideoByCreateTime(ctx context.Context, createTime time.Time) ([]*Video, error)
 		ListVideoByUserId(ctx context.Context, userId int64) ([]*Video, error)
+		ListVideoByVideoSet(ctx context.Context, videoSet []string) ([]*Video, error)
 	}
 
 	customVideoModel struct {
@@ -25,6 +27,29 @@ type (
 	}
 )
 
+func (m *customVideoModel) ListVideoByVideoSet(ctx context.Context, videoSet []string) ([]*Video, error) {
+	// 构建视频ID IN 查询的条件字符串，例如 "video_id IN ('id1', 'id2', ...)"
+	var videoIdsPlaceholder strings.Builder
+	for i, id := range videoSet {
+		if i > 0 {
+			videoIdsPlaceholder.WriteString(", ")
+		}
+		videoIdsPlaceholder.WriteString(id)
+	}
+
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE `id` IN (%s)", videoRows, m.table, videoIdsPlaceholder.String())
+
+	var videos []*Video
+	err := m.conn.QueryRowsCtx(ctx, &videos, query)
+	switch {
+	case err == nil:
+		return videos, nil
+	case errors.Is(err, sqlx.ErrNotFound):
+		return []*Video{}, nil // 返回空切片表示没有找到匹配项，而不是nil
+	default:
+		return nil, err
+	}
+}
 func (m *customVideoModel) ListVideoByUserId(ctx context.Context, userId int64) ([]*Video, error) {
 	query := fmt.Sprintf("select %s from %s where `userid` = ? ", videoRows, m.table)
 	var resp []*Video

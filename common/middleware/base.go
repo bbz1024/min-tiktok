@@ -16,17 +16,18 @@ import (
 var WhitePath = []string{
 	"/douyin/user/login",
 	"/douyin/user/register",
-	"/douyin/comment/list",
+
 	"/douyin/publish/list",
 	"/douyin/favorite/list",
 }
 
 // OptionPath 可能携带token的path
 var OptionPath = []string{
-	"/douyin/feed/",
+	"/douyin/feed",
 	"/douyin/user/",
 	"/douyin/relation/follow/list/",
 	"/douyin/relation/follower/list/",
+	"/douyin/comment/list/",
 }
 var once sync.Once
 var authRpc authsclient.Auths
@@ -36,13 +37,14 @@ func WrapperAuthMiddleware(rpcConf zrpc.RpcClientConf) func(next http.HandlerFun
 		return func(w http.ResponseWriter, r *http.Request) {
 			// white path
 			if slices.Contains(WhitePath, r.URL.Path) {
-				//
 				next(w, r)
 				return
 			}
 			var token = r.PostFormValue("token")
 			if r.Method == http.MethodGet {
 				token = r.FormValue("token")
+			} else if token == "" && r.Method == http.MethodPost {
+				token = r.URL.Query().Get("token")
 			}
 			// optional token
 			if token == "" && slices.Contains(OptionPath, r.URL.Path) {
@@ -57,7 +59,6 @@ func WrapperAuthMiddleware(rpcConf zrpc.RpcClientConf) func(next http.HandlerFun
 			res, err := authRpc.Authentication(r.Context(), &auths.AuthsRequest{
 				Token: token,
 			})
-
 			// back err
 			if err != nil {
 				httpx.OkJsonCtx(r.Context(), w, response.NewResponse(code.ServerError, code.ServerErrorMsg))

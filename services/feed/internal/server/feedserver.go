@@ -33,3 +33,9 @@ func (s *FeedServer) ListVideosByUserID(ctx context.Context, in *feed.ListVideos
 	l := logic.NewListVideosByUserIDLogic(ctx, s.svcCtx)
 	return l.ListVideosByUserID(in)
 }
+
+// query by set of video_id
+func (s *FeedServer) ListVideosBySet(ctx context.Context, in *feed.ListVideosBySetRequest) (*feed.ListVideosBySetResponse, error) {
+	l := logic.NewListVideosBySetLogic(ctx, s.svcCtx)
+	return l.ListVideosBySet(in)
+}

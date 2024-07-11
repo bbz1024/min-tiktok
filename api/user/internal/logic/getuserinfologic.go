@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"min-tiktok/common/consts/code"
 	"min-tiktok/services/user/user"
 
 	"min-tiktok/api/user/internal/svc"
@@ -26,28 +27,34 @@ func NewGetUserInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUs
 
 func (l *GetUserInfoLogic) GetUserInfo(req *types.GetUserInfoRequest) (resp *types.GetUserInfoResponse, err error) {
 	// call rpc
-	info, err := l.svcCtx.UserRpc.GetUserInfo(l.ctx, &user.UserRequest{
-		ActorId: uint32(req.ActorID), //
-		UserId:  uint32(req.UserID),  //
+	res, err := l.svcCtx.UserRpc.GetUserInfo(l.ctx, &user.UserRequest{
+		ActorId: req.ActorID, //
+		UserId:  req.UserID,  //
 	})
-
+	resp = new(types.GetUserInfoResponse)
 	if err != nil {
+		resp.StatusCode = code.ServerError
+		resp.StatusMsg = code.ServerErrorMsg
 		l.Errorw("call rpc UserRpc.GetUserInfo error ", logx.Field("err", err))
 		return
 	}
-	resp = new(types.GetUserInfoResponse)
+	if res.StatusCode != code.OK {
+		resp.StatusCode = uint32(res.StatusCode)
+		resp.StatusMsg = res.StatusMsg
+		return
+	}
 	resp.User = types.User{
-		ID:              int64(info.User.Id),
-		Name:            info.User.Name,
-		FollowCount:     int64(info.User.FollowCount),
-		FollowerCount:   int64(info.User.FollowerCount),
-		IsFollow:        info.User.IsFollow,
-		Avatar:          info.User.Avatar,
-		BackgroundImage: info.User.BackgroundImage,
-		Signature:       info.User.Signature,
-		TotalFavorited:  int64(info.User.TotalFavorited),
-		WorkCount:       int64(info.User.WorkCount),
-		FavoriteCount:   int64(info.User.FavoriteCount),
+		ID:              res.User.Id,
+		Name:            res.User.Name,
+		FollowCount:     res.User.FollowCount,
+		FollowerCount:   res.User.FollowerCount,
+		IsFollow:        res.User.IsFollow,
+		Avatar:          res.User.Avatar,
+		BackgroundImage: res.User.BackgroundImage,
+		Signature:       res.User.Signature,
+		TotalFavorited:  res.User.TotalFavorited,
+		WorkCount:       res.User.WorkCount,
+		FavoriteCount:   res.User.FavoriteCount,
 	}
 	return
 }

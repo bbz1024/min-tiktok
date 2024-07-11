@@ -11,7 +11,7 @@ Telemetry:
   Sampler: 1.0
 Log:
   ServiceName: "user-api"
-  Mode: 'file'
+  Mode: 'console'
   Encoding: "json"
   Level: "error"
   Path: "./logs/user-api"

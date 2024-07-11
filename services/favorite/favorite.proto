@@ -1,0 +1,109 @@
+syntax = "proto3";
+
+package favorite;
+option go_package = "./favorite";
+enum ActionType {
+  UNKNOWN = 0;
+  FAVORITE = 1;
+  CANCEL_FAVORITE = 2;
+}
+message FavoriteRequest {
+  uint32 actor_id = 1; // 用户id
+  uint32 video_id = 2; // 视频id
+  ActionType action_type = 3; // 1-点赞，2-取消点赞
+}
+
+message FavoriteResponse {
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  string status_msg = 2; // 返回状态描述
+}
+
+message FavoriteListRequest {
+  uint32 actor_id = 1; // 发出请求的用户的id
+  uint32 user_id = 2; // 用户id
+}
+message UserInfo {
+  uint32 id = 1; // 用户id
+  string name = 2; // 用户名称
+  uint32 follow_count = 3; // 关注总数
+  uint32 follower_count = 4; // 粉丝总数
+  bool is_follow = 5; // true-已关注，false-未关注
+  string avatar = 6; //用户头像
+  string background_image = 7; //用户个人页顶部大图
+  string signature = 8; //个人简介
+  uint32 total_favorited = 9; //获赞数量
+  uint32 work_count = 10; //作品数量
+  uint32 favorite_count = 11; //点赞数量
+}
+message Video {
+  uint32 id = 1;
+  UserInfo author = 2;
+  string play_url = 3;
+  string cover_url = 4;
+  uint32 favorite_count = 5;
+  uint32 comment_count = 6;
+  bool is_favorite = 7;
+  string title = 8;
+}
+message FavoriteListResponse {
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  string status_msg = 2; // 返回状态描述
+  repeated Video video_list = 3; // 用户点赞视频列表
+}
+
+message IsFavoriteRequest {
+  uint32 actor_id = 1; // 用户id
+  uint32 video_id = 2; // 视频id
+}
+
+message IsFavoriteResponse {
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  string status_msg = 2; // 返回状态描述
+  bool result = 3; // 结果
+}
+
+message CountFavoriteRequest {
+  uint32 video_id = 1; // 视频id
+}
+
+message CountFavoriteResponse {
+  int32 status_code = 1;
+  string status_msg = 2;
+  uint32 count = 3; // 点赞数
+}
+
+message CountUserFavoriteRequest {
+  uint32 user_id = 1; // 用户id
+}
+
+message CountUserFavoriteResponse {
+  int32 status_code = 1;
+  string status_msg = 2;
+  uint32 count = 3; // 点赞数
+}
+
+message CountUserTotalFavoritedRequest {
+  uint32 actor_id = 1;
+  uint32 user_id = 2;
+}
+
+message CountUserTotalFavoritedResponse {
+  int32 status_code = 1;
+  string status_msg = 2;
+  uint32 count = 3; // 点赞数
+}
+
+service Favorite {
+  rpc FavoriteAction (FavoriteRequest) returns (FavoriteResponse);
+
+  rpc FavoriteList (FavoriteListRequest) returns (FavoriteListResponse);
+
+  rpc IsFavorite (IsFavoriteRequest) returns (IsFavoriteResponse);
+
+  rpc CountFavorite (CountFavoriteRequest) returns (CountFavoriteResponse);
+
+  rpc CountUserFavorite (CountUserFavoriteRequest) returns (CountUserFavoriteResponse);
+
+  rpc CountUserTotalFavorited (CountUserTotalFavoritedRequest) returns (CountUserTotalFavoritedResponse);
+}
+

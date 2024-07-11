@@ -1,0 +1,39 @@
+Name: favorite.rpc
+ListenOn: 0.0.0.0:10004
+Consul:
+  Host: 192.168.241.131:8500 # consul endpoint
+  Key: favorite.rpc
+  Meta:
+    Protocol: grpc
+  Tag:
+    - tag
+    - rpc
+DevServer:
+  Port: 20004
+
+Telemetry:
+  Name: favorite.rpc
+  Endpoint: http://192.168.241.131:14268/api/traces
+  Batcher: jaeger
+  Sampler: 1.0
+Mysql:
+  DataSource: lzb200244:lzb200244@tcp(192.168.241.131:3306)/tiktok?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+CacheRedis:
+  - Host: 192.168.241.131:6379
+    Type: node
+    Pass: lzb200244
+# Redis配置
+RedisConf:
+  Host: 192.168.241.131:6379
+  Type: node
+  Pass: lzb200244
+  Tls: false
+Log:
+  ServiceName: "favorite-rpc"
+  Mode: 'console'
+  Encoding: "json"
+  Level: "error"
+  Path: "./logs/favorite-rpc"
+FeedRpc:
+  Target: consul://192.168.241.131:8500/feed.rpc?wait=14s
+  NonBlock: true

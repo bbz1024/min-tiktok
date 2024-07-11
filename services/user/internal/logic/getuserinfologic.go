@@ -4,15 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/mr"
 	"github.com/zeromicro/go-zero/core/stores/redis"
 	"min-tiktok/common/consts/code"
 	"min-tiktok/common/consts/keys"
+	user2 "min-tiktok/models/user"
 	"min-tiktok/services/user/internal/svc"
 	"min-tiktok/services/user/user"
 	"strconv"
-
-	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type GetUserInfoLogic struct {
@@ -68,16 +68,22 @@ func (l *GetUserInfoLogic) GetUserInfo(in *user.UserRequest) (*user.UserResponse
 		userInfo.TotalFavorited = uint32(totalFavorite)
 		userInfo.WorkCount = uint32(workCount)
 		userInfo.FavoriteCount = uint32(favoriteCount)
+		// authed user
+		if in.ActorId != 0 {
+			//	TODO 是否互相关注
+		}
 		return nil
 	})
 	res.User = userInfo
 	// exist error
 	if err != nil {
+		if errors.Is(err, user2.ErrNotFound) {
+			res.StatusCode = code.UserNotFoundCode
+			res.StatusMsg = code.UserNotFoundMsg
+			return res, nil
+		}
 		logx.Errorw("get user info error", logx.Field("err", err))
-		return &user.UserResponse{
-			StatusCode: code.ServerError,
-			StatusMsg:  code.ServerErrorMsg,
-		}, err
+		return nil, err
 	}
 	return res, nil
 }

@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"min-tiktok/common/consts/code"
 	"min-tiktok/services/auths/auths"
 
 	"min-tiktok/api/auths/internal/svc"
@@ -32,13 +33,17 @@ func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.RegisterRe
 		Password: req.Password,
 	})
 	resp = new(types.RegisterResp)
-	resp.StatusMsg = res.StatusMsg
-	resp.StatusCode = res.StatusCode
 	if err != nil {
+		resp.StatusCode = code.ServerError
+		resp.StatusMsg = code.ServerErrorMsg
 		l.Errorw("call rpc AuthsRpc.Register error ", logx.Field("err", err))
 		return
 	}
-
+	if res.StatusCode != code.OK {
+		resp.StatusCode = res.StatusCode
+		resp.StatusMsg = res.StatusMsg
+		return
+	}
 	// register success before put in bloom
 	l.svcCtx.UserFilter.Add([]byte(req.UserName))
 	resp.Token = res.Token
