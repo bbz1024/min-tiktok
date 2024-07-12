@@ -56,13 +56,19 @@ func (l *ListVideosLogic) ListVideos(in *feed.ListFeedRequest) (*feed.ListFeedRe
 		return nil, err
 	}
 
-	videos, err := FetchVideoDetails(l.ctx, videoList, in.ActorId, l.svcCtx.UserRpc, l.svcCtx.Rdb)
+	videos, err := FetchVideoDetails(l.ctx, videoList, 0, l.svcCtx.UserRpc, l.svcCtx.Rdb)
 	if err != nil {
 		l.Errorw("fetch video details failed", logx.Field("err", err))
 		return nil, err
 	}
+	var nextTime int64
+	if len(videoList) != 0 {
+		nextTime = videoList[len(videos)-1].CreatedAt.UnixMilli()
+	}
+
 	resp := &feed.ListFeedResponse{
 		VideoList: videos,
+		NextTime:  uint64(nextTime),
 	}
 
 	return resp, nil

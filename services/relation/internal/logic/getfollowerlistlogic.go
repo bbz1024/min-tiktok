@@ -3,11 +3,10 @@ package logic
 import (
 	"context"
 	"fmt"
+	"github.com/zeromicro/go-zero/core/logx"
 	"min-tiktok/common/consts/keys"
 	"min-tiktok/services/relation/internal/svc"
 	"min-tiktok/services/relation/relation"
-
-	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type GetFollowerListLogic struct {
@@ -26,6 +25,7 @@ func NewGetFollowerListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *G
 
 // GetFollowerList get user follower list 粉丝
 func (l *GetFollowerListLogic) GetFollowerList(in *relation.FollowerListRequest) (*relation.FollowerListResponse, error) {
+
 	userFollowerKey := fmt.Sprintf(keys.UserFollower, in.UserId)
 	resp := new(relation.FollowerListResponse)
 	userList, err := fetchUserList(l.ctx, userFollowerKey, in.ActorId, l.svcCtx.Rdb, l.svcCtx.UserRpc)

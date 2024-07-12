@@ -6,6 +6,7 @@ import (
 	"github.com/zeromicro/go-zero/zrpc"
 	"min-tiktok/models/comment"
 	"min-tiktok/services/comment/internal/config"
+	"min-tiktok/services/feedback/feedbackclient"
 	"min-tiktok/services/user/userclient"
 )
 
@@ -14,6 +15,7 @@ type ServiceContext struct {
 	Rdb          *redis.Redis
 	CommentModel comment.CommentModel
 	UserRpc      userclient.User
+	FeedbackRpc  feedbackclient.Feedback
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -28,5 +30,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		Rdb:          rdb,
 		CommentModel: comment.NewCommentModel(mysqlConn),
 		UserRpc:      userclient.NewUser(zrpc.MustNewClient(c.UserRpc)),
+		FeedbackRpc:  feedbackclient.NewFeedback(zrpc.MustNewClient(c.FeedBackRpc)),
 	}
 }

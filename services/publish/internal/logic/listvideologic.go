@@ -2,11 +2,10 @@ package logic
 
 import (
 	"context"
+	"github.com/zeromicro/go-zero/core/logx"
 	"min-tiktok/services/feed/feed"
 	"min-tiktok/services/publish/internal/svc"
 	"min-tiktok/services/publish/publish"
-
-	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type ListVideoLogic struct {
@@ -25,6 +24,7 @@ func NewListVideoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListVid
 
 // ListVideo 获取用户发布列表
 func (l *ListVideoLogic) ListVideo(in *publish.ListVideoReq) (*publish.ListVideoResp, error) {
+
 	res, err := l.svcCtx.FeedRpc.ListVideosByUserID(l.ctx, &feed.ListVideosByUserIDRequest{
 		UserId:  in.UserId,
 		ActorId: in.ActorId,

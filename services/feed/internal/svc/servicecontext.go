@@ -7,28 +7,32 @@ import (
 	"min-tiktok/models/user"
 	"min-tiktok/models/video"
 	"min-tiktok/services/feed/internal/config"
+	"min-tiktok/services/feedback/feedbackclient"
 	"min-tiktok/services/user/userclient"
 )
 
 type ServiceContext struct {
-	Config     config.Config
-	Rdb        *redis.Redis
-	UserModel  user.UsersModel
-	VideoModel video.VideoModel
-	UserRpc    userclient.User
+	Config      config.Config
+	Rdb         *redis.Redis
+	UserModel   user.UsersModel
+	VideoModel  video.VideoModel
+	UserRpc     userclient.User
+	FeedBackRpc feedbackclient.Feedback
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	mysqlConn := sqlx.NewMysql(c.MySQL.DataSource)
 	rdb, err := redis.NewRedis(c.RedisConf)
+
 	if err != nil {
 		panic(err)
 	}
 	return &ServiceContext{
-		Config:     c,
-		UserModel:  user.NewUsersModel(mysqlConn),
-		VideoModel: video.NewVideoModel(mysqlConn),
-		UserRpc:    userclient.NewUser(zrpc.MustNewClient(c.UserRpc)),
-		Rdb:        rdb,
+		Config:      c,
+		UserModel:   user.NewUsersModel(mysqlConn),
+		VideoModel:  video.NewVideoModel(mysqlConn),
+		UserRpc:     userclient.NewUser(zrpc.MustNewClient(c.UserRpc)),
+		Rdb:         rdb,
+		FeedBackRpc: feedbackclient.NewFeedback(zrpc.MustNewClient(c.FeedBackRpc)),
 	}
 }

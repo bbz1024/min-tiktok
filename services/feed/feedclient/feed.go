@@ -15,6 +15,7 @@ import (
 type (
 	ListFeedRequest            = feed.ListFeedRequest
 	ListFeedResponse           = feed.ListFeedResponse
+	ListRecommendRequest       = feed.ListRecommendRequest
 	ListVideosBySetRequest     = feed.ListVideosBySetRequest
 	ListVideosBySetResponse    = feed.ListVideosBySetResponse
 	ListVideosByUserIDRequest  = feed.ListVideosByUserIDRequest
@@ -25,6 +26,7 @@ type (
 	Feed interface {
 		// rpc ListVideosByRecommend(ListFeedRequest) returns (ListFeedResponse);
 		ListVideos(ctx context.Context, in *ListFeedRequest, opts ...grpc.CallOption) (*ListFeedResponse, error)
+		ListRecommendVideos(ctx context.Context, in *ListRecommendRequest, opts ...grpc.CallOption) (*ListFeedResponse, error)
 		// query by user_id 获取某个用户的视频列表
 		ListVideosByUserID(ctx context.Context, in *ListVideosByUserIDRequest, opts ...grpc.CallOption) (*ListVideosByUserIDResponse, error)
 		// query by set of video_id
@@ -46,6 +48,11 @@ func NewFeed(cli zrpc.Client) Feed {
 func (m *defaultFeed) ListVideos(ctx context.Context, in *ListFeedRequest, opts ...grpc.CallOption) (*ListFeedResponse, error) {
 	client := feed.NewFeedClient(m.cli.Conn())
 	return client.ListVideos(ctx, in, opts...)
+}
+
+func (m *defaultFeed) ListRecommendVideos(ctx context.Context, in *ListRecommendRequest, opts ...grpc.CallOption) (*ListFeedResponse, error) {
+	client := feed.NewFeedClient(m.cli.Conn())
+	return client.ListRecommendVideos(ctx, in, opts...)
 }
 
 // query by user_id 获取某个用户的视频列表

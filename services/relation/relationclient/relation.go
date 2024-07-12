@@ -31,7 +31,6 @@ type (
 		GetFollowList(ctx context.Context, in *FollowListRequest, opts ...grpc.CallOption) (*FollowListResponse, error)
 		GetFollowerList(ctx context.Context, in *FollowerListRequest, opts ...grpc.CallOption) (*FollowerListResponse, error)
 		GetFriendList(ctx context.Context, in *FriendListRequest, opts ...grpc.CallOption) (*FriendListResponse, error)
-		IsFollow(ctx context.Context, in *IsFollowRequest, opts ...grpc.CallOption) (*IsFollowResponse, error)
 	}
 
 	defaultRelation struct {
@@ -68,9 +67,4 @@ func (m *defaultRelation) GetFollowerList(ctx context.Context, in *FollowerListR
 func (m *defaultRelation) GetFriendList(ctx context.Context, in *FriendListRequest, opts ...grpc.CallOption) (*FriendListResponse, error) {
 	client := relation.NewRelationClient(m.cli.Conn())
 	return client.GetFriendList(ctx, in, opts...)
-}
-
-func (m *defaultRelation) IsFollow(ctx context.Context, in *IsFollowRequest, opts ...grpc.CallOption) (*IsFollowResponse, error) {
-	client := relation.NewRelationClient(m.cli.Conn())
-	return client.IsFollow(ctx, in, opts...)
 }

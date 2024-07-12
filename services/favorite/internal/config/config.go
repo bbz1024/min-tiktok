@@ -9,8 +9,8 @@ import (
 
 type Config struct {
 	zrpc.RpcServerConf
-	Consul    consul.Conf
-	MySQL     config.MysqlStructure
-	RedisConf redis.RedisConf
-	FeedRpc   zrpc.RpcClientConf
+	Consul               consul.Conf
+	MySQL                config.MysqlStructure
+	RedisConf            redis.RedisConf
+	FeedRpc, FeedBackRpc zrpc.RpcClientConf
 }

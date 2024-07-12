@@ -37,3 +37,6 @@ Log:
 UserRpc:
   Target: consul://192.168.241.131:8500/user.rpc?wait=14s
   NonBlock: true
+FeedBackRpc:
+  Target: consul://192.168.241.131:8500/feedback.rpc?wait=14s
+  NonBlock: true

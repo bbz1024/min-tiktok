@@ -6,10 +6,9 @@ import (
 	"fmt"
 	"github.com/zeromicro/go-zero/core/stores/redis"
 	"min-tiktok/common/consts/keys"
-	"min-tiktok/services/feed/feed"
-
 	"min-tiktok/services/favorite/favorite"
 	"min-tiktok/services/favorite/internal/svc"
+	"min-tiktok/services/feed/feed"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -29,12 +28,17 @@ func NewFavoriteListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Favo
 }
 
 func (l *FavoriteListLogic) FavoriteList(in *favorite.FavoriteListRequest) (*favorite.FavoriteListResponse, error) {
+
 	// get user favorite set
 	key := fmt.Sprintf(keys.UserFavoriteKey, in.UserId)
 	members, err := l.svcCtx.Rdb.SmembersCtx(l.ctx, key)
 	if err != nil && errors.Is(err, redis.Nil) {
 		logx.Errorw("redis error", logx.Field("err", err))
 		return nil, err
+	}
+	resp := new(favorite.FavoriteListResponse)
+	if len(members) == 0 {
+		return resp, nil
 	}
 	res, err := l.svcCtx.FeedRpc.ListVideosBySet(l.ctx, &feed.ListVideosBySetRequest{
 		VideoIdSet: members,
@@ -44,7 +48,7 @@ func (l *FavoriteListLogic) FavoriteList(in *favorite.FavoriteListRequest) (*fav
 		logx.Errorw("call rpc FeedRpc.ListVideosBySet", logx.Field("err", err))
 		return nil, err
 	}
-	resp := new(favorite.FavoriteListResponse)
+
 	for _, v := range res.VideoList {
 		resp.VideoList = append(resp.VideoList, &favorite.Video{
 			Id: v.Id,

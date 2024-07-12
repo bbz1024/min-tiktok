@@ -7,6 +7,7 @@ import (
 	"min-tiktok/common/middleware"
 	"min-tiktok/services/auths/authsclient"
 	"min-tiktok/services/publish/publishclient"
+	"min-tiktok/services/user/userclient"
 	"time"
 )
 
@@ -16,6 +17,7 @@ type ServiceContext struct {
 	WithMiddleware rest.Middleware
 	AuthsRpc       authsclient.Auths
 	PublishRpc     publishclient.Publish
+	UserRpc        userclient.User
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -25,5 +27,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		AuthMiddleware: middleware.WrapperAuthMiddleware(c.AuthsRpc),
 		WithMiddleware: middleware.WithMiddleware,
 		PublishRpc:     publishclient.NewPublish(zrpc.MustNewClient(c.PublishRpc)),
+		UserRpc:        userclient.NewUser(zrpc.MustNewClient(c.UserRpc)),
 	}
 }

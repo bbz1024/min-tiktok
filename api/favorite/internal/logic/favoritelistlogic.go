@@ -4,6 +4,7 @@ import (
 	"context"
 	"min-tiktok/common/consts/code"
 	"min-tiktok/services/favorite/favorite"
+	"min-tiktok/services/user/userclient"
 
 	"min-tiktok/api/favorite/internal/svc"
 	"min-tiktok/api/favorite/internal/types"
@@ -26,6 +27,22 @@ func NewFavoriteListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Favo
 }
 
 func (l *FavoriteListLogic) FavoriteList(req *types.ListRequest) (resp *types.ListResponse, err error) {
+	// check user_id exist
+	exist, err := l.svcCtx.UserRpc.CheckUserExist(l.ctx, &userclient.UserExistRequest{
+		UserId: req.UserID,
+	})
+	if err != nil {
+		l.Errorw("call rpc UserRpc.CheckUserExist", logx.Field("err", err))
+		return nil, err
+	}
+	if !exist.Exist {
+		l.Infow("user not found", logx.Field("user_id", req.UserID))
+		return &types.ListResponse{
+			StatusCode: code.UserNotFoundCode,
+			StatusMsg:  code.UserNotFoundMsg,
+		}, nil
+	}
+
 	res, err := l.svcCtx.FavoriteRpc.FavoriteList(l.ctx, &favorite.FavoriteListRequest{
 		UserId:  req.UserID,
 		ActorId: req.ActorID,

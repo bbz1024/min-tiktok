@@ -13,12 +13,15 @@ import (
 )
 
 type (
-	UserInfo     = user.UserInfo
-	UserRequest  = user.UserRequest
-	UserResponse = user.UserResponse
+	UserExistRequest  = user.UserExistRequest
+	UserExistResponse = user.UserExistResponse
+	UserInfo          = user.UserInfo
+	UserRequest       = user.UserRequest
+	UserResponse      = user.UserResponse
 
 	User interface {
 		GetUserInfo(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error)
+		CheckUserExist(ctx context.Context, in *UserExistRequest, opts ...grpc.CallOption) (*UserExistResponse, error)
 	}
 
 	defaultUser struct {
@@ -35,4 +38,9 @@ func NewUser(cli zrpc.Client) User {
 func (m *defaultUser) GetUserInfo(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error) {
 	client := user.NewUserClient(m.cli.Conn())
 	return client.GetUserInfo(ctx, in, opts...)
+}
+
+func (m *defaultUser) CheckUserExist(ctx context.Context, in *UserExistRequest, opts ...grpc.CallOption) (*UserExistResponse, error) {
+	client := user.NewUserClient(m.cli.Conn())
+	return client.CheckUserExist(ctx, in, opts...)
 }

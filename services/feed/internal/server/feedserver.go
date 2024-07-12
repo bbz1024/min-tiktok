@@ -28,6 +28,11 @@ func (s *FeedServer) ListVideos(ctx context.Context, in *feed.ListFeedRequest) (
 	return l.ListVideos(in)
 }
 
+func (s *FeedServer) ListRecommendVideos(ctx context.Context, in *feed.ListRecommendRequest) (*feed.ListFeedResponse, error) {
+	l := logic.NewListRecommendVideosLogic(ctx, s.svcCtx)
+	return l.ListRecommendVideos(in)
+}
+
 // query by user_id 获取某个用户的视频列表
 func (s *FeedServer) ListVideosByUserID(ctx context.Context, in *feed.ListVideosByUserIDRequest) (*feed.ListVideosByUserIDResponse, error) {
 	l := logic.NewListVideosByUserIDLogic(ctx, s.svcCtx)

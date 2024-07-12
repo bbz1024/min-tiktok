@@ -27,7 +27,7 @@ func NewListCommentLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListC
 
 func (l *ListCommentLogic) ListComment(in *comment.ListCommentRequest) (*comment.ListCommentResponse, error) {
 	//l.svcCtx.CommentModel.F
-	commentList, err := l.svcCtx.CommentModel.GetCommentList(l.ctx)
+	commentList, err := l.svcCtx.CommentModel.GetCommentList(l.ctx, in.VideoId)
 	if err != nil {
 		return nil, err
 	}

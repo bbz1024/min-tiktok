@@ -4,6 +4,7 @@ import (
 	"context"
 	"min-tiktok/common/consts/code"
 	"min-tiktok/services/relation/relationclient"
+	"min-tiktok/services/user/userclient"
 
 	"min-tiktok/api/relation/internal/svc"
 	"min-tiktok/api/relation/internal/types"
@@ -25,48 +26,22 @@ func NewRelationFollowListLogic(ctx context.Context, svcCtx *svc.ServiceContext)
 	}
 }
 
-/*
-	res, err := l.svcCtx.RelationRpc.GetFollowerList(l.ctx, &relationclient.FollowerListRequest{
-		ActorId: req.ActorID,
-		UserId:  req.UserID,
-	})
-
-	if err != nil {
-		resp.StatusMsg = code.ServerErrorMsg
-		resp.StatusCode = code.ServerError
-		return
-	}
-
-resp = new(types.RelationFollowerListResponse)
-
-	if res.StatusCode != 0 {
-		resp.StatusMsg = res.StatusMsg
-		resp.StatusCode = uint32(res.StatusCode)
-		return resp, nil
-	}
-
-var followerList = make([]*types.User, len(res.UserList))
-
-	for i, user := range res.UserList {
-		followerList[i] = &types.User{
-			ID:              user.Id,
-			Name:            user.Name,
-			FollowCount:     user.FollowCount,
-			FollowerCount:   user.FollowerCount,
-			IsFollow:        user.IsFollow,
-			Avatar:          user.Avatar,
-			BackgroundImage: user.BackgroundImage,
-			Signature:       user.Signature,
-			TotalFavorited:  user.TotalFavorited,
-			WorkCount:       user.WorkCount,
-			FavoriteCount:   user.FavoriteCount,
-		}
-	}
-
-resp.UserList = followerList
-return resp, nil
-*/
 func (l *RelationFollowListLogic) RelationFollowList(req *types.RelationFollowListRequest) (resp *types.RelationFollowListResponse, err error) {
+	// check user_id exist
+	exist, err := l.svcCtx.UserRpc.CheckUserExist(l.ctx, &userclient.UserExistRequest{
+		UserId: req.UserID,
+	})
+	if err != nil {
+		l.Errorw("call rpc UserRpc.CheckUserExist", logx.Field("err", err))
+		return nil, err
+	}
+	if !exist.Exist {
+		l.Infow("user not found", logx.Field("user_id", req.UserID))
+		return &types.RelationFollowListResponse{
+			StatusCode: code.UserNotFoundCode,
+			StatusMsg:  code.UserNotFoundMsg,
+		}, nil
+	}
 	res, err := l.svcCtx.RelationRpc.GetFollowList(
 		l.ctx,
 		&relationclient.FollowListRequest{

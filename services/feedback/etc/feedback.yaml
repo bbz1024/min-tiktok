@@ -1,0 +1,35 @@
+Name: feedback.rpc
+ListenOn: 0.0.0.0:10007
+Consul:
+  Host: 192.168.241.131:8500 # consul endpoint
+  Key: feedback.rpc
+  Meta:
+    Protocol: grpc
+  Tag:
+    - tag
+    - rpc
+
+Telemetry:
+  Name: feedback.rpc
+  Endpoint: http://192.168.241.131:14268/api/traces
+  Batcher: jaeger
+  Sampler: 1.0
+
+DevServer:
+  Port: 20007
+Log:
+  ServiceName: "feedback-rpc"
+  Mode: 'console'
+  Encoding: "json"
+  Level: "error"
+  Path: "./logs/feedback-rpc"
+
+RabbitMQ:
+  Host: 192.168.241.131
+  Port: 5672
+  User: admin
+  Pass: admin
+  VHost: /
+Gorse:
+  GorseAddr: http://192.168.241.131:8088
+  GorseApikey: 5105502fc46a411c896aa5b50c31e951

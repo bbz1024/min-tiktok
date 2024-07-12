@@ -10,6 +10,5 @@ type Config struct {
 	rest.RestConf
 	Consul consul.Conf
 	// -------------------- rpc --------------------
-	AuthsRpc   zrpc.RpcClientConf
-	PublishRpc zrpc.RpcClientConf
+	AuthsRpc, UserRpc, PublishRpc zrpc.RpcClientConf
 }

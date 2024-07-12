@@ -36,4 +36,10 @@ Log:
   Path: "./logs/favorite-api"
 FavoriteRpc:
   Target: consul://192.168.241.131:8500/favorite.rpc?wait=14s
-  NonBlock: true # 启动时是否阻塞 , 即使rpc服务没有启动也不会影响客户端的启动
+  NonBlock: true
+UserRpc:
+  Target: consul://192.168.241.131:8500/user.rpc?wait=14s
+  NonBlock: true
+AuthsRpc:
+  Target: consul://192.168.241.131:8500/auths.rpc?wait=14s
+  NonBlock: true

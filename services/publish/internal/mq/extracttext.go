@@ -6,29 +6,25 @@ import (
 	"encoding/json"
 	"github.com/streadway/amqp"
 	"github.com/zeromicro/go-zero/core/logx"
-	"github.com/zhenghaoz/gorse/client"
 	"min-tiktok/common/consts/variable"
-	mq2 "min-tiktok/common/mq"
-	"min-tiktok/common/util/gpt"
 	"min-tiktok/common/util/transform"
 	"min-tiktok/services/publish/internal/svc"
 )
 
-type VideoSummery struct {
-	Channel     *amqp.Channel
-	nsl         *transform.NlsTask
-	gpt         *gpt.Gpt
-	svcCtx      *svc.ServiceContext
-	gorseClient *client.GorseClient
+type ExtractVideoText struct {
+	Channel *amqp.Channel
+	nsl     *transform.NlsTask
+
+	svcCtx *svc.ServiceContext
 }
-type VideoSummeryReq struct {
+type ExtractVideoTextReq struct {
 	VideoID uint32 `json:"video_id"`
 }
 
-var summery *VideoSummery
+var extractText *ExtractVideoText
 
-func InitVideoSummery(svcCtx *svc.ServiceContext) error {
-	summery = &VideoSummery{
+func InitExtractVideo(svcCtx *svc.ServiceContext) error {
+	extractText = &ExtractVideoText{
 		svcCtx: svcCtx,
 	}
 	conn, err := amqp.Dial(svcCtx.Config.RabbitMQ.Dns())
@@ -39,48 +35,47 @@ func InitVideoSummery(svcCtx *svc.ServiceContext) error {
 	if err != nil {
 		return err
 	}
-	summery.Channel = channel
+	extractText.Channel = channel
 
-	if err := summery.declare(); err != nil {
+	if err := extractText.declare(); err != nil {
 		return err
 	}
 
-	summery.nsl = transform.NewNlsTask(
+	extractText.nsl = transform.NewNlsTask(
 		svcCtx.Config.AlibabaNsl.AccessKeyId,
 		svcCtx.Config.AlibabaNsl.AccessKeySecret,
 		svcCtx.Config.AlibabaNsl.AppKey,
 	)
-	summery.gpt = gpt.NewGpt(summery.svcCtx.Config.Gpt.ApiKey, svcCtx.Config.Gpt.ModelID)
-	summery.gorseClient = client.NewGorseClient(summery.svcCtx.Config.Gorse.GorseAddr, summery.svcCtx.Config.Gorse.GorseApikey)
-	go summery.Consumer()
+	go extractText.Consumer()
+	logx.Infof("extract text  init success")
 	return nil
 }
-func GetInstance() *VideoSummery {
-	if summery == nil {
-		panic("summery is nil")
+func GetExtractVideoText() *ExtractVideoText {
+	if extractText == nil {
+		panic("extractText is nil")
 	}
-	return summery
+	return extractText
 }
-func (s *VideoSummery) declare() error {
-	if err := s.Channel.ExchangeDeclare(variable.SummeryExchange, variable.SummeryKind,
+func (s *ExtractVideoText) declare() error {
+	if err := s.Channel.ExchangeDeclare(variable.ExtractTextExchange, variable.ExtractTextKind,
 		true, false, false, false, nil,
 	); err != nil {
 		return err
 	}
 	if _, err := s.Channel.QueueDeclare(
-		variable.SummeryQueue, // name
-		true,                  // durable
-		false,                 // delete when unused
-		false,                 // exclusive
-		false,                 // no-wait
-		nil,                   // arguments
+		variable.ExtractTextQueue, // name
+		true,                      // durable
+		false,                     // delete when unused
+		false,                     // exclusive
+		false,                     // no-wait
+		nil,                       // arguments
 	); err != nil {
 		return err
 	}
 	if err := s.Channel.QueueBind(
-		variable.SummeryQueue,      // queue name
-		variable.SummeryRoutingKey, // routing key
-		variable.SummeryExchange,   // exchange
+		variable.ExtractTextQueue,      // queue name
+		variable.ExtractTextRoutingKey, // routing key
+		variable.ExtractTextExchange,   // exchange
 		false,
 		nil,
 	); err != nil {
@@ -88,10 +83,10 @@ func (s *VideoSummery) declare() error {
 	}
 	return nil
 }
-func (s *VideoSummery) Consumer() {
+func (s *ExtractVideoText) Consumer() {
 	results, err := s.Channel.Consume(
-		variable.SummeryQueue,
-		variable.SummeryRoutingKey,
+		variable.ExtractTextQueue,
+		variable.ExtractTextRoutingKey,
 		false, // 关闭自动应答
 		false,
 		false,
@@ -102,7 +97,7 @@ func (s *VideoSummery) Consumer() {
 		panic(err)
 	}
 	for res := range results {
-		var msg VideoSummeryReq
+		var msg ExtractVideoTextReq
 		if err := json.Unmarshal(res.Body, &msg); err != nil {
 			logx.Errorf("unmarshal msg error: %v", err)
 			continue
@@ -125,23 +120,16 @@ func (s *VideoSummery) Consumer() {
 			logx.Errorf("get video text error: %v", err)
 			continue
 		}
-		// 3. extract summery
-		response, err := s.gpt.ChatWithModel(context.Background(), variable.ExtractSummeryQuestion, result.Content)
-		if err != nil {
-			logx.Errorf("extract summery error: %v", err)
-			continue
-		}
 		// 4. update db
-		v.Summery = sql.NullString{String: response, Valid: true}
+		v.Content = sql.NullString{String: result.Content, Valid: true}
 		if err = s.svcCtx.VideoModel.Update(context.Background(), v); err != nil {
 			logx.Errorf("update db error: %v", err)
 			continue
 		}
-		//5. insert gorse to make recommend
-		if err := mq2.GetInstance().Product(
-			mq2.GorseRecommendReq{VideoID: uint32(v.Id)},
-		); err != nil {
-			return
+		// 5. extract task
+		if err := GetChatVideo().Product(ChatVideoReq{VideoID: msg.VideoID}); err != nil {
+			logx.Errorf("extract task error: %v", err)
+			continue
 		}
 		if err = s.Channel.Ack(res.DeliveryTag, false); err != nil {
 			logx.Errorf("ack error: %v", err)
@@ -150,14 +138,14 @@ func (s *VideoSummery) Consumer() {
 		logx.Infof("consum vidoeID: %d success", msg.VideoID)
 	}
 }
-func (s *VideoSummery) Product(msg VideoSummeryReq) error {
+func (s *ExtractVideoText) Product(msg ExtractVideoTextReq) error {
 	body, err := json.Marshal(msg)
 	if err != nil {
 		return err
 	}
 	if err := s.Channel.Publish(
-		variable.SummeryExchange,
-		variable.SummeryRoutingKey,
+		variable.ExtractTextExchange,
+		variable.ExtractTextRoutingKey,
 		false,
 		false,
 		amqp.Publishing{

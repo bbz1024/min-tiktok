@@ -9,7 +9,6 @@ import (
 	"github.com/zeromicro/zero-contrib/zrpc/registry/consul"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	mq2 "min-tiktok/common/mq"
 	"min-tiktok/services/publish/internal/config"
 	"min-tiktok/services/publish/internal/mq"
 	"min-tiktok/services/publish/internal/server"
@@ -42,11 +41,10 @@ func main() {
 	}
 
 	// -------------------- init --------------------
-	if err := mq.InitVideoSummery(ctx); err != nil {
+	if err := mq.InitExtractVideo(ctx); err != nil {
 		panic(err)
 	}
-
-	if err := mq2.InitGorse(&c.Gorse, &c.RabbitMQ, &c.MySQL); err != nil {
+	if err := mq.InitChatVideo(ctx); err != nil {
 		panic(err)
 	}
 

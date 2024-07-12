@@ -14,7 +14,7 @@ type (
 	// and implement the added methods in customCommentModel.
 	CommentModel interface {
 		commentModel
-		GetCommentList(ctx context.Context) ([]*Comment, error)
+		GetCommentList(ctx context.Context, videoId uint32) ([]*Comment, error)
 		withSession(session sqlx.Session) CommentModel
 	}
 
@@ -23,10 +23,10 @@ type (
 	}
 )
 
-func (m *customCommentModel) GetCommentList(ctx context.Context) ([]*Comment, error) {
-	query := fmt.Sprintf("select %s from %s order by ? ", commentRows, m.table)
+func (m *customCommentModel) GetCommentList(ctx context.Context, videoId uint32) ([]*Comment, error) {
+	query := fmt.Sprintf("select %s from %s where videoid = ? order by ? ", commentRows, m.table)
 	var resp []*Comment
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, "createdat")
+	err := m.conn.QueryRowsCtx(ctx, &resp, query, videoId, "createdat")
 	switch {
 	case err == nil:
 		return resp, nil

@@ -40,7 +40,7 @@ type (
 		Title     string         `db:"title"`      // 标题
 		Playurl   string         `db:"playurl"`    // 文件名
 		Coverurl  string         `db:"coverurl"`   // 封面名
-		Summery   sql.NullString `db:"summery"`    // 摘要
+		Content   sql.NullString `db:"content"`    // 摘要
 		CreatedAt time.Time      `db:"created_at"` // 创建时间
 		UpdatedAt time.Time      `db:"updated_at"` // 更新时间
 	}
@@ -75,13 +75,13 @@ func (m *defaultVideoModel) FindOne(ctx context.Context, id uint64) (*Video, err
 
 func (m *defaultVideoModel) Insert(ctx context.Context, data *Video) (sql.Result, error) {
 	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?)", m.table, videoRowsExpectAutoSet)
-	ret, err := m.conn.ExecCtx(ctx, query, data.Userid, data.Title, data.Playurl, data.Coverurl, data.Summery)
+	ret, err := m.conn.ExecCtx(ctx, query, data.Userid, data.Title, data.Playurl, data.Coverurl, data.Content)
 	return ret, err
 }
 
 func (m *defaultVideoModel) Update(ctx context.Context, data *Video) error {
 	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, videoRowsWithPlaceHolder)
-	_, err := m.conn.ExecCtx(ctx, query, data.Userid, data.Title, data.Playurl, data.Coverurl, data.Summery, data.Id)
+	_, err := m.conn.ExecCtx(ctx, query, data.Userid, data.Title, data.Playurl, data.Coverurl, data.Content, data.Id)
 	return err
 }
 

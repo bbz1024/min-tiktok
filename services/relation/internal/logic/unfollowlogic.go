@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"min-tiktok/common/consts/code"
 	"min-tiktok/common/consts/keys"
-
 	"min-tiktok/services/relation/internal/svc"
 	"min-tiktok/services/relation/relation"
 
@@ -27,6 +26,7 @@ func NewUnfollowLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Unfollow
 }
 
 func (l *UnfollowLogic) Unfollow(in *relation.RelationActionRequest) (*relation.RelationActionResponse, error) {
+
 	// actor follow user
 	followKey := fmt.Sprintf(keys.UserFollow, in.ActorId)
 	// check user follow user

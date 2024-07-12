@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/zeromicro/zero-contrib/zrpc/registry/consul"
-
 	"min-tiktok/services/feed/feed"
 	"min-tiktok/services/feed/internal/config"
 	"min-tiktok/services/feed/internal/server"
@@ -37,7 +36,6 @@ func main() {
 		panic(err)
 	}
 	defer s.Stop()
-
 	fmt.Printf("Starting rpc server at %s...\n", c.ListenOn)
 	s.Start()
 }

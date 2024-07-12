@@ -6,6 +6,7 @@ import (
 	"min-tiktok/api/publish/internal/types"
 	"min-tiktok/common/consts/code"
 	"min-tiktok/services/publish/publish"
+	"min-tiktok/services/user/userclient"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -25,6 +26,22 @@ func NewPublishListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Publi
 }
 
 func (l *PublishListLogic) PublishList(req *types.PublishListReq) (resp *types.PublishListResp, err error) {
+	// check user_id exist
+	exist, err := l.svcCtx.UserRpc.CheckUserExist(l.ctx, &userclient.UserExistRequest{
+		UserId: req.UserId,
+	})
+	if err != nil {
+		l.Errorw("call rpc UserRpc.CheckUserExist", logx.Field("err", err))
+		return nil, err
+	}
+	if !exist.Exist {
+		l.Infow("user not found", logx.Field("user_id", req.UserId))
+		return &types.PublishListResp{
+			StatusCode: code.UserNotFoundCode,
+			StatusMsg:  code.UserNotFoundMsg,
+		}, nil
+	}
+
 	res, err := l.svcCtx.PublishRpc.ListVideo(l.ctx, &publish.ListVideoReq{
 		ActorId: req.ActorId,
 		UserId:  req.UserId,

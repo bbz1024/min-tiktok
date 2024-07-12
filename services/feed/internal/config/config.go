@@ -9,8 +9,10 @@ import (
 
 type Config struct {
 	zrpc.RpcServerConf
-	Consul    consul.Conf
-	MySQL     config.MysqlStructure
-	UserRpc   zrpc.RpcClientConf
-	RedisConf redis.RedisConf
+	Consul      consul.Conf
+	MySQL       config.MysqlStructure
+	UserRpc     zrpc.RpcClientConf
+	FeedBackRpc zrpc.RpcClientConf
+	RedisConf   redis.RedisConf
+	RabbitMQ    config.RabbitMQStructure
 }

@@ -73,5 +73,4 @@ service Relation {
   rpc GetFollowList (FollowListRequest) returns (FollowListResponse);
   rpc GetFollowerList (FollowerListRequest) returns (FollowerListResponse);
   rpc GetFriendList (FriendListRequest) returns (FriendListResponse);
-  rpc IsFollow (IsFollowRequest) returns (IsFollowResponse);
 }

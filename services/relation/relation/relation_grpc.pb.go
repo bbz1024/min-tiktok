@@ -24,7 +24,6 @@ const (
 	Relation_GetFollowList_FullMethodName   = "/relation.Relation/GetFollowList"
 	Relation_GetFollowerList_FullMethodName = "/relation.Relation/GetFollowerList"
 	Relation_GetFriendList_FullMethodName   = "/relation.Relation/GetFriendList"
-	Relation_IsFollow_FullMethodName        = "/relation.Relation/IsFollow"
 )
 
 // RelationClient is the client API for Relation service.
@@ -36,7 +35,6 @@ type RelationClient interface {
 	GetFollowList(ctx context.Context, in *FollowListRequest, opts ...grpc.CallOption) (*FollowListResponse, error)
 	GetFollowerList(ctx context.Context, in *FollowerListRequest, opts ...grpc.CallOption) (*FollowerListResponse, error)
 	GetFriendList(ctx context.Context, in *FriendListRequest, opts ...grpc.CallOption) (*FriendListResponse, error)
-	IsFollow(ctx context.Context, in *IsFollowRequest, opts ...grpc.CallOption) (*IsFollowResponse, error)
 }
 
 type relationClient struct {
@@ -97,16 +95,6 @@ func (c *relationClient) GetFriendList(ctx context.Context, in *FriendListReques
 	return out, nil
 }
 
-func (c *relationClient) IsFollow(ctx context.Context, in *IsFollowRequest, opts ...grpc.CallOption) (*IsFollowResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(IsFollowResponse)
-	err := c.cc.Invoke(ctx, Relation_IsFollow_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // RelationServer is the server API for Relation service.
 // All implementations must embed UnimplementedRelationServer
 // for forward compatibility
@@ -116,7 +104,6 @@ type RelationServer interface {
 	GetFollowList(context.Context, *FollowListRequest) (*FollowListResponse, error)
 	GetFollowerList(context.Context, *FollowerListRequest) (*FollowerListResponse, error)
 	GetFriendList(context.Context, *FriendListRequest) (*FriendListResponse, error)
-	IsFollow(context.Context, *IsFollowRequest) (*IsFollowResponse, error)
 	mustEmbedUnimplementedRelationServer()
 }
 
@@ -138,9 +125,6 @@ func (UnimplementedRelationServer) GetFollowerList(context.Context, *FollowerLis
 }
 func (UnimplementedRelationServer) GetFriendList(context.Context, *FriendListRequest) (*FriendListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetFriendList not implemented")
-}
-func (UnimplementedRelationServer) IsFollow(context.Context, *IsFollowRequest) (*IsFollowResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method IsFollow not implemented")
 }
 func (UnimplementedRelationServer) mustEmbedUnimplementedRelationServer() {}
 
@@ -245,24 +229,6 @@ func _Relation_GetFriendList_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Relation_IsFollow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(IsFollowRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RelationServer).IsFollow(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Relation_IsFollow_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RelationServer).IsFollow(ctx, req.(*IsFollowRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // Relation_ServiceDesc is the grpc.ServiceDesc for Relation service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -289,10 +255,6 @@ var Relation_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetFriendList",
 			Handler:    _Relation_GetFriendList_Handler,
-		},
-		{
-			MethodName: "IsFollow",
-			Handler:    _Relation_IsFollow_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

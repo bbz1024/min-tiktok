@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package feedback;
+option go_package = "./feedback";
+
+message FeedbackRequest {
+  repeated uint32 video_ids = 1;
+  uint32 user_id = 2;
+  string type = 3; // read comment favorite
+}
+message FeedbackResponse {
+  uint32 status_code = 1;
+  string status_msg = 2;
+}
+message ListRecommendRequest{
+  uint32 actor_id = 1;
+  uint32 count = 2;
+}
+message ListRecommendResponse {
+  uint32 status_code = 1;
+  string status_msg = 2;
+  repeated string video_ids = 3;
+}
+service Feedback {
+  rpc Feedback(FeedbackRequest) returns (FeedbackResponse);
+  rpc ListRecommendWithFeedback(ListRecommendRequest) returns (ListRecommendResponse);
+}

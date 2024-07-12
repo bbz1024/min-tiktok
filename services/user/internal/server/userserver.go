@@ -26,3 +26,8 @@ func (s *UserServer) GetUserInfo(ctx context.Context, in *user.UserRequest) (*us
 	l := logic.NewGetUserInfoLogic(ctx, s.svcCtx)
 	return l.GetUserInfo(in)
 }
+
+func (s *UserServer) CheckUserExist(ctx context.Context, in *user.UserExistRequest) (*user.UserExistResponse, error) {
+	l := logic.NewCheckUserExistLogic(ctx, s.svcCtx)
+	return l.CheckUserExist(in)
+}

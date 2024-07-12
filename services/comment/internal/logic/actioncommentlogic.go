@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"min-tiktok/common/consts/code"
 	"min-tiktok/common/consts/keys"
+	"min-tiktok/common/consts/variable"
+	"min-tiktok/services/feedback/feedback"
 	"min-tiktok/services/user/user"
 	"time"
 
@@ -53,6 +55,7 @@ func (l *ActionCommentLogic) ActionComment(in *comment.ActionCommentRequest) (*c
 			Createdat: now,
 			Updatedat: now,
 		})
+
 		if err != nil {
 			l.Errorw("insert comment error", logx.Field("err", err))
 			return nil, err
@@ -77,6 +80,15 @@ func (l *ActionCommentLogic) ActionComment(in *comment.ActionCommentRequest) (*c
 		if err != nil || res.StatusCode != code.OK {
 			l.Errorw("get user info error", logx.Field("err", err))
 			return nil, err
+		}
+		//  feedback
+		feedres, err := l.svcCtx.FeedbackRpc.Feedback(l.ctx, &feedback.FeedbackRequest{
+			UserId:   in.ActorId,
+			VideoIds: []uint32{in.VideoId},
+			Type:     variable.CommentFeedBack,
+		})
+		if err != nil || feedres.StatusCode != code.OK {
+			l.Errorw("feedback error", logx.Field("err", err))
 		}
 		resp.Comment.User = &comment.UserInfo{
 			Id:              res.User.Id,

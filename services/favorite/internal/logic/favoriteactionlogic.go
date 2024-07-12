@@ -7,6 +7,8 @@ import (
 	"github.com/zeromicro/go-zero/core/stores/redis"
 	"min-tiktok/common/consts/code"
 	"min-tiktok/common/consts/keys"
+	"min-tiktok/common/consts/variable"
+	"min-tiktok/services/feedback/feedback"
 	"strconv"
 
 	"min-tiktok/services/favorite/favorite"
@@ -55,7 +57,7 @@ func (l *FavoriteActionLogic) FavoriteAction(in *favorite.FavoriteRequest) (*fav
 	switch in.ActionType {
 	case favorite.ActionType_FAVORITE:
 		// already favorite
-		ok, err := l.svcCtx.Rdb.SismemberCtx(l.ctx, favoriteKey, in.ActorId)
+		ok, err := l.svcCtx.Rdb.SismemberCtx(l.ctx, favoriteKey, in.VideoId)
 		if err != nil && !errors.Is(err, redis.Nil) {
 			return nil, err
 		}
@@ -66,11 +68,21 @@ func (l *FavoriteActionLogic) FavoriteAction(in *favorite.FavoriteRequest) (*fav
 			}, nil
 		}
 		// 1. add videoId to favorite set
-		if _, err := l.svcCtx.Rdb.SaddCtx(l.ctx, favoriteKey, in.ActorId); err != nil && !errors.Is(err, redis.Nil) {
+		if _, err := l.svcCtx.Rdb.SaddCtx(l.ctx, favoriteKey, in.VideoId); err != nil && !errors.Is(err, redis.Nil) {
+			l.Errorw("add favorite error", logx.Field("err", err))
+			return nil, err
+		}
+		feedres, err := l.svcCtx.FeedBackRpc.Feedback(l.ctx, &feedback.FeedbackRequest{
+			UserId:   in.ActorId,
+			VideoIds: []uint32{in.VideoId},
+			Type:     string(variable.FavoriteFeedBack),
+		})
+		if err != nil || feedres.StatusCode != code.OK {
+			l.Errorw("feedback error", logx.Field("err", err))
 			return nil, err
 		}
 	case favorite.ActionType_CANCEL_FAVORITE:
-		ok, err := l.svcCtx.Rdb.SismemberCtx(l.ctx, favoriteKey, in.ActorId)
+		ok, err := l.svcCtx.Rdb.SismemberCtx(l.ctx, favoriteKey, in.VideoId)
 		if err != nil && !errors.Is(err, redis.Nil) {
 			return nil, err
 		}
@@ -80,7 +92,7 @@ func (l *FavoriteActionLogic) FavoriteAction(in *favorite.FavoriteRequest) (*fav
 				StatusMsg:  code.FavoriteNotFoundMsg,
 			}, nil
 		}
-		if _, err := l.svcCtx.Rdb.SremCtx(l.ctx, favoriteKey, in.ActorId); err != nil && !errors.Is(err, redis.Nil) {
+		if _, err := l.svcCtx.Rdb.SremCtx(l.ctx, favoriteKey, in.VideoId); err != nil && !errors.Is(err, redis.Nil) {
 			return nil, err
 		}
 		increment = -1

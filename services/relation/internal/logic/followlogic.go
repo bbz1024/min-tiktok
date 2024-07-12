@@ -7,6 +7,7 @@ import (
 	"min-tiktok/common/consts/keys"
 	"min-tiktok/services/relation/internal/svc"
 	"min-tiktok/services/relation/relation"
+	"min-tiktok/services/user/userclient"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -27,10 +28,23 @@ func NewFollowLogic(ctx context.Context, svcCtx *svc.ServiceContext) *FollowLogi
 
 // Follow 关注
 func (l *FollowLogic) Follow(in *relation.RelationActionRequest) (*relation.RelationActionResponse, error) {
-	/*
-		user_id: 作者id
-		actor_id: 我的id
-	*/
+
+	// check user_id exist
+	exist, err := l.svcCtx.UserRpc.CheckUserExist(l.ctx, &userclient.UserExistRequest{
+		UserId: in.UserId,
+	})
+	if err != nil {
+		l.Errorw("call rpc UserRpc.CheckUserExist", logx.Field("err", err))
+		return nil, err
+	}
+	if !exist.Exist {
+		l.Infow("user not found", logx.Field("user_id", in.UserId))
+		return &relation.RelationActionResponse{
+			StatusCode: code.UserNotFoundCode,
+			StatusMsg:  code.UserNotFoundMsg,
+		}, nil
+	}
+
 	followKey := fmt.Sprintf(keys.UserFollow, in.ActorId)
 	// check user is follow actor
 	isFollow, err := l.svcCtx.Rdb.SismemberCtx(l.ctx, followKey, in.UserId)

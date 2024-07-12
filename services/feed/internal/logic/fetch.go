@@ -21,15 +21,16 @@ func FetchVideoDetails(ctx context.Context, videoList []*video.Video, actorId ui
 	var err2 error
 	for i, v := range videoList {
 		order := i
+		value := v
 		runner.Schedule(func() {
 			videoInfo := &feed.Video{
-				Id:       uint32(v.Id),
-				PlayUrl:  v.Playurl,
-				CoverUrl: v.Coverurl,
-				Title:    v.Title,
+				Id:       uint32(value.Id),
+				PlayUrl:  value.Playurl,
+				CoverUrl: value.Coverurl,
+				Title:    value.Title,
 			}
 			// get video info from redis
-			videoKey := fmt.Sprintf(keys.VideoInfoKey, v.Id)
+			videoKey := fmt.Sprintf(keys.VideoInfoKey, value.Id)
 			info, err := rdb.HgetallCtx(ctx, videoKey)
 			if err != nil {
 				err2 = err
@@ -58,7 +59,7 @@ func FetchVideoDetails(ctx context.Context, videoList []*video.Video, actorId ui
 			// is favorite
 			if actorId != 0 {
 				key := fmt.Sprintf(keys.UserFavoriteKey, actorId)
-				if isFavorite, err = rdb.SismemberCtx(ctx, key, uint32(v.Id)); err != nil {
+				if isFavorite, err = rdb.SismemberCtx(ctx, key, uint32(value.Id)); err != nil {
 					err2 = err
 					logx.Errorw("get video info from redis error", logx.Field("err", err))
 					return
@@ -67,7 +68,7 @@ func FetchVideoDetails(ctx context.Context, videoList []*video.Video, actorId ui
 			}
 
 			res, err := userRpc.GetUserInfo(ctx, &userclient.UserRequest{
-				UserId:  uint32(v.Userid),
+				UserId:  uint32(value.Userid),
 				ActorId: actorId,
 			})
 			if err != nil {

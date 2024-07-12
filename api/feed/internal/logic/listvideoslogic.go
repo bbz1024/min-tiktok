@@ -29,24 +29,19 @@ func (l *ListVideosLogic) ListVideos(req *types.ListVideosReq) (resp *types.List
 	var res *feedclient.ListFeedResponse
 	// not login
 	if req.ActorId == 0 {
-		res, err = l.svcCtx.FeedRpc.ListVideos(
-			l.ctx,
+		res, err = l.svcCtx.FeedRpc.ListVideos(l.ctx,
 			&feedclient.ListFeedRequest{
 				LatestTime: req.LatestTime,
-				ActorId:    req.ActorId,
 			},
 		)
 	} else {
 		// recommend
-		res, err = l.svcCtx.FeedRpc.ListVideos(
-			l.ctx,
-			&feedclient.ListFeedRequest{
-				LatestTime: req.LatestTime,
-				ActorId:    req.ActorId,
+		res, err = l.svcCtx.FeedRpc.ListRecommendVideos(l.ctx,
+			&feedclient.ListRecommendRequest{
+				ActorId: req.ActorId,
 			},
 		)
 	}
-
 	resp = new(types.ListVideosResp)
 	if err != nil {
 		resp.StatusMsg = code.ServerErrorMsg

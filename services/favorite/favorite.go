@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/zeromicro/zero-contrib/zrpc/registry/consul"
-
 	"min-tiktok/services/favorite/favorite"
 	"min-tiktok/services/favorite/internal/config"
 	"min-tiktok/services/favorite/internal/server"
@@ -36,6 +35,7 @@ func main() {
 	if err := consul.RegisterService(c.ListenOn, c.Consul); err != nil {
 		panic(err)
 	}
+
 	defer s.Stop()
 
 	fmt.Printf("Starting rpc server at %s...\n", c.ListenOn)

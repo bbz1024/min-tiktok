@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"min-tiktok/common/consts/keys"
-
 	"min-tiktok/services/relation/internal/svc"
 	"min-tiktok/services/relation/relation"
 
@@ -27,6 +26,7 @@ func NewGetFriendListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Get
 
 // GetFriendList follow each other
 func (l *GetFriendListLogic) GetFriendList(in *relation.FriendListRequest) (*relation.FriendListResponse, error) {
+
 	// user follow
 	userFollowKey := fmt.Sprintf(keys.UserFollow, in.UserId)
 	// user follower

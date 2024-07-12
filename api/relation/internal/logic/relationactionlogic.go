@@ -6,6 +6,7 @@ import (
 	"min-tiktok/api/relation/internal/types"
 	"min-tiktok/common/consts/code"
 	"min-tiktok/services/relation/relation"
+	"min-tiktok/services/user/userclient"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -25,7 +26,21 @@ func NewRelationActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Re
 }
 
 func (l *RelationActionLogic) RelationAction(req *types.RealtionActionReuqest) (resp *types.RealtionActionResponse, err error) {
-
+	// check user_id exist
+	exist, err := l.svcCtx.UserRpc.CheckUserExist(l.ctx, &userclient.UserExistRequest{
+		UserId: req.UserID,
+	})
+	if err != nil {
+		l.Errorw("call rpc UserRpc.CheckUserExist", logx.Field("err", err))
+		return nil, err
+	}
+	if !exist.Exist {
+		l.Infow("user not found", logx.Field("user_id", req.UserID))
+		return &types.RealtionActionResponse{
+			StatusCode: code.UserNotFoundCode,
+			StatusMsg:  code.UserNotFoundMsg,
+		}, nil
+	}
 	// check follow yourself
 	if req.ActorID == req.UserID {
 		resp = new(types.RealtionActionResponse)

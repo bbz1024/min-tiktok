@@ -32,3 +32,8 @@ relation-api=8894
 relation-service=10006
 relation-service-health=20006
 relation-api-health=30006
+
+feedback-api=8895
+feedback-service=10007
+feedback-service-health=20007
+feedback-api-health=30007

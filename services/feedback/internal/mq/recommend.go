@@ -1,36 +1,33 @@
-package mq
+package recommend
 
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/streadway/amqp"
 	"github.com/zeromicro/go-zero/core/logx"
-	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"github.com/zhenghaoz/gorse/client"
-	"min-tiktok/common/config"
 	"min-tiktok/common/consts/variable"
-	"min-tiktok/models/video"
+	"min-tiktok/services/feedback/internal/svc"
+	"strconv"
 	"time"
 )
 
 type GorseRecommend struct {
 	channel     *amqp.Channel
 	gorseClient *client.GorseClient
-	videoModel  video.VideoModel
 }
 type GorseRecommendReq struct {
-	VideoID uint32 `json:"video_id"`
-	UserID  uint32 `json:"user_id"`
-	Type    variable.Type
+	VideoIds []uint32 `json:"video_id"`
+	UserID   uint32   `json:"user_id"`
+	Type     variable.FeedType
 }
 
 var gorseClient *GorseRecommend
 
-func InitGorse(gorseConf *config.GorseStructure, MqConf *config.RabbitMQStructure, mysqlConf *config.MysqlStructure) error {
-	cli := client.NewGorseClient(gorseConf.GorseAddr, gorseConf.GorseApikey)
+func InitGorse(ctx *svc.ServiceContext) error {
+	cli := client.NewGorseClient(ctx.Config.Gorse.GorseAddr, ctx.Config.Gorse.GorseApikey)
 
-	conn, err := amqp.Dial(MqConf.Dns())
+	conn, err := amqp.Dial(ctx.Config.RabbitMQ.Dns())
 	if err != nil {
 		return err
 	}
@@ -46,8 +43,6 @@ func InitGorse(gorseConf *config.GorseStructure, MqConf *config.RabbitMQStructur
 		return err
 	}
 
-	mysqlConn := sqlx.NewMysql(mysqlConf.DataSource)
-	gorseClient.videoModel = video.NewVideoModel(mysqlConn)
 	go gorseClient.Consumer()
 	return nil
 }
@@ -99,29 +94,28 @@ func (g *GorseRecommend) Consumer() {
 	}
 	ctx := context.Background()
 	for res := range results {
-		var err error
 		var msg GorseRecommendReq
 		if err := json.Unmarshal(res.Body, &msg); err != nil {
 			logx.Errorf("unmarshal msg error: %v", err)
 			continue
 		}
-		v, err := g.videoModel.FindOne(ctx, uint64(msg.VideoID))
-		if err != nil {
+		now := time.Now().UTC().Format(time.RFC3339)
+		var feedback []client.Feedback
+		for _, videoid := range msg.VideoIds {
+			feedback = append(feedback, client.Feedback{
+				FeedbackType: string(msg.Type),
+				UserId:       strconv.Itoa(int(msg.UserID)),
+				ItemId:       strconv.Itoa(int(videoid)),
+				Timestamp:    now,
+			})
+		}
+		if _, err := g.gorseClient.InsertFeedback(ctx, feedback); err != nil {
+			logx.Errorf("insert feedback error: %v", err)
 			continue
 		}
-		now := time.Now().UTC().Format(time.RFC3339)
-		switch msg.Type {
-		case variable.InsertType:
-			_, err = g.gorseClient.InsertItem(ctx, client.Item{
-				ItemId:    fmt.Sprintf("%d", v.Id),
-				Timestamp: now,
-				Comment:   v.Title,
-			})
-		case variable.FavoriteType:
-
-		}
-		if err == nil {
-			res.Ack(false)
+		if err := res.Ack(false); err != nil {
+			logx.Errorf("ack error: %v", err)
+			continue
 		}
 	}
 }

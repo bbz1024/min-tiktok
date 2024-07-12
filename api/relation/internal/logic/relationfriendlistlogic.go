@@ -4,6 +4,7 @@ import (
 	"context"
 	"min-tiktok/common/consts/code"
 	"min-tiktok/services/relation/relationclient"
+	"min-tiktok/services/user/userclient"
 
 	"min-tiktok/api/relation/internal/svc"
 	"min-tiktok/api/relation/internal/types"
@@ -26,6 +27,21 @@ func NewRelationFriendListLogic(ctx context.Context, svcCtx *svc.ServiceContext)
 }
 
 func (l *RelationFriendListLogic) RelationFriendList(req *types.RelationFriendListRequest) (resp *types.RelationFriendListResponse, err error) {
+	// check user_id exist
+	exist, err := l.svcCtx.UserRpc.CheckUserExist(l.ctx, &userclient.UserExistRequest{
+		UserId: req.UserID,
+	})
+	if err != nil {
+		l.Errorw("call rpc UserRpc.CheckUserExist", logx.Field("err", err))
+		return nil, err
+	}
+	if !exist.Exist {
+		l.Infow("user not found", logx.Field("user_id", req.UserID))
+		return &types.RelationFriendListResponse{
+			StatusCode: code.UserNotFoundCode,
+			StatusMsg:  code.UserNotFoundMsg,
+		}, nil
+	}
 	res, err := l.svcCtx.RelationRpc.GetFriendList(l.ctx, &relationclient.FriendListRequest{
 		UserId:  req.UserID,
 		ActorId: req.ActorID,

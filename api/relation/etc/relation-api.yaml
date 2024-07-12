@@ -41,3 +41,6 @@ AuthsRpc: # 需要与config保持一致
 RelationRpc:
   Target: consul://192.168.241.131:8500/relation.rpc?wait=14s
   NonBlock: true
+UserRpc:
+  Target: consul://192.168.241.131:8500/user.rpc?wait=14s
+  NonBlock: true

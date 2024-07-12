@@ -6,6 +6,7 @@ import (
 	"min-tiktok/api/relation/internal/config"
 	"min-tiktok/common/middleware"
 	"min-tiktok/services/relation/relationclient"
+	"min-tiktok/services/user/userclient"
 )
 
 type ServiceContext struct {
@@ -13,6 +14,7 @@ type ServiceContext struct {
 	AuthMiddleware rest.Middleware
 	WithMiddleware rest.Middleware
 	RelationRpc    relationclient.Relation
+	UserRpc        userclient.User
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -21,5 +23,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		AuthMiddleware: middleware.WrapperAuthMiddleware(c.AuthsRpc),
 		WithMiddleware: middleware.WithMiddleware,
 		RelationRpc:    relationclient.NewRelation(zrpc.MustNewClient(c.RelationRpc)),
+		UserRpc:        userclient.NewUser(zrpc.MustNewClient(c.UserRpc)),
 	}
 }

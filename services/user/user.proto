@@ -27,8 +27,14 @@ message UserInfo {
   uint32 work_count = 10; //作品数量
   uint32 favorite_count = 11; //点赞数量
 }
+message UserExistRequest {
+  uint32 user_id = 1; // 用户id
+}
+message UserExistResponse{
+  bool exist = 3;
+}
 // User名不能修改
 service User {
   rpc GetUserInfo(UserRequest) returns(UserResponse);
-
+  rpc CheckUserExist(UserExistRequest) returns(UserExistResponse);
 }
