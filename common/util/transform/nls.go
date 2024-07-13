@@ -87,7 +87,7 @@ func (nt *NlsTask) SubmitTask(fileLink string) (string, error) {
 	if err := json.Unmarshal([]byte(postResponse.GetHttpContentString()), &postMapResult); err != nil {
 		return "", err
 	}
-	fmt.Println(postMapResult)
+	//fmt.Println(postMapResult)
 	return postMapResult["TaskId"].(string), nil
 }
 

@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"github.com/zeromicro/go-zero/core/conf"
+	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/service"
 	"github.com/zeromicro/go-zero/zrpc"
 	"github.com/zeromicro/zero-contrib/zrpc/registry/consul"
@@ -31,8 +33,8 @@ func main() {
 			reflection.Register(grpcServer)
 		}
 	})
-	// max-size
-	// 50m
+	//
+	// max-size 50m
 	s.AddOptions(grpc.MaxRecvMsgSize((1 << 20) * 50))
 	//
 	// register center
@@ -41,15 +43,32 @@ func main() {
 	}
 
 	// -------------------- init --------------------
-	if err := mq.InitExtractVideo(ctx); err != nil {
+	if err := mq.InitExtractVideo(ctx, 3, 3); err != nil {
 		panic(err)
 	}
-	if err := mq.InitChatVideo(ctx); err != nil {
+	if err := mq.InitChatVideo(ctx, 3, 3); err != nil {
 		panic(err)
 	}
 
 	defer s.Stop()
-
+	//genVideoInfo(ctx)
 	fmt.Printf("Starting rpc server at %s...\n", c.ListenOn)
 	s.Start()
+}
+func genVideoInfo(ctx *svc.ServiceContext) {
+	//get all video
+	ids, err := ctx.VideoModel.GetVideoIds(context.Background())
+	if err != nil {
+		return
+	}
+	for _, id := range ids {
+		err := mq.GetChatVideo().Product(mq.ChatVideoReq{
+			VideoID: id,
+		})
+		if err != nil {
+			logx.Error(err)
+			return
+		}
+	}
+
 }

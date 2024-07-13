@@ -1,0 +1,45 @@
+Name: message-api
+Host: 0.0.0.0
+Port: 8896
+Mode: dev
+
+Consul:
+  Host: 192.168.241.131:8500
+  Key: message.rpc
+
+Middlewares:
+  Metrics: true
+
+
+#  trace
+Telemetry:
+  Name: message.api
+  Endpoint: http://192.168.241.131:14268/api/traces
+  Batcher: jaeger
+  Sampler: 1.0
+
+Mysql:
+  DataSource: lzb200244:lzb200244@tcp(192.168.241.131:3306)/tiktok?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+
+# metrics
+DevServer:
+  Port: 30008
+
+# log
+Log:
+  ServiceName: "message-api"
+  Mode: 'console'
+  Encoding: "json"
+  Level: "error"
+  Path: "./logs/message-api"
+
+# rpc
+MessageRpc:
+  Target: consul://192.168.241.131:8500/message.rpc?wait=14s
+  NonBlock: true
+AuthsRpc:
+  Target: consul://192.168.241.131:8500/auths.rpc?wait=14s
+  NonBlock: true
+UserRpc:
+  Target: consul://192.168.241.131:8500/user.rpc?wait=14s
+  NonBlock: true

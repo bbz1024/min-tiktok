@@ -31,6 +31,7 @@ const (
 	IsFollowCode     = 50001
 	IsNotFollowCode  = 50002
 	ForbidFollowSelf = 50003
+	IsNotFriendCode  = 50004
 )
 
 // msg
@@ -65,4 +66,5 @@ const (
 	IsFollowMsg         = "你已关注不可再次关注"
 	IsNotFollowMsg      = "你未关注不可取消关注"
 	ForbidFollowSelfMsg = "不能关注自己"
+	IsNotFriendMsg      = "你与对方不是好友关系"
 )

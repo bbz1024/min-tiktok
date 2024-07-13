@@ -1,0 +1,47 @@
+syntax = "v1"
+
+type MessageChatReq {
+	ActorId    uint32 `form:"actor_id"`
+	ToUserID   uint32 `form:"to_user_id"`
+	PreMsgTime uint64 `form:"pre_msg_time,optional"`
+}
+
+type MessageChatResp {
+	StatusCode  uint32     `json:"status_code"`
+	StatusMsg   string     `json:"status_msg"`
+	MessageList []*Message `json:"message_list"`
+}
+
+type Message {
+	ID         uint32 `json:"id"`
+	ToUserID   uint32 `json:"to_user_id"`
+	FromUserID uint32 `json:"from_user_id"`
+	Content    string `json:"content"`
+	CreateTime uint64 `json:"create_time"`
+}
+
+type MessageActionReq {
+	ActorId    uint32 `form:"actor_id"`
+	ToUserID   uint32 `form:"to_user_id"`
+	ActionType uint32 `form:"action_type"` // 1- 发送消息
+	Content    string `form:"content"`
+}
+
+type MessageActionResp {
+	StatusCode uint32 `json:"status_code"`
+	StatusMsg  string `json:"status_msg"`
+}
+
+@server (
+	prefix: /douyin/message
+	// 通过 middileware 关键字声明中间件，多个中间件以英文逗号分割，如 UserAgentMiddleware,LogMiddleware
+	middleware: WithMiddleware,AuthMiddleware
+)
+service message-api {
+	@handler ListMessageChat
+	get /chat (MessageChatReq) returns (MessageChatResp)
+
+	@handler SendMessage
+	post /action (MessageActionReq) returns (MessageActionResp)
+}
+

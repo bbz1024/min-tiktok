@@ -75,10 +75,11 @@ func (v *ChatVideo) Product(msg ChatVideoReq) error {
 	return nil
 
 }
-func (v *ChatVideo) Consumer() {
+func (v *ChatVideo) Consumer(consumerName int) {
+	name := fmt.Sprintf("consumer-%s-%d", variable.ExtractTextQueue, consumerName)
 	results, err := v.Channel.Consume(
 		variable.ChatQueue,
-		variable.ChatRoutingKey,
+		name,
 		false, // 关闭自动应答
 		false,
 		false,
@@ -98,24 +99,28 @@ func (v *ChatVideo) Consumer() {
 		vid, err := v.svcCtx.VideoModel.FindOne(context.TODO(), uint64(msg.VideoID))
 		if err != nil {
 			logx.Errorf("find video error: %v", err)
+			res.Nack(false, true)
 			continue
 		}
 		// extract summery
 		summery, err := v.gpt.ChatWithModel(context.TODO(), variable.ExtractSummeryQuestion, vid.Content.String)
 		if err != nil {
 			logx.Errorf("extract summery error: %v", err)
+			res.Nack(false, true)
 			continue
 		}
 		// extract keyword
 		keywordStr, err := v.gpt.ChatWithModel(context.TODO(), variable.ExtractKeyWordQuestion, vid.Content.String)
 		if err != nil {
 			logx.Errorf("extract keyword error: %v", err)
+			res.Nack(false, true)
 			continue
 		}
 		// extract category
 		categoryStr, err := v.gpt.ChatWithModel(context.TODO(), variable.ExtractCategoryQuestion, vid.Content.String)
 		if err != nil {
 			logx.Errorf("extract category error: %v", err)
+			res.Nack(false, true)
 			continue
 		}
 		var conn = sqlx.NewMysql(v.svcCtx.Config.MySQL.DataSource)
@@ -138,6 +143,7 @@ func (v *ChatVideo) Consumer() {
 			}
 			return nil
 		}); err != nil {
+			res.Nack(false, true)
 			logx.Errorf("transact error: %v", err)
 			continue
 		}
@@ -151,10 +157,12 @@ func (v *ChatVideo) Consumer() {
 		}
 		row, err := v.gorseClient.InsertItem(context.TODO(), item)
 		if err != nil {
+			res.Nack(false, true)
 			logx.Errorf("insert gorse error: %v", err)
 			continue
 		}
 		if row.RowAffected != 1 {
+			res.Nack(false, true)
 			logx.Errorf("insert gorse error: %v", err)
 			continue
 		}
@@ -162,13 +170,14 @@ func (v *ChatVideo) Consumer() {
 			logx.Errorf("ack error: %v", err)
 			continue
 		}
+		fmt.Printf("consum vidoeID: %d\n", msg.VideoID)
 		logx.Infof("consum vidoeID: %d", msg.VideoID)
 	}
 }
 func GetChatVideo() *ChatVideo {
 	return chatText
 }
-func InitChatVideo(svcCtx *svc.ServiceContext) error {
+func InitChatVideo(svcCtx *svc.ServiceContext, maxPrefetchCnt, consumerCnt int) error {
 	chatText = &ChatVideo{
 		svcCtx: svcCtx,
 	}
@@ -180,6 +189,9 @@ func InitChatVideo(svcCtx *svc.ServiceContext) error {
 	if err != nil {
 		return err
 	}
+	if err := channel.Qos(maxPrefetchCnt, 0, false); err != nil {
+		return err
+	}
 	chatText.Channel = channel
 
 	if err := chatText.declare(); err != nil {
@@ -187,7 +199,10 @@ func InitChatVideo(svcCtx *svc.ServiceContext) error {
 	}
 	chatText.gpt = gpt.NewGpt(extractText.svcCtx.Config.Gpt.ApiKey, svcCtx.Config.Gpt.ModelID)
 	chatText.gorseClient = client.NewGorseClient(extractText.svcCtx.Config.Gorse.GorseAddr, extractText.svcCtx.Config.Gorse.GorseApikey)
-	go chatText.Consumer()
+	for i := 0; i < consumerCnt; i++ {
+		name := i
+		go chatText.Consumer(name)
+	}
 	logx.Infof("chat video init success")
 	return nil
 }

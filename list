@@ -37,3 +37,8 @@ feedback-api=8895
 feedback-service=10007
 feedback-service-health=20007
 feedback-api-health=30007
+
+message-api=8896
+message-service=10008
+message-service-health=20008
+message-api-health=30008

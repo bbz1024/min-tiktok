@@ -5,7 +5,8 @@ import (
 	"encoding/json"
 	"github.com/streadway/amqp"
 	"github.com/zeromicro/go-zero/core/logx"
-	"github.com/zhenghaoz/gorse/client"
+	client "min-tiktok/common/util/gorse"
+
 	"min-tiktok/common/consts/variable"
 	"min-tiktok/services/feedback/internal/svc"
 	"strconv"

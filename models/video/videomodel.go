@@ -20,6 +20,7 @@ type (
 		ListVideoByCreateTime(ctx context.Context, createTime time.Time) ([]*Video, error)
 		ListVideoByUserId(ctx context.Context, userId int64) ([]*Video, error)
 		ListVideoByVideoSet(ctx context.Context, videoSet []string) ([]*Video, error)
+		GetVideoIds(ctx context.Context) ([]uint32, error)
 	}
 
 	customVideoModel struct {
@@ -27,9 +28,26 @@ type (
 	}
 )
 
+func (m *customVideoModel) GetVideoIds(ctx context.Context) ([]uint32, error) {
+	query := fmt.Sprintf("SELECT `id` FROM %s", m.table)
+	var videoIds []uint32
+	err := m.conn.QueryRowsCtx(ctx, &videoIds, query)
+	switch {
+	case err == nil:
+		return videoIds, nil
+	case errors.Is(err, sqlx.ErrNotFound):
+		return videoIds, nil
+	default:
+		return nil, err
+	}
+}
+
 func (m *customVideoModel) ListVideoByVideoSet(ctx context.Context, videoSet []string) ([]*Video, error) {
 	// 构建视频ID IN 查询的条件字符串，例如 "video_id IN ('id1', 'id2', ...)"
 	var videoIdsPlaceholder strings.Builder
+	if len(videoSet) == 0 {
+		return []*Video{}, nil
+	}
 	for i, id := range videoSet {
 		if i > 0 {
 			videoIdsPlaceholder.WriteString(", ")

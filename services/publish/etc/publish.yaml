@@ -46,7 +46,7 @@ QiNiu:
 
 Log:
   ServiceName: "publish-rpc"
-  Mode: 'file'
+  Mode: 'console'
   Encoding: "json"
   Level: "error"
   Path: "./logs/publish-rpc"

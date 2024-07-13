@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"github.com/streadway/amqp"
 	"github.com/zeromicro/go-zero/core/logx"
 	"min-tiktok/common/consts/variable"
@@ -23,7 +24,7 @@ type ExtractVideoTextReq struct {
 
 var extractText *ExtractVideoText
 
-func InitExtractVideo(svcCtx *svc.ServiceContext) error {
+func InitExtractVideo(svcCtx *svc.ServiceContext, maxPrefetchCnt, consumerCnt int) error {
 	extractText = &ExtractVideoText{
 		svcCtx: svcCtx,
 	}
@@ -36,7 +37,9 @@ func InitExtractVideo(svcCtx *svc.ServiceContext) error {
 		return err
 	}
 	extractText.Channel = channel
-
+	if err := channel.Qos(maxPrefetchCnt, 0, false); err != nil {
+		return err
+	}
 	if err := extractText.declare(); err != nil {
 		return err
 	}
@@ -46,7 +49,10 @@ func InitExtractVideo(svcCtx *svc.ServiceContext) error {
 		svcCtx.Config.AlibabaNsl.AccessKeySecret,
 		svcCtx.Config.AlibabaNsl.AppKey,
 	)
-	go extractText.Consumer()
+	for i := 0; i < consumerCnt; i++ {
+		name := i
+		go extractText.Consumer(name)
+	}
 	logx.Infof("extract text  init success")
 	return nil
 }
@@ -83,10 +89,11 @@ func (s *ExtractVideoText) declare() error {
 	}
 	return nil
 }
-func (s *ExtractVideoText) Consumer() {
+func (s *ExtractVideoText) Consumer(consumerName int) {
+	name := fmt.Sprintf("consumer-%s-%d", variable.ExtractTextQueue, consumerName)
 	results, err := s.Channel.Consume(
 		variable.ExtractTextQueue,
-		variable.ExtractTextRoutingKey,
+		name,
 		false, // 关闭自动应答
 		false,
 		false,
