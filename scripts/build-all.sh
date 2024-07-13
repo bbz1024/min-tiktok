@@ -1,5 +1,4 @@
 #!/bin/bash
-
 echo "building..."
 ################### build api
 mkdir -p /output/apis
@@ -12,6 +11,7 @@ for i in *;do
   capName="${name^}"
   cd "$i" || exit
   go build -ldflags="-s -w" -o "/output/apis/${capName}Api"
+  /build/upx -9 "/output/apis/${capName}Api"
   cp ./etc/* /output/etc/
   cd ..
 done
@@ -27,6 +27,7 @@ for i in *;do
   capName="${name^}"
   cd "$i" || exit
   go build -ldflags="-s -w" -o "/output/services/${capName}Service"
+  /build/upx -9 "/output/services/${capName}Service"
   cp ./etc/* /output/etc/
   cd ..
 done

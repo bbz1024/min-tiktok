@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tiktok
+  namespace: tiktok
+spec:
+  selector:
+    app: tiktok
+  ports:
+    - name: api-8890
+      port: 8890
+      targetPort: 8890
+      protocol: TCP
+
+  type: ClusterIP

@@ -1,0 +1,117 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: favorite-service
+  namespace: tiktok
+  labels:
+    app: favorite-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: favorite-service
+  template:
+    metadata:
+      name: favorite-service
+      labels:
+        app: favorite-service
+    spec:
+      containers:
+        - name: favorite-service
+          image: min-tiktok
+          imagePullPolicy: Never
+          command:
+            - ./services/FavoriteService
+          ports:
+            - containerPort: 10000
+              protocol: TCP
+          volumeMounts:
+            - name: project-etc-volume
+              mountPath: /project/etc
+            - name: project-logs-volume
+              mountPath: /project/logs
+      volumes:
+        - name: project-etc-volume
+          hostPath:
+            path: /data/etc
+#            不存在就创建
+            type: DirectoryOrCreate
+        - name: project-logs-volume
+          hostPath:
+            path: /data/logs
+            type: DirectoryOrCreate
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: favorite-service
+  namespace: tiktok
+spec:
+  selector:
+    app: favorite-service
+  ports:
+    - name: service-10004
+      port: 10004
+      targetPort: 10004
+      protocol: TCP
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: favorite-api
+  namespace: tiktok
+  labels:
+    app: favorite-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: favorite-api
+  template:
+    metadata:
+      name: favorite-api
+      labels:
+        app: favorite-api
+    spec:
+      containers:
+        - name: favorite-api
+          image: min-tiktok
+          imagePullPolicy: Never
+          command:
+            - ./apis/FavoriteApi
+          ports:
+            - containerPort: 8892
+              protocol: TCP
+          volumeMounts:
+            - name: project-etc-volume
+              mountPath: /project/etc
+            - name: project-logs-volume
+              mountPath: /project/logs
+      volumes:
+        - name: project-etc-volume
+          hostPath:
+            path: /data/etc
+            type: DirectoryOrCreate
+        - name: project-logs-volume
+          hostPath:
+            path: /data/logs
+            type: DirectoryOrCreate
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: favorite-api
+  namespace: tiktok
+spec:
+  selector:
+    app: favorite-api
+  ports:
+    - name: api-8892
+      port: 8892
+      targetPort: 8892
+      protocol: TCP
+  type: ClusterIP

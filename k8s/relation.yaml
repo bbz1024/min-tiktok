@@ -1,0 +1,117 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: relation-service
+  namespace: tiktok
+  labels:
+    app: relation-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: relation-service
+  template:
+    metadata:
+      name: relation-service
+      labels:
+        app: relation-service
+    spec:
+      containers:
+        - name: relation-service
+          image: min-tiktok
+          imagePullPolicy: Never
+          command:
+            - ./services/RelationService
+          ports:
+            - containerPort: 10006
+              protocol: TCP
+          volumeMounts:
+            - name: project-etc-volume
+              mountPath: /project/etc
+            - name: project-logs-volume
+              mountPath: /project/logs
+      volumes:
+        - name: project-etc-volume
+          hostPath:
+            path: /data/etc
+#            不存在就创建
+            type: DirectoryOrCreate
+        - name: project-logs-volume
+          hostPath:
+            path: /data/logs
+            type: DirectoryOrCreate
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: relation-service
+  namespace: tiktok
+spec:
+  selector:
+    app: relation-service
+  ports:
+    - name: service-10006
+      port: 10006
+      targetPort: 10006
+      protocol: TCP
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: relation-api
+  namespace: tiktok
+  labels:
+    app: relation-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: relation-api
+  template:
+    metadata:
+      name: relation-api
+      labels:
+        app: relation-api
+    spec:
+      containers:
+        - name: relation-api
+          image: min-tiktok
+          imagePullPolicy: Never
+          command:
+            - ./apis/RelationApi
+          ports:
+            - containerPort: 8894
+              protocol: TCP
+          volumeMounts:
+            - name: project-etc-volume
+              mountPath: /project/etc
+            - name: project-logs-volume
+              mountPath: /project/logs
+      volumes:
+        - name: project-etc-volume
+          hostPath:
+            path: /data/etc
+            type: DirectoryOrCreate
+        - name: project-logs-volume
+          hostPath:
+            path: /data/logs
+            type: DirectoryOrCreate
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: relation-api
+  namespace: tiktok
+spec:
+  selector:
+    app: relation-api
+  ports:
+    - name: api-8894
+      port: 8894
+      targetPort: 8894
+      protocol: TCP
+  type: ClusterIP

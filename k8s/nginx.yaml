@@ -1,0 +1,65 @@
+---
+apiVersion: apps/v1 # deployment api 版本
+kind: Deployment # 资源类型
+metadata: # 元信息
+  name: nginx-svc
+  namespace: tiktok
+  labels:
+    app: nginx-svc
+    type: gateway
+spec:
+  replicas: 1 # 期望副本数
+  revisionHistoryLimit: 10 # 保留历史版本
+  selector: # 匹配标签，用于找到匹配的replacementSet，也会创建一个 RS 资源类型的
+    matchLabels: # 匹配标签
+      app: nginx-svc
+  template: # pod模板 也会创建一个 Pod 资源类型
+    metadata:
+      name: nginx-svc
+      labels:
+        app: nginx-svc
+    spec:
+      volumes:
+        - name: nginx-conf
+          hostPath:
+            path: /project/min-tiktok/k8s/nginx.conf
+            type: File
+        - name: nginx-logs
+          hostPath:
+            path: /data/logs/nginx
+            type: DirectoryOrCreate
+      containers:
+        - name: nginx
+          image: nginx
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - mountPath: /etc/nginx/nginx.conf
+              name: nginx-conf
+            - mountPath: /var/log/nginx
+              name: nginx-logs
+          command:
+            - nginx
+            - -c
+            - /etc/nginx/nginx.conf
+            - -g
+            - daemon off;
+
+
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: tiktok
+  name: nginx-svc # service 名称
+  labels:
+    app: nginx #Services 自身的标签，其他pod可以根据这个找到services
+spec:
+  selector: # 匹配哪些 pod 会被该 services 代理
+    app: nginx-svc
+  ports: # 端口映射
+    - port: 80 # services 自己的端口，在使用内网ip访问时使用
+      targetPort: 80  # 目标pod 的端口
+      name: web # 为端口起个名字，可以通过名称快速访问到
+      protocol: TCP
+  type: NodePort

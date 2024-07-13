@@ -1,0 +1,59 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: feedback-service
+  namespace: tiktok
+  labels:
+    app: feedback-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: feedback-service
+  template:
+    metadata:
+      name: feedback-service
+      labels:
+        app: feedback-service
+    spec:
+      containers:
+        - name: feedback-service
+          image: min-tiktok
+          imagePullPolicy: Never
+          command:
+            - ./services/FeedbackService
+          ports:
+            - containerPort: 10007
+              protocol: TCP
+          volumeMounts:
+            - name: project-etc-volume
+              mountPath: /project/etc
+            - name: project-logs-volume
+              mountPath: /project/logs
+      volumes:
+        - name: project-etc-volume
+          hostPath:
+            path: /data/etc
+#            不存在就创建
+            type: DirectoryOrCreate
+        - name: project-logs-volume
+          hostPath:
+            path: /data/logs
+            type: DirectoryOrCreate
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: feedback-service
+  namespace: tiktok
+spec:
+  selector:
+    app: feedback-service
+  ports:
+    - name: service-10007
+      port: 10007
+      targetPort: 10007
+      protocol: TCP
+  type: ClusterIP

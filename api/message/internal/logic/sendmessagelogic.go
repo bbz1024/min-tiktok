@@ -49,7 +49,7 @@ func (l *SendMessageLogic) SendMessage(req *types.MessageActionReq) (resp *types
 	}
 
 	res, err := l.svcCtx.MessageRpc.MessageAction(l.ctx, &messageclient.MessageActionRequest{
-		UserId:     req.ToUserID,
+		ToUserId:   req.ToUserID,
 		ActorId:    req.ActorId,
 		ActionType: req.ActionType,
 		Content:    req.Content,

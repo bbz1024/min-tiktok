@@ -86,7 +86,7 @@ func UploadVideoToServer(url, filePath, title, token string) error {
 func TestUploadVideo(t *testing.T) {
 	token := "217734a2-f438-4f2c-b895-ecf433252168"
 	url := "http://localhost:8891/douyin/publish/action/"
-	videosPath := "C:\\Users\\lzb\\Downloads\\Video"
+	videosPath := "C:\\Users\\lzb\\Downloads\\Video2"
 	dir, err := os.ReadDir(videosPath)
 	if err != nil {
 		t.Errorf("ReadDir() error = %v", err)

@@ -7,6 +7,7 @@ import (
 	"min-tiktok/services/comment/comment"
 	"min-tiktok/services/comment/internal/svc"
 	"min-tiktok/services/user/user"
+	"time"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -35,12 +36,13 @@ func (l *ListCommentLogic) ListComment(in *comment.ListCommentRequest) (*comment
 	var comments = make([]*comment.Comments, len(commentList))
 	var err2 error
 	var runner = threading.NewTaskRunner(10)
-	for i, cmt := range commentList {
+	for i, c := range commentList {
 		order := i
+		cmt := c
 		runner.Schedule(func() {
 			c := &comment.Comments{
 				Content:    cmt.Content.String,
-				CreateDate: cmt.Createdat.Format("01-02"),
+				CreateDate: cmt.Createdat.Format(time.DateTime),
 				Id:         uint32(cmt.Id),
 			}
 			res, err := l.svcCtx.UserRpc.GetUserInfo(l.ctx, &user.UserRequest{

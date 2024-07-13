@@ -12,7 +12,6 @@ for i in *; do
     echo "collecting $i"
     cd "$i" || exit
     cp -r ./etc/* /data/etc/ || { echo "Failed to copy files for $i"; exit 1; }
-    sed -i 's/info/error/g' /data/etc/
     cd ..
 done
 popd || exit

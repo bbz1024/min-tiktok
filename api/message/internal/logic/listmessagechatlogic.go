@@ -59,7 +59,7 @@ func (l *ListMessageChatLogic) ListMessageChat(req *types.MessageChatReq) (resp 
 		}, nil
 	}
 	res, err := l.svcCtx.MessageRpc.MessageList(l.ctx, &messageclient.MessageListRequest{
-		UserId:     req.ToUserID,
+		ToUserId:   req.ToUserID,
 		ActorId:    req.ActorId,
 		PreMsgTime: req.PreMsgTime,
 	})
@@ -79,6 +79,8 @@ func (l *ListMessageChatLogic) ListMessageChat(req *types.MessageChatReq) (resp 
 			ID:         v.Id,
 			Content:    v.Content,
 			CreateTime: v.CreateTime,
+			ToUserID:   v.ToUserId,
+			FromUserID: v.FromUserId,
 		})
 	}
 	return

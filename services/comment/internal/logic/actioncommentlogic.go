@@ -71,7 +71,7 @@ func (l *ActionCommentLogic) ActionComment(in *comment.ActionCommentRequest) (*c
 		}
 		resp.Comment = &comment.Comments{
 			Id:         uint32(id),
-			CreateDate: now.Format("2006-01-02 15:04"),
+			CreateDate: now.Format(time.DateTime),
 			Content:    in.CommentText,
 		}
 		res, err := l.svcCtx.UserRpc.GetUserInfo(l.ctx, &user.UserRequest{

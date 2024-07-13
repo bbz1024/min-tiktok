@@ -33,9 +33,9 @@ func NewNlsTask(accessKeyId, accessKeySec, appKey string) *NlsTask {
 	return &NlsTask{
 		regionId:     "cn-shanghai",
 		endpointName: "cn-shanghai",
-		domain:       "filetrans.cn-shanghai.aliyuncs.com",
-		product:      "nls-filetrans",
-		apiVersion:   "2018-08-17",
+		domain:       "speechfiletranscriberlite.cn-shanghai.aliyuncs.com",
+		product:      "SpeechFileTranscriberLite",
+		apiVersion:   "2021-12-21",
 		postAction:   "SubmitTask",
 		getAction:    "GetTaskResult",
 		accessKeyId:  accessKeyId,

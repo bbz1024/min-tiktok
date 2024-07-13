@@ -25,9 +25,9 @@ type (
 func (m *customMessagesModel) QueryMessageListByTime(ctx context.Context, userId, actorId uint32, preMsgTime uint64) ([]*Messages, error) {
 
 	var messageList []*Messages
-	conversationid := fmt.Sprintf("%d-%d", actorId, userId)
-	if actorId > userId {
-		conversationid = fmt.Sprintf("%d-%d", userId, actorId)
+	conversationid := fmt.Sprintf("%d-%d", userId, actorId)
+	if userId > actorId {
+		conversationid = fmt.Sprintf("%d-%d", actorId, userId)
 	}
 	if preMsgTime == 0 {
 		query := fmt.Sprintf("select %s from %s where conversationid = ?  order by createdat", messagesRows, m.table)
