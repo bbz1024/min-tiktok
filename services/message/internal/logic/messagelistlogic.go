@@ -24,7 +24,7 @@ func NewMessageListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Messa
 
 func (l *MessageListLogic) MessageList(in *message.MessageListRequest) (*message.MessageListResponse, error) {
 
-	messageList, err := l.svcCtx.MessageModel.QueryMessageListByTime(l.ctx, in.UserId, in.ActorId, in.PreMsgTime)
+	messageList, err := l.svcCtx.MessageModel.QueryMessageListByTime(l.ctx, in.ToUserId, in.ActorId, in.PreMsgTime)
 	if err != nil {
 		logx.Errorw("query message list failed", logx.Field("err", err))
 		return nil, err
@@ -40,5 +40,6 @@ func (l *MessageListLogic) MessageList(in *message.MessageListRequest) (*message
 			CreateTime: uint64(v.Createdat.UTC().UnixMilli()),
 		})
 	}
+
 	return resp, nil
 }

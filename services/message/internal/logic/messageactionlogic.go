@@ -31,7 +31,7 @@ func (l *MessageActionLogic) MessageAction(in *message.MessageActionRequest) (*m
 	// check is friend
 	res, err := l.svcCtx.RelationRpc.IsFriend(l.ctx, &relation.IsFriendRequest{
 		ActorId: in.ActorId,
-		UserId:  in.UserId,
+		UserId:  in.ToUserId,
 	})
 	if err != nil {
 		l.Errorw("call rpc RelationRpc.IsFriend", logx.Field("err", err))
@@ -43,14 +43,14 @@ func (l *MessageActionLogic) MessageAction(in *message.MessageActionRequest) (*m
 			StatusMsg:  code.IsNotFriendMsg,
 		}, nil
 	}
-	conversationid := fmt.Sprintf("%d-%d", in.ActorId, in.UserId)
-	if in.ActorId > in.UserId {
-		conversationid = fmt.Sprintf("%d-%d", in.UserId, in.ActorId)
+	conversationid := fmt.Sprintf("%d-%d", in.ToUserId, in.ActorId)
+	if in.ToUserId > in.ActorId {
+		conversationid = fmt.Sprintf("%d-%d", in.ActorId, in.ToUserId)
 	}
 	msg := &message2.Messages{
 		Content:        in.Content,
 		Fromuserid:     uint64(in.ActorId),
-		Touserid:       uint64(in.UserId),
+		Touserid:       uint64(in.ToUserId),
 		Conversationid: conversationid,
 		Createdat:      time.Now(),
 	}
