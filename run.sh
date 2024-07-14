@@ -23,6 +23,6 @@ scp ./k8s/nginx.conf root@node2:/data/etc/nginx.conf
 echo "scp done ..."
 
 # k8s
-kubectl apply -f ./k8s/nginx.yaml
-kubectl apply -f ./k8s/auths.yaml
-kubectl apply -f ./k8s/user.yaml
+#kubectl apply -f ./k8s/nginx.yaml
+#kubectl apply -f ./k8s/auths.yaml
+#kubectl apply -f ./k8s/user.yaml
