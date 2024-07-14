@@ -12,15 +12,14 @@ echo "build app . . ."
 # collect conf
 echo "collect conf . . ."
 bash ./collect-etc.sh
-echo "collect conf done"
-
+cp ./k8s/nginx.conf /data/etc/nginx.conf
 echo "collect conf done"
 # scp
 echo "scp ..."
-##ping -c 1 node2 || exit 1
-#scp -r /data/etc root@node2:/data/etc || { echo "Failed to scp files"; exit 1; }
-#scp ./k8s/nginx.conf root@node2:/data/etc/nginx.conf
-#echo "scp done ..."
+#ping -c 1 node2 || exit 1
+scp -r /data/etc root@node1:/data/etc || { echo "Failed to scp files"; exit 1; }
+scp -r /data/etc root@node2:/data/etc || { echo "Failed to scp files"; exit 1; }
+echo "scp done ..."
 
 # k8s
 #kubectl apply -f ./k8s/nginx.yaml
