@@ -78,6 +78,7 @@ func GetInstance() *GorseRecommend {
 	if gorseClient == nil {
 		panic("gorseClient is nil")
 	}
+	//gorseClient.gorseClient.UpdateUser()
 	return gorseClient
 }
 func (g *GorseRecommend) Consumer() {

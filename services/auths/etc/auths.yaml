@@ -1,7 +1,7 @@
 Name: auths.rpc
 ListenOn: 0.0.0.0:10000
 Consul:
-  Host: 192.168.241.131:8500 # consul endpoint
+  Host: 192.168.241.128:8500 # consul endpoint
   Key: auths.rpc
   Meta:
     Protocol: grpc
@@ -12,18 +12,18 @@ Consul:
 
 Telemetry:
   Name: auths.rpc
-  Endpoint: http://192.168.241.131:14268/api/traces
+  Endpoint: http://192.168.241.128:14268/api/traces
   Batcher: jaeger
   Sampler: 1.0
 Mysql:
-  DataSource: lzb200244:lzb200244@tcp(192.168.241.131:3306)/tiktok?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+  DataSource: lzb200244:lzb200244@tcp(192.168.241.128:3306)/tiktok?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
 CacheRedis:
-  - Host: 192.168.241.131:6379
+  - Host: 192.168.241.128:6379
     Type: node
     Pass: lzb200244
 # Redis配置
 RedisConf:
-  Host: 192.168.241.131:6379
+  Host: 192.168.241.128:6379
   Type: node
   Pass: lzb200244
   Tls: false
@@ -37,7 +37,7 @@ Log:
   Level: "error"
   Path: "./logs/auths-rpc"
 Gorse:
-  GorseAddr: http://192.168.241.131:8088
+  GorseAddr: http://192.168.241.128:8088
   GorseApikey: 5105502fc46a411c896aa5b50c31e951
 UserInfo:
   SignatureUrl: https://v1.hitokoto.cn/?c=b&encode=text

@@ -4,7 +4,7 @@ Port: 8896
 Mode: dev
 
 Consul:
-  Host: 192.168.241.131:8500
+  Host: 192.168.241.128:8500
   Key: message.rpc
 
 Middlewares:
@@ -14,12 +14,12 @@ Middlewares:
 #  trace
 Telemetry:
   Name: message.api
-  Endpoint: http://192.168.241.131:14268/api/traces
+  Endpoint: http://192.168.241.128:14268/api/traces
   Batcher: jaeger
   Sampler: 1.0
 
 Mysql:
-  DataSource: lzb200244:lzb200244@tcp(192.168.241.131:3306)/tiktok?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+  DataSource: lzb200244:lzb200244@tcp(192.168.241.128:3306)/tiktok?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
 
 # metrics
 DevServer:
@@ -35,11 +35,11 @@ Log:
 
 # rpc
 MessageRpc:
-  Target: consul://192.168.241.131:8500/message.rpc?wait=14s
+  Target: consul://192.168.241.128:8500/message.rpc?wait=14s
   NonBlock: true
 AuthsRpc:
-  Target: consul://192.168.241.131:8500/auths.rpc?wait=14s
+  Target: consul://192.168.241.128:8500/auths.rpc?wait=14s
   NonBlock: true
 UserRpc:
-  Target: consul://192.168.241.131:8500/user.rpc?wait=14s
+  Target: consul://192.168.241.128:8500/user.rpc?wait=14s
   NonBlock: true
