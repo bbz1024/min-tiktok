@@ -4,6 +4,7 @@ echo "building..."
 mkdir -p /output/apis
 mkdir -p /output/services
 mkdir -p /output/etc
+compress=${compress:-0}  # 使用默认值0，如果未定义或为空
 pushd api || exit
 for i in *;do
   echo "building $i"
@@ -11,7 +12,9 @@ for i in *;do
   capName="${name^}"
   cd "$i" || exit
   go build -ldflags="-s -w" -o "/output/apis/${capName}Api"
-  /build/upx -9 "/output/apis/${capName}Api"
+  if [ "$compress" == 1 ]; then
+        /build/upx -9 "/output/apis/${capName}Api"
+  fi
   cp ./etc/* /output/etc/
   cd ..
 done
@@ -27,7 +30,9 @@ for i in *;do
   capName="${name^}"
   cd "$i" || exit
   go build -ldflags="-s -w" -o "/output/services/${capName}Service"
-  /build/upx -9 "/output/services/${capName}Service"
+  if [ "$compress" == 1 ]; then
+        /build/upx -9 "/output/services/${capName}Service"
+  fi
   cp ./etc/* /output/etc/
   cd ..
 done

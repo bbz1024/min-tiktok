@@ -22,7 +22,7 @@ spec:
           image: min-tiktok
           imagePullPolicy: Never
           #          sh run.sh auths api
-          command: [ "sh", "run.sh", "auths", "service" ]
+          command: [ "ash", "run.sh", "auths", "service" ]
           ports:
             - containerPort: 10000
               protocol: TCP
@@ -80,7 +80,7 @@ spec:
         - name: auths-api
           image: min-tiktok
           imagePullPolicy: Never
-          command: [ "sh", "run.sh", "auths", "api" ]
+          command: [ "ash", "run.sh", "auths", "api" ]
           ports:
             - containerPort: 8888
               protocol: TCP
