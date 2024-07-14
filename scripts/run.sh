@@ -1,4 +1,4 @@
-#!/bin/ash
+#!/bin/bash
 
 function clear_and_run() {
     local name=$1
