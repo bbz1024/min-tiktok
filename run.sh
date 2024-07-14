@@ -22,6 +22,6 @@ scp -r /data/etc/* root@node1:/data/etc/ || { echo "Failed to scp files"; exit 1
 echo "scp done ..."
 
 # k8s
-#kubectl apply -f ./k8s/nginx.yaml
-#kubectl apply -f ./k8s/auths.yaml
-#kubectl apply -f ./k8s/user.yaml
+kubectl apply -f ./k8s/nginx.yaml
+kubectl apply -f ./k8s/auths.yaml
+kubectl apply -f ./k8s/user.yaml
