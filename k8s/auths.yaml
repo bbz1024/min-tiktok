@@ -21,8 +21,8 @@ spec:
         - name: auths-service
           image: min-tiktok
           imagePullPolicy: Never
-          command:
-            - ./services/AuthsService
+          #          sh run.sh auths api
+          command: [ "sh", "run.sh", "auths", "service" ]
           ports:
             - containerPort: 10000
               protocol: TCP
@@ -35,7 +35,7 @@ spec:
         - name: project-etc-volume
           hostPath:
             path: /data/etc
-#            不存在就创建
+            #            不存在就创建
             type: DirectoryOrCreate
         - name: project-logs-volume
           hostPath:
@@ -80,8 +80,7 @@ spec:
         - name: auths-api
           image: min-tiktok
           imagePullPolicy: Never
-          command:
-            - ./apis/AuthsApi
+          command: [ "sh", "run.sh", "auths", "api" ]
           ports:
             - containerPort: 8888
               protocol: TCP
