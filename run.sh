@@ -17,7 +17,7 @@ echo "collect conf done"
 # scp
 echo "scp ..."
 #ping -c 1 node2 || exit 1
-scp -r /data/etc root@node1:/data/etc || { echo "Failed to scp files"; exit 1; }
+scp -r /data/etc/* root@node1:/data/etc/ || { echo "Failed to scp files"; exit 1; }
 #scp -r /data/etc root@node2:/data/etc || { echo "Failed to scp files"; exit 1; } # 无限循环
 echo "scp done ..."
 
