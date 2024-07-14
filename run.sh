@@ -14,9 +14,10 @@ echo "collect conf . . ."
 bash ./collect-etc.sh
 echo "collect conf done"
 cp ./k8s/nginx.conf /data/etc
+echo "collect conf done"
 # scp
 echo "scp ..."
-ping -c 1 node2 || exit 1
+#ping -c 1 node2 || exit 1
 scp -r /data/etc root@node2:/data/etc || { echo "Failed to scp files"; exit 1; }
 echo "scp done ..."
 
