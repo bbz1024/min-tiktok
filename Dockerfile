@@ -6,7 +6,6 @@ ENV CGO_ENABLED 0
 ENV GOPROXY https://goproxy.cn/,direct
 
 COPY . .
-RUN tar -xvf ./pkg/upx.4.2.4.tar.xz
 RUN mv ./pkg/upx upx
 RUN chmod +x ./upx
 RUN go mod download
