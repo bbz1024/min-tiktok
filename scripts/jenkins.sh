@@ -11,14 +11,15 @@ echo "build app . . ."
 
 # collect conf
 echo "collect conf . . ."
-bash ./collect-etc.sh
-cp ./k8s/nginx.conf /data/etc/nginx.conf
+bash ./scripts/collect-etc.sh
+# nginx conf
+cp ./conf/nginx-k8s.conf /data/etc/nginx-k8s.conf
 echo "collect conf done"
 # scp
 echo "scp ..."
 #ping -c 1 node2 || exit 1
-scp -r /data/etc/* root@node1:/data/etc/ || { echo "Failed to scp files"; exit 1; }
-#scp -r /data/etc root@node2:/data/etc || { echo "Failed to scp files"; exit 1; } # 无限循环
+scp -r /data/etc/* root@node1:/data/etc || { echo "Failed to scp files"; exit 1; }
+scp -r /data/etc/* root@node2:/data/etc || { echo "Failed to scp files"; exit 1; }
 echo "scp done ..."
 
 # k8s

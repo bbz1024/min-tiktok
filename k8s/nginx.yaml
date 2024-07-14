@@ -22,7 +22,7 @@ spec:
       volumes:
         - name: nginx-conf
           hostPath:
-            path: /data/etc/nginx.conf
+            path: /data/etc/nginx-k8s.conf
             type: File
         - name: nginx-logs
           hostPath:
