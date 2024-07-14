@@ -2,29 +2,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: message-service
+  name: auths-service
   namespace: tiktok
   labels:
-    app: message-service
+    app: auths-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: message-service
+      app: auths-service
   template:
     metadata:
-      name: message-service
+      name: auths-service
       labels:
-        app: message-service
+        app: auths-service
     spec:
       containers:
-        - name: message-service
+        - name: auths-service
           image: min-tiktok
           imagePullPolicy: Never
           command:
-            - ./services/MessageService
+            - ./services/AuthsService
           ports:
-            - containerPort: 10008
+            - containerPort: 10000
               protocol: TCP
           volumeMounts:
             - name: project-etc-volume
@@ -35,7 +35,7 @@ spec:
         - name: project-etc-volume
           hostPath:
             path: /data/etc
-            #            不存在就创建
+#            不存在就创建
             type: DirectoryOrCreate
         - name: project-logs-volume
           hostPath:
@@ -46,46 +46,44 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: message-service
+  name: auths-service
   namespace: tiktok
 spec:
   selector:
-    app: message-service
+    app: auths-service
   ports:
-    - name: service-10008
-      port: 10008
-      targetPort: 10008
+    - name: service-10000
+      port: 10000
+      targetPort: 10000
       protocol: TCP
   type: ClusterIP
-
-
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: message-api
+  name: auths-api
   namespace: tiktok
   labels:
-    app: message-api
+    app: auths-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: message-api
+      app: auths-api
   template:
     metadata:
-      name: message-api
+      name: auths-api
       labels:
-        app: message-api
+        app: auths-api
     spec:
       containers:
-        - name: message-api
+        - name: auths-api
           image: min-tiktok
           imagePullPolicy: Never
           command:
-            - ./apis/MessageApi
+            - ./apis/AuthsApi
           ports:
-            - containerPort: 8896
+            - containerPort: 8888
               protocol: TCP
           volumeMounts:
             - name: project-etc-volume
@@ -106,14 +104,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: message-api
+  name: auths-api
   namespace: tiktok
 spec:
   selector:
-    app: message-api
+    app: auths-api
   ports:
-    - name: api-8896
-      port: 8896
-      targetPort: 8896
+    - name: api-8888
+      port: 8888
+      targetPort: 8888
       protocol: TCP
   type: ClusterIP

@@ -2,29 +2,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: message-service
+  name: user-service
   namespace: tiktok
   labels:
-    app: message-service
+    app: user-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: message-service
+      app: user-service
   template:
     metadata:
-      name: message-service
+      name: user-service
       labels:
-        app: message-service
+        app: user-service
     spec:
       containers:
-        - name: message-service
+        - name: user-service
           image: min-tiktok
           imagePullPolicy: Never
           command:
-            - ./services/MessageService
+            - ./services/UserService
           ports:
-            - containerPort: 10008
+            - containerPort: 10001
               protocol: TCP
           volumeMounts:
             - name: project-etc-volume
@@ -35,7 +35,6 @@ spec:
         - name: project-etc-volume
           hostPath:
             path: /data/etc
-            #            不存在就创建
             type: DirectoryOrCreate
         - name: project-logs-volume
           hostPath:
@@ -46,52 +45,51 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: message-service
+  name: user-service
   namespace: tiktok
 spec:
   selector:
-    app: message-service
+    app: user-service
   ports:
-    - name: service-10008
-      port: 10008
-      targetPort: 10008
+    -
+      port: 10001
+      targetPort: 10001
       protocol: TCP
   type: ClusterIP
-
-
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: message-api
+  name: user-api
   namespace: tiktok
   labels:
-    app: message-api
+    app: user-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: message-api
+      app: user-api
   template:
     metadata:
-      name: message-api
+      name: user-api
       labels:
-        app: message-api
+        app: user-api
     spec:
       containers:
-        - name: message-api
+        - name: user-api
           image: min-tiktok
           imagePullPolicy: Never
           command:
-            - ./apis/MessageApi
+            - ./apis/UserApi
           ports:
-            - containerPort: 8896
+            - containerPort: 8889
               protocol: TCP
           volumeMounts:
             - name: project-etc-volume
               mountPath: /project/etc
             - name: project-logs-volume
               mountPath: /project/logs
+
       volumes:
         - name: project-etc-volume
           hostPath:
@@ -106,14 +104,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: message-api
+  name: user-api
   namespace: tiktok
 spec:
   selector:
-    app: message-api
+    app: user-api
   ports:
-    - name: api-8896
-      port: 8896
-      targetPort: 8896
+    - name: api-8889
+      port: 8889
+      targetPort: 8889
       protocol: TCP
   type: ClusterIP

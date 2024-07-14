@@ -22,7 +22,7 @@ spec:
       volumes:
         - name: nginx-conf
           hostPath:
-            path: /project/min-tiktok/k8s/nginx.conf
+            path: /data/nginx.conf
             type: File
         - name: nginx-logs
           hostPath:
@@ -43,8 +43,6 @@ spec:
             - /etc/nginx/nginx.conf
             - -g
             - daemon off;
-
-
       restartPolicy: Always
 ---
 apiVersion: v1
