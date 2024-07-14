@@ -22,8 +22,8 @@ scp -r /data/etc/* root@node1:/data/etc || { echo "Failed to scp files"; exit 1;
 scp -r /data/etc/* root@node2:/data/etc || { echo "Failed to scp files"; exit 1; }
 mkdir -p /project/min-tiktok/k8s
 cp ./k8s/* /project/min-tiktok/k8s
-scp -r ./k8s/* root@node1:/project/min-tiktok/k8s
-scp -r ./k8s/* root@node2:/project/min-tiktok/k8s
+scp -r /project/min-tiktok/k8s root@node1:/ || { echo "Failed to scp files"; exit 1; }
+scp -r /project/min-tiktok/k8s root@node2:/ || { echo "Failed to scp files"; exit 1; }
 echo "scp done ..."
 
 # k8s
