@@ -13,18 +13,15 @@
 
  Date: 25/07/2024 15:39:44
 */
+
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
--- 创建一个单独的用户
-CREATE USER IF NOT EXISTS 'lzb200244'@'%' IDENTIFIED BY 'lzb200244';
-GRANT ALL PRIVILEGES ON *.* TO 'lzb200244'@'%';
--- 创建数据库
 CREATE DATABASE IF NOT EXISTS tiktok CHARACTER SET utf8mb4;
-CREATE DATABASE IF NOT EXISTS gorse CHARACTER SET utf8mb4;
-
+USE `tiktok`;
 -- ----------------------------
 -- Table structure for comment
 -- ----------------------------
+
 DROP TABLE IF EXISTS `comment`;
 CREATE TABLE `comment`
 (
@@ -1998,4 +1995,3 @@ VALUES (103, 103,
         '南宁旅游 | 云顶观光 | 城市风景 | 美食体验 | 浪漫晚餐 ', '2024-07-14 14:10:20', '2024-07-14 14:10:20');
 
 SET FOREIGN_KEY_CHECKS = 1;
-
