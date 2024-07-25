@@ -17,12 +17,27 @@ type (
 		withSession(session sqlx.Session) UsersModel
 		GetNamesCtx(crx context.Context) ([]string, error)
 		GetAllUserId(ctx context.Context) ([]string, error)
+		GetAllUser(ctx context.Context) ([]*Users, error)
 	}
 
 	customUsersModel struct {
 		*defaultUsersModel
 	}
 )
+
+func (m *customUsersModel) GetAllUser(ctx context.Context) ([]*Users, error) {
+	var resp []*Users
+	query := fmt.Sprintf("select %s from %s ", usersRows, m.table)
+	err := m.conn.QueryRowsCtx(ctx, &resp, query)
+	switch {
+	case err == nil:
+		return resp, nil
+	case errors.Is(err, sqlx.ErrNotFound):
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
 
 func (m *customUsersModel) GetAllUserId(ctx context.Context) ([]string, error) {
 	var resp []string

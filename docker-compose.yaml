@@ -16,28 +16,6 @@ services:
       retries: 3
     networks:
       - Tiktok
-  jaeger:
-    image: jaegertracing/all-in-one
-    environment:
-      - COLLECTOR_OTLP_ENABLED=true
-    ports:
-      - "5775:5775/udp"
-      - "6831:6831/udp"
-      - "6832:6832/udp"
-      - "5778:5778"
-      - "16686:16686"
-      - "14250:14250"
-      - "14268:14268"
-      - "14269:14269"
-      - "9411:9411"
-    healthcheck:
-      test: [ "CMD-SHELL", "wget --spider -q http://localhost:16686/search || exit 1" ]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-    networks:
-      - Tiktok
-    restart: unless-stopped
   redis:
     image: redis:6-alpine
     volumes:
@@ -97,6 +75,28 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  jaeger:
+    image: jaegertracing/all-in-one
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "16686:16686"
+      - "14250:14250"
+      - "14268:14268"
+      - "14269:14269"
+      - "9411:9411"
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --spider -q http://localhost:16686/search || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - Tiktok
+    restart: unless-stopped
   gorse:
     image: zhenghaoz/gorse-in-one
     restart: unless-stopped
@@ -115,8 +115,8 @@ services:
         condition: service_healthy
       mysql:
         condition: service_healthy
-
     networks:
       Tiktok:
 networks:
   Tiktok:
+
