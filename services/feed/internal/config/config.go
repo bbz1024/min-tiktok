@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/zeromicro/go-zero/core/stores/redis"
+	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/zrpc"
 	"github.com/zeromicro/zero-contrib/zrpc/registry/consul"
 	"min-tiktok/common/config"
@@ -9,10 +9,9 @@ import (
 
 type Config struct {
 	zrpc.RpcServerConf
-	Consul      consul.Conf
-	MySQL       config.MysqlStructure
-	UserRpc     zrpc.RpcClientConf
-	FeedBackRpc zrpc.RpcClientConf
-	RedisConf   redis.RedisConf
-	RabbitMQ    config.RabbitMQStructure
+	Consul               consul.Conf
+	MySQL                config.MysqlStructure
+	UserRpc, FeedBackRpc zrpc.RpcClientConf
+	CacheConf            cache.CacheConf
+	RabbitMQ             config.RabbitMQStructure
 }

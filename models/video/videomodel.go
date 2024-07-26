@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"strings"
 	"time"
@@ -11,16 +12,16 @@ import (
 
 var _ VideoModel = (*customVideoModel)(nil)
 
+const Count = 5
+
 type (
 	// VideoModel is an interface to be customized, add more methods here,
 	// and implement the added methods in customVideoModel.
 	VideoModel interface {
 		videoModel
-		withSession(session sqlx.Session) VideoModel
-		ListVideoByCreateTime(ctx context.Context, createTime time.Time) ([]*Video, error)
-		ListVideoByUserId(ctx context.Context, userId int64) ([]*Video, error)
-		ListVideoByVideoSet(ctx context.Context, videoSet []string) ([]*Video, error)
-		GetVideoIds(ctx context.Context) ([]uint32, error)
+		ListVideoByVideoSet(ctx context.Context, ids []string) ([]*Video, error)
+		ListVideoByUserId(ctx context.Context, i int64) ([]*Video, error)
+		ListVideoByCreateTime(ctx context.Context, time time.Time) ([]*Video, error)
 	}
 
 	customVideoModel struct {
@@ -28,21 +29,36 @@ type (
 	}
 )
 
-func (m *customVideoModel) GetVideoIds(ctx context.Context) ([]uint32, error) {
-	query := fmt.Sprintf("SELECT `id` FROM %s", m.table)
-	var videoIds []uint32
-	err := m.conn.QueryRowsCtx(ctx, &videoIds, query)
+func (c customVideoModel) ListVideoByCreateTime(ctx context.Context, createTime time.Time) ([]*Video, error) {
+	query := fmt.Sprintf("select %s from %s where `created_at` < ? order by `created_at` desc limit ? ", videoRows, c.table)
+	var resp []*Video
+
+	err := c.CachedConn.QueryRowsNoCacheCtx(ctx, &resp, query, createTime, Count)
 	switch {
 	case err == nil:
-		return videoIds, nil
+		return resp, nil
 	case errors.Is(err, sqlx.ErrNotFound):
-		return videoIds, nil
+		return resp, nil
 	default:
 		return nil, err
 	}
 }
 
-func (m *customVideoModel) ListVideoByVideoSet(ctx context.Context, videoSet []string) ([]*Video, error) {
+func (c customVideoModel) ListVideoByUserId(ctx context.Context, userId int64) ([]*Video, error) {
+	query := fmt.Sprintf("select %s from %s where `userid` = ? ", videoRows, c.table)
+	var resp []*Video
+	err := c.CachedConn.QueryRowsNoCacheCtx(ctx, &resp, query, userId)
+	switch {
+	case err == nil:
+		return resp, nil
+	case errors.Is(err, sqlx.ErrNotFound):
+		return resp, nil
+	default:
+		return nil, err
+	}
+}
+
+func (c customVideoModel) ListVideoByVideoSet(ctx context.Context, videoSet []string) ([]*Video, error) {
 	// 构建视频ID IN 查询的条件字符串，例如 "video_id IN ('id1', 'id2', ...)"
 	var videoIdsPlaceholder strings.Builder
 	if len(videoSet) == 0 {
@@ -55,10 +71,10 @@ func (m *customVideoModel) ListVideoByVideoSet(ctx context.Context, videoSet []s
 		videoIdsPlaceholder.WriteString(id)
 	}
 
-	query := fmt.Sprintf("SELECT %s FROM %s WHERE `id` IN (%s)", videoRows, m.table, videoIdsPlaceholder.String())
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE `id` IN (%s)", videoRows, c.table, videoIdsPlaceholder.String())
 
 	var videos []*Video
-	err := m.conn.QueryRowsCtx(ctx, &videos, query)
+	err := c.CachedConn.QueryRowsNoCacheCtx(ctx, &videos, query)
 	switch {
 	case err == nil:
 		return videos, nil
@@ -68,44 +84,10 @@ func (m *customVideoModel) ListVideoByVideoSet(ctx context.Context, videoSet []s
 		return nil, err
 	}
 }
-func (m *customVideoModel) ListVideoByUserId(ctx context.Context, userId int64) ([]*Video, error) {
-	query := fmt.Sprintf("select %s from %s where `userid` = ? ", videoRows, m.table)
-	var resp []*Video
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, userId)
-	switch {
-	case err == nil:
-		return resp, nil
-	case errors.Is(err, sqlx.ErrNotFound):
-		return resp, nil
-	default:
-		return nil, err
-	}
-}
-
-const Count = 5
-
-func (m *customVideoModel) ListVideoByCreateTime(ctx context.Context, createTime time.Time) ([]*Video, error) {
-	query := fmt.Sprintf("select %s from %s where `created_at` < ? order by `created_at` desc limit ? ", videoRows, m.table)
-	var resp []*Video
-
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, createTime, Count)
-	switch {
-	case err == nil:
-		return resp, nil
-	case errors.Is(err, sqlx.ErrNotFound):
-		return resp, nil
-	default:
-		return nil, err
-	}
-}
 
 // NewVideoModel returns a model for the database table.
-func NewVideoModel(conn sqlx.SqlConn) VideoModel {
+func NewVideoModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) VideoModel {
 	return &customVideoModel{
-		defaultVideoModel: newVideoModel(conn),
+		defaultVideoModel: newVideoModel(conn, c, opts...),
 	}
-}
-
-func (m *customVideoModel) withSession(session sqlx.Session) VideoModel {
-	return NewVideoModel(sqlx.NewSqlConnFromSession(session))
 }

@@ -23,8 +23,8 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	mysqlConn := sqlx.NewMysql(c.MySQL.DataSource)
 	mysqlConn2 := sqlx.NewMysql(c.MySQL.DataSource)
 	videoInfoModel := videoInfo.NewVideoinfoModel(mysqlConn)
-	videoModel := video.NewVideoModel(mysqlConn2)
-	rdb, err := redis.NewRedis(c.RedisConf)
+	videoModel := video.NewVideoModel(mysqlConn2, c.CacheConf)
+	rdb, err := redis.NewRedis(c.CacheConf[0].RedisConf)
 	if err != nil {
 		panic(err)
 	}

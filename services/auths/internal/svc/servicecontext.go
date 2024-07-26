@@ -17,13 +17,13 @@ type ServiceContext struct {
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	mysqlConn := sqlx.NewMysql(c.MySQL.DataSource)
-	rdb, err := redis.NewRedis(c.RedisConf)
+	rdb, err := redis.NewRedis(c.CacheConf[0].RedisConf)
 	if err != nil {
 		panic(err)
 	}
 	return &ServiceContext{
 		Config:      c,
-		UserModel:   user.NewUsersModel(mysqlConn),
+		UserModel:   user.NewUsersModel(mysqlConn, c.CacheConf),
 		Rdb:         rdb,
 		GorseClient: client.NewGorseClient(c.Gorse.GorseAddr, c.Gorse.GorseApikey),
 	}

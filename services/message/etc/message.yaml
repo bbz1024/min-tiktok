@@ -15,14 +15,9 @@ Telemetry:
   Sampler: 1.0
 Mysql:
   DataSource: lzb200244:lzb200244@tcp(192.168.241.128:3306)/tiktok?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
-# Redis配置
-RedisConf:
-  Host: 192.168.241.128:6379
-  Type: node
-  Pass: lzb200244
-  Tls: false
+
 DevServer:
-  Port: 20002
+  Port: 20008
 Log:
   ServiceName: "message-rpc"
   Mode: 'console'

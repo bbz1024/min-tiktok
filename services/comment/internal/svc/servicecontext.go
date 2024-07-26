@@ -19,7 +19,7 @@ type ServiceContext struct {
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	rdb, err := redis.NewRedis(c.RedisConf)
+	rdb, err := redis.NewRedis(c.CacheConf[0].RedisConf)
 	mysqlConn := sqlx.NewMysql(c.MySQL.DataSource)
 
 	if err != nil {

@@ -2,8 +2,8 @@ package user
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
 
@@ -14,10 +14,8 @@ type (
 	// and implement the added methods in customUsersModel.
 	UsersModel interface {
 		usersModel
-		withSession(session sqlx.Session) UsersModel
-		GetNamesCtx(crx context.Context) ([]string, error)
-		GetAllUserId(ctx context.Context) ([]string, error)
-		GetAllUser(ctx context.Context) ([]*Users, error)
+		QueryAllUsername(ctx context.Context) ([]string, error)
+		QueryAllUserID(ctx context.Context) ([]string, error)
 	}
 
 	customUsersModel struct {
@@ -25,60 +23,27 @@ type (
 	}
 )
 
-func (m *customUsersModel) GetAllUser(ctx context.Context) ([]*Users, error) {
-	var resp []*Users
-	query := fmt.Sprintf("select %s from %s ", usersRows, m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query)
-	switch {
-	case err == nil:
-		return resp, nil
-	case errors.Is(err, sqlx.ErrNotFound):
-		return nil, ErrNotFound
-	default:
+func (c customUsersModel) QueryAllUserID(ctx context.Context) ([]string, error) {
+	var res []string
+	query := fmt.Sprintf("select id from %s", c.table)
+	if err := c.CachedConn.QueryRowsNoCacheCtx(ctx, &res, query); err != nil {
 		return nil, err
 	}
+	return res, nil
 }
 
-func (m *customUsersModel) GetAllUserId(ctx context.Context) ([]string, error) {
-	var resp []string
-	query := fmt.Sprintf("select id from %s ", m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query)
-	switch {
-	case err == nil:
-		return resp, nil
-	case errors.Is(err, sqlx.ErrNotFound):
-		return nil, ErrNotFound
-	default:
+func (c customUsersModel) QueryAllUsername(ctx context.Context) ([]string, error) {
+	var res []string
+	query := fmt.Sprintf("select username from %s", c.table)
+	if err := c.CachedConn.QueryRowsNoCacheCtx(ctx, &res, query); err != nil {
 		return nil, err
 	}
-}
-
-func (m *customUsersModel) GetNamesCtx(ctx context.Context) ([]string, error) {
-	var resp []*Users
-	query := fmt.Sprintf("select %s from %s ", usersRows, m.table)
-	err := m.conn.QueryRowsCtx(ctx, &resp, query)
-
-	switch {
-	case err == nil:
-		names := make([]string, 0, len(resp))
-		for _, user := range resp {
-			names = append(names, user.Username)
-		}
-		return names, nil
-	case errors.Is(err, sqlx.ErrNotFound):
-		return nil, ErrNotFound
-	default:
-		return nil, err
-	}
+	return res, nil
 }
 
 // NewUsersModel returns a model for the database table.
-func NewUsersModel(conn sqlx.SqlConn) UsersModel {
+func NewUsersModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) UsersModel {
 	return &customUsersModel{
-		defaultUsersModel: newUsersModel(conn),
+		defaultUsersModel: newUsersModel(conn, c, opts...),
 	}
-}
-
-func (m *customUsersModel) withSession(session sqlx.Session) UsersModel {
-	return NewUsersModel(sqlx.NewSqlConnFromSession(session))
 }

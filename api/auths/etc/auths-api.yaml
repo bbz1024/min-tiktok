@@ -7,8 +7,10 @@ Consul:
   Host: 192.168.241.128:8500
   Key: auths.rpc
 
-
-
+CacheConf:
+  - NodeConf:
+    Host: 192.168.241.128:6379
+    Pass: lzb200244
 #  trace
 Telemetry:
   Name: auths.api

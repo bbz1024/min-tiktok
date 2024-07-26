@@ -19,8 +19,8 @@ type ServiceContext struct {
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	mysqlConn := sqlx.NewMysql(c.MySQL.DataSource)
-	userModel := user.NewUsersModel(mysqlConn)
-	rdb, err := redis.NewRedis(c.RedisConf)
+	userModel := user.NewUsersModel(mysqlConn, c.CacheConf)
+	rdb, err := redis.NewRedis(c.CacheConf[0].RedisConf)
 	if err != nil {
 		panic(err)
 	}
@@ -28,7 +28,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	estimates := bloom.NewWithEstimates(10000, 0.01)
 	// put user_id into bloom filter
 	//userModel
-	ids, err := userModel.GetAllUserId(context.TODO())
+	ids, err := userModel.QueryAllUserID(context.TODO())
 	for _, id := range ids {
 		estimates.AddString(id)
 	}

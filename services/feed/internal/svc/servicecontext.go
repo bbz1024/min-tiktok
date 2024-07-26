@@ -4,7 +4,6 @@ import (
 	"github.com/zeromicro/go-zero/core/stores/redis"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"github.com/zeromicro/go-zero/zrpc"
-	"min-tiktok/models/user"
 	"min-tiktok/models/video"
 	"min-tiktok/services/feed/internal/config"
 	"min-tiktok/services/feedback/feedbackclient"
@@ -14,7 +13,6 @@ import (
 type ServiceContext struct {
 	Config      config.Config
 	Rdb         *redis.Redis
-	UserModel   user.UsersModel
 	VideoModel  video.VideoModel
 	UserRpc     userclient.User
 	FeedBackRpc feedbackclient.Feedback
@@ -22,15 +20,14 @@ type ServiceContext struct {
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	mysqlConn := sqlx.NewMysql(c.MySQL.DataSource)
-	rdb, err := redis.NewRedis(c.RedisConf)
+	rdb, err := redis.NewRedis(c.CacheConf[0].RedisConf)
 
 	if err != nil {
 		panic(err)
 	}
 	return &ServiceContext{
 		Config:      c,
-		UserModel:   user.NewUsersModel(mysqlConn),
-		VideoModel:  video.NewVideoModel(mysqlConn),
+		VideoModel:  video.NewVideoModel(mysqlConn, c.CacheConf),
 		UserRpc:     userclient.NewUser(zrpc.MustNewClient(c.UserRpc)),
 		Rdb:         rdb,
 		FeedBackRpc: feedbackclient.NewFeedback(zrpc.MustNewClient(c.FeedBackRpc)),

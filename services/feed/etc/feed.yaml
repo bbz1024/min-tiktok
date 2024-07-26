@@ -8,7 +8,6 @@ Consul:
   Tag:
     - tag
     - rpc
-
 Telemetry:
   Name: feed.rpc
   Endpoint: http://192.168.241.128:14268/api/traces
@@ -16,16 +15,10 @@ Telemetry:
   Sampler: 1.0
 Mysql:
   DataSource: lzb200244:lzb200244@tcp(192.168.241.128:3306)/tiktok?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
-CacheRedis:
-  - Host: 192.168.241.128:6379
-    Type: node
+CacheConf:
+  - NodeConf:
+    Host: 192.168.241.128:6379
     Pass: lzb200244
-# Redis配置
-RedisConf:
-  Host: 192.168.241.128:6379
-  Type: node
-  Pass: lzb200244
-  Tls: false
 DevServer:
   Port: 20002
 Log:

@@ -14,7 +14,7 @@ type ServiceContext struct {
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	rdb, err := redis.NewRedis(c.RedisConf)
+	rdb, err := redis.NewRedis(c.CacheConf[0].RedisConf)
 	if err != nil {
 		panic(err)
 	}

@@ -7,14 +7,13 @@ import (
 )
 
 type ServiceContext struct {
-	Config config.Config
-
+	Config    config.Config
 	Recommend *client.GorseClient
 	Rdb       *redis.Redis
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	rdb, err := redis.NewRedis(c.RedisConf)
+	rdb, err := redis.NewRedis(c.CacheConf[0].RedisConf)
 	if err != nil {
 		panic(err)
 	}

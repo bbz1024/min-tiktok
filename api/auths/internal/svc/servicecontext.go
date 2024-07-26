@@ -23,10 +23,11 @@ type ServiceContext struct {
 func NewServiceContext(c config.Config) *ServiceContext {
 
 	mysqlConn := sqlx.NewMysql(c.MySQL.DataSource)
-	userModel := user.NewUsersModel(mysqlConn)
+	userModel := user.NewUsersModel(mysqlConn, c.CacheConf)
+
 	userFilter := bloom.NewWithEstimates(100000, 0.01)
 	//  push user id to bloom filter
-	names, err := userModel.GetNamesCtx(context.TODO())
+	names, err := userModel.QueryAllUsername(context.TODO())
 	if err != nil {
 		panic(err)
 	}

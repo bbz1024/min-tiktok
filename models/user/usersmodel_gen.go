@@ -10,6 +10,8 @@ import (
 	"time"
 
 	"github.com/zeromicro/go-zero/core/stores/builder"
+	"github.com/zeromicro/go-zero/core/stores/cache"
+	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"github.com/zeromicro/go-zero/core/stringx"
 )
@@ -19,6 +21,9 @@ var (
 	usersRows                = strings.Join(usersFieldNames, ",")
 	usersRowsExpectAutoSet   = strings.Join(stringx.Remove(usersFieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), ",")
 	usersRowsWithPlaceHolder = strings.Join(stringx.Remove(usersFieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), "=?,") + "=?"
+
+	cacheUsersIdPrefix       = "cache:users:id:"
+	cacheUsersUsernamePrefix = "cache:users:username:"
 )
 
 type (
@@ -31,7 +36,7 @@ type (
 	}
 
 	defaultUsersModel struct {
-		conn  sqlx.SqlConn
+		sqlc.CachedConn
 		table string
 	}
 
@@ -47,27 +52,39 @@ type (
 	}
 )
 
-func newUsersModel(conn sqlx.SqlConn) *defaultUsersModel {
+func newUsersModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) *defaultUsersModel {
 	return &defaultUsersModel{
-		conn:  conn,
-		table: "`users`",
+		CachedConn: sqlc.NewConn(conn, c, opts...),
+		table:      "`users`",
 	}
 }
 
 func (m *defaultUsersModel) Delete(ctx context.Context, id uint64) error {
-	query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
-	_, err := m.conn.ExecCtx(ctx, query, id)
+	data, err := m.FindOne(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	usersIdKey := fmt.Sprintf("%s%v", cacheUsersIdPrefix, id)
+	usersUsernameKey := fmt.Sprintf("%s%v", cacheUsersUsernamePrefix, data.Username)
+	_, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
+		return conn.ExecCtx(ctx, query, id)
+	}, usersIdKey, usersUsernameKey)
 	return err
 }
 
 func (m *defaultUsersModel) FindOne(ctx context.Context, id uint64) (*Users, error) {
-	query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", usersRows, m.table)
+	usersIdKey := fmt.Sprintf("%s%v", cacheUsersIdPrefix, id)
 	var resp Users
-	err := m.conn.QueryRowCtx(ctx, &resp, query, id)
+	err := m.QueryRowCtx(ctx, &resp, usersIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
+		query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", usersRows, m.table)
+		return conn.QueryRowCtx(ctx, v, query, id)
+	})
 	switch err {
 	case nil:
 		return &resp, nil
-	case sqlx.ErrNotFound:
+	case sqlc.ErrNotFound:
 		return nil, ErrNotFound
 	default:
 		return nil, err
@@ -75,13 +92,19 @@ func (m *defaultUsersModel) FindOne(ctx context.Context, id uint64) (*Users, err
 }
 
 func (m *defaultUsersModel) FindOneByUsername(ctx context.Context, username string) (*Users, error) {
+	usersUsernameKey := fmt.Sprintf("%s%v", cacheUsersUsernamePrefix, username)
 	var resp Users
-	query := fmt.Sprintf("select %s from %s where `username` = ? limit 1", usersRows, m.table)
-	err := m.conn.QueryRowCtx(ctx, &resp, query, username)
+	err := m.QueryRowIndexCtx(ctx, &resp, usersUsernameKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v any) (i any, e error) {
+		query := fmt.Sprintf("select %s from %s where `username` = ? limit 1", usersRows, m.table)
+		if err := conn.QueryRowCtx(ctx, &resp, query, username); err != nil {
+			return nil, err
+		}
+		return resp.Id, nil
+	}, m.queryPrimary)
 	switch err {
 	case nil:
 		return &resp, nil
-	case sqlx.ErrNotFound:
+	case sqlc.ErrNotFound:
 		return nil, ErrNotFound
 	default:
 		return nil, err
@@ -89,15 +112,37 @@ func (m *defaultUsersModel) FindOneByUsername(ctx context.Context, username stri
 }
 
 func (m *defaultUsersModel) Insert(ctx context.Context, data *Users) (sql.Result, error) {
-	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?)", m.table, usersRowsExpectAutoSet)
-	ret, err := m.conn.ExecCtx(ctx, query, data.Username, data.Password, data.Avatar, data.Backgroundimage, data.Signature, data.Createdat, data.Updatedat)
+	usersIdKey := fmt.Sprintf("%s%v", cacheUsersIdPrefix, data.Id)
+	usersUsernameKey := fmt.Sprintf("%s%v", cacheUsersUsernamePrefix, data.Username)
+	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?)", m.table, usersRowsExpectAutoSet)
+		return conn.ExecCtx(ctx, query, data.Username, data.Password, data.Avatar, data.Backgroundimage, data.Signature, data.Createdat, data.Updatedat)
+	}, usersIdKey, usersUsernameKey)
 	return ret, err
 }
 
 func (m *defaultUsersModel) Update(ctx context.Context, newData *Users) error {
-	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, usersRowsWithPlaceHolder)
-	_, err := m.conn.ExecCtx(ctx, query, newData.Username, newData.Password, newData.Avatar, newData.Backgroundimage, newData.Signature, newData.Createdat, newData.Updatedat, newData.Id)
+	data, err := m.FindOne(ctx, newData.Id)
+	if err != nil {
+		return err
+	}
+
+	usersIdKey := fmt.Sprintf("%s%v", cacheUsersIdPrefix, data.Id)
+	usersUsernameKey := fmt.Sprintf("%s%v", cacheUsersUsernamePrefix, data.Username)
+	_, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, usersRowsWithPlaceHolder)
+		return conn.ExecCtx(ctx, query, newData.Username, newData.Password, newData.Avatar, newData.Backgroundimage, newData.Signature, newData.Createdat, newData.Updatedat, newData.Id)
+	}, usersIdKey, usersUsernameKey)
 	return err
+}
+
+func (m *defaultUsersModel) formatPrimary(primary any) string {
+	return fmt.Sprintf("%s%v", cacheUsersIdPrefix, primary)
+}
+
+func (m *defaultUsersModel) queryPrimary(ctx context.Context, conn sqlx.SqlConn, v, primary any) error {
+	query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", usersRows, m.table)
+	return conn.QueryRowCtx(ctx, v, query, primary)
 }
 
 func (m *defaultUsersModel) tableName() string {

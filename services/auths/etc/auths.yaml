@@ -22,11 +22,10 @@ CacheRedis:
     Type: node
     Pass: lzb200244
 # Redis配置
-RedisConf:
-  Host: 192.168.241.128:6379
-  Type: node
-  Pass: lzb200244
-  Tls: false
+CacheConf:
+  - NodeConf:
+    Host: 192.168.241.128:6379
+    Pass: lzb200244
 # 健康检查和指标收集
 DevServer:
   Port: 20000
