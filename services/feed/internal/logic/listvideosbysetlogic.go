@@ -29,7 +29,6 @@ func (l *ListVideosBySetLogic) ListVideosBySet(in *feed.ListVideosBySetRequest) 
 		l.Errorw("query video by video set failed", logx.Field("err", err))
 		return nil, err
 	}
-
 	videos, err := FetchVideoDetails(l.ctx, videoList, in.ActorId, l.svcCtx.UserRpc, l.svcCtx.Rdb)
 	if err != nil {
 		l.Errorw("fetch video details failed", logx.Field("err", err))

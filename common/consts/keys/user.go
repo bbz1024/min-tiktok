@@ -19,4 +19,7 @@ const (
 	UserFollow    = "user_follow:%d"
 	UserFollower  = "user_follower:%d"
 	UserFriendKey = "user_friend:%d"
+
+	// -------------------- local cache --------------------
+	UserLocalCacheKey = "user_local_cache:%d"
 )

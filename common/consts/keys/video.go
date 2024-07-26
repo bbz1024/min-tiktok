@@ -5,4 +5,6 @@ const (
 	VideoAuthorID      = "author_id"
 	VideoCommentCount  = "comment_count"
 	VideoFavoriteCount = "favorite_count"
+
+	VideoLocalCacheKey = "video_local_cache:%d"
 )

@@ -20,15 +20,14 @@ type ServiceContext struct {
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	rdb, err := redis.NewRedis(c.CacheConf[0].RedisConf)
-	mysqlConn := sqlx.NewMysql(c.MySQL.DataSource)
-
 	if err != nil {
 		panic(err)
 	}
+
 	return &ServiceContext{
 		Config:       c,
 		Rdb:          rdb,
-		CommentModel: comment.NewCommentModel(mysqlConn),
+		CommentModel: comment.NewCommentModel(sqlx.NewMysql(c.MySQL.DataSource)),
 		UserRpc:      userclient.NewUser(zrpc.MustNewClient(c.UserRpc)),
 		FeedbackRpc:  feedbackclient.NewFeedback(zrpc.MustNewClient(c.FeedBackRpc)),
 	}

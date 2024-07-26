@@ -36,18 +36,24 @@ func (l *GetUserInfoLogic) GetUserInfo(in *user.UserRequest) (*user.UserResponse
 		StatusCode: code.OK,
 		StatusMsg:  code.OkMsg,
 	}
+	localKey := fmt.Sprintf(keys.UserLocalCacheKey, in.UserId)
+	// get from cache / mysql
 	var userInfo = new(user.UserInfo)
 	err := mr.Finish(func() error {
-		// from db
-		userinfo, err := l.svcCtx.UserModel.FindOne(l.ctx, uint64(in.UserId))
+		localUserInfo, err := l.svcCtx.LocalCache.Take(localKey, func() (any, error) {
+			// from cache or db
+			l.Infow("get user info from cache", logx.Field("userId", in.UserId))
+			return l.svcCtx.UserModel.FindOne(l.ctx, uint64(in.UserId))
+		})
 		if err != nil {
 			return err
 		}
-		userInfo.Id = uint32(userinfo.Id)
-		userInfo.Name = userinfo.Username
-		userInfo.Avatar = userinfo.Avatar.String
-		userInfo.BackgroundImage = userinfo.Backgroundimage.String
-		userInfo.Signature = userinfo.Signature.String
+		v := localUserInfo.(*user2.Users)
+		userInfo.Id = uint32(v.Id)
+		userInfo.Name = v.Username
+		userInfo.Avatar = v.Avatar.String
+		userInfo.BackgroundImage = v.Backgroundimage.String
+		userInfo.Signature = v.Signature.String
 		return nil
 
 	}, func() error {
@@ -85,7 +91,6 @@ func (l *GetUserInfoLogic) GetUserInfo(in *user.UserRequest) (*user.UserResponse
 		}
 		return nil
 	})
-	res.User = userInfo
 	// exist error
 	if err != nil {
 		if errors.Is(err, user2.ErrNotFound) {
@@ -96,5 +101,6 @@ func (l *GetUserInfoLogic) GetUserInfo(in *user.UserRequest) (*user.UserResponse
 		logx.Errorw("get user info error", logx.Field("err", err))
 		return nil, err
 	}
+	res.User = userInfo
 	return res, nil
 }
