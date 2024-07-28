@@ -28,8 +28,10 @@ import (
 var configFile = flag.String("f", "etc/user.yaml", "the config file")
 
 const (
+	// 线程池大小
 	workPoolSize = 10
-	triggerTime  = time.Hour * 24 * 7
+	// 7天
+	triggerTime = time.Hour * 24 * 7
 	// 秒，分、时、日、月、周
 	period = "*/10 * * * *"
 )

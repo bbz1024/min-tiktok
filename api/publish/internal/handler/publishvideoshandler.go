@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/core/syncx"
 	"min-tiktok/common/consts/code"
 	"min-tiktok/common/response"
 	"net/http"
@@ -12,9 +14,25 @@ import (
 )
 
 const MaxSize = 1 << 20 * 100 // 100M
+const MaxLimit = 10
+
+var limiter = syncx.NewLimit(MaxLimit)
 
 func PublishVideosHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+
 	return func(w http.ResponseWriter, r *http.Request) {
+		if !limiter.TryBorrow() {
+			logx.Infow("limit trigger")
+			httpx.OkJsonCtx(r.Context(), w, response.NewResponse(code.TooManyRequestCode, code.TooManyRequestMsg))
+			return
+		}
+		defer func() {
+			if err := limiter.Return(); err != nil {
+				httpx.OkJsonCtx(r.Context(), w, response.NewResponse(code.TooManyRequestCode, code.TooManyRequestMsg))
+				logx.Errorw("limiter return error", logx.Field("err", err))
+			}
+		}()
+
 		var req types.PublishActionReq
 		if err := httpx.ParseForm(r, &req); err != nil {
 			response.NewParamError(r.Context(), w, err)

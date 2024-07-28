@@ -14,7 +14,6 @@ var configFile = flag.String("f", "etc/publish-api.yaml", "the config file")
 
 func main() {
 	flag.Parse()
-
 	var c config.Config
 	conf.MustLoad(*configFile, &c)
 

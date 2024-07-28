@@ -32,6 +32,9 @@ const (
 	IsNotFollowCode  = 50002
 	ForbidFollowSelf = 50003
 	IsNotFriendCode  = 50004
+
+	// -------------------- 服务治理 --------------------
+	TooManyRequestCode = 60001
 )
 
 // msg
@@ -67,4 +70,8 @@ const (
 	IsNotFollowMsg      = "你未关注不可取消关注"
 	ForbidFollowSelfMsg = "不能关注自己"
 	IsNotFriendMsg      = "你与对方不是好友关系"
+
+	// -------------------- 服务治理 --------------------
+
+	TooManyRequestMsg = "请求太频繁"
 )

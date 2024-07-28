@@ -24,6 +24,7 @@ func NewPublishVideosLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Pub
 }
 
 func (l *PublishVideosLogic) PublishVideos(req *types.PublishActionReq) (resp *types.PublishActionResp, err error) {
+
 	res, err := l.svcCtx.PublishRpc.ActionVideo(l.ctx, &publish.ActionVideoReq{
 		ActorId: req.ActorId,
 		Data:    req.Data,
