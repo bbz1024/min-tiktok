@@ -12,4 +12,7 @@ type Config struct {
 	Consul    consul.Conf
 	MySQL     config.MysqlStructure
 	CacheConf cache.CacheConf
+	RabbitMQ  config.RabbitMQStructure
+	Gpt       config.GptStructure
+	Gorse     config.GorseStructure
 }

@@ -17,9 +17,11 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	if err != nil {
 		panic(err)
 	}
+
 	return &ServiceContext{
 		Config:    c,
 		Recommend: client.NewGorseClient(c.Gorse.GorseAddr, c.Gorse.GorseApikey),
 		Rdb:       rdb,
 	}
+
 }

@@ -19,6 +19,7 @@ const (
 	UserFollow    = "user_follow:%d"
 	UserFollower  = "user_follower:%d"
 	UserFriendKey = "user_friend:%d"
+	UserDeedKey   = "user_deed:%s" // zset
 
 	// -------------------- local cache --------------------
 	UserLocalCacheKey = "user_local_cache:%d"

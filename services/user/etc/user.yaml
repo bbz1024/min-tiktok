@@ -22,6 +22,18 @@ CacheConf:
   - NodeConf:
     Host: 192.168.241.128:6379
     Pass: lzb200244
+RabbitMQ:
+  Host: 192.168.241.128
+  Port: 5672
+  User: admin
+  Pass: admin
+  VHost: /
+Gpt:
+  ApiKey: 116d0a63-2b52-4bde-a625-062e1dc227df
+  ModelID: ep-20240714140201-b65wt
+Gorse:
+  GorseAddr: http://192.168.241.128:8088
+  GorseApikey: 5105502fc46a411c896aa5b50c31e951
 Log:
   ServiceName: "user-rpc"
   Mode: 'console'

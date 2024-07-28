@@ -16,12 +16,27 @@ type (
 		videoinfoModel
 		withSession(session sqlx.Session) VideoinfoModel
 		GetAll(ctx context.Context) ([]*Videoinfo, error)
+		GetVideoCategory(ctx context.Context, videoID string) (string, error)
 	}
 
 	customVideoinfoModel struct {
 		*defaultVideoinfoModel
 	}
 )
+
+func (m *customVideoinfoModel) GetVideoCategory(ctx context.Context, videoID string) (string, error) {
+	var videoCategoryStr string
+	query := fmt.Sprintf("select `keyword` from %s where videoid = ?", m.table)
+	err := m.conn.QueryRowCtx(ctx, &videoCategoryStr, query, videoID)
+	switch {
+	case err == nil:
+		return videoCategoryStr, nil
+	case errors.Is(err, sqlx.ErrNotFound):
+		return "", ErrNotFound
+	default:
+		return "", err
+	}
+}
 
 func (m *defaultVideoinfoModel) GetAll(ctx context.Context) ([]*Videoinfo, error) {
 	var videoinfo []*Videoinfo

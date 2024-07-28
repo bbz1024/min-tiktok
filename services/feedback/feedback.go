@@ -37,6 +37,7 @@ func main() {
 	if err := consul.RegisterService(c.ListenOn, c.Consul); err != nil {
 		panic(err)
 	}
+
 	// gorse
 	if err := recommend.InitGorse(ctx); err != nil {
 		panic(err)
