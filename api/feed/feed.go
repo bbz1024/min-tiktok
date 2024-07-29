@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-
 	"min-tiktok/api/feed/internal/config"
 	"min-tiktok/api/feed/internal/handler"
 	"min-tiktok/api/feed/internal/svc"

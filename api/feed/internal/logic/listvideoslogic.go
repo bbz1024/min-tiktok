@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"github.com/zeromicro/go-zero/core/breaker"
 	"min-tiktok/common/consts/code"
 	"min-tiktok/services/feed/feedclient"
 
@@ -25,30 +26,48 @@ func NewListVideosLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListVi
 	}
 }
 
+var b = breaker.NewBreaker(breaker.WithName("ListVideos"))
+
+func (l *ListVideosLogic) handleCircuitBreakerError(err error) {
+	l.Errorw("circuit breaker open", logx.Field("error", err))
+}
 func (l *ListVideosLogic) ListVideos(req *types.ListVideosReq) (resp *types.ListVideosResp, err error) {
 	var res *feedclient.ListFeedResponse
-	// not login
-	if req.ActorId == 0 {
-		res, err = l.svcCtx.FeedRpc.ListVideos(l.ctx,
-			&feedclient.ListFeedRequest{
-				LatestTime: req.LatestTime,
-			},
-		)
-	} else {
-		// recommend
-		res, err = l.svcCtx.FeedRpc.ListRecommendVideos(l.ctx,
-			&feedclient.ListRecommendRequest{
-				ActorId: req.ActorId,
-			},
-		)
-	}
-	resp = new(types.ListVideosResp)
+	err = b.DoWithAcceptable(func() error {
+		var err error
+		// not login
+		if req.ActorId == 0 {
+			res, err = l.svcCtx.FeedRpc.ListVideos(l.ctx,
+				&feedclient.ListFeedRequest{
+					LatestTime: req.LatestTime,
+				},
+			)
+		} else {
+			// recommend
+			res, err = l.svcCtx.FeedRpc.ListRecommendVideos(l.ctx,
+				&feedclient.ListRecommendRequest{
+					ActorId: req.ActorId,
+				},
+			)
+		}
+		return err
+	}, func(err error) bool {
+		// circuit
+		l.Errorw("open circuit breaker", logx.Field("err", err))
+		// 熔断，快速返回错误
+		res = &feedclient.ListFeedResponse{
+			StatusCode: code.TooManyRequestCode,
+			StatusMsg:  code.TooManyRequestMsg,
+		}
+		// true 代表错误可接受，不会进行重试，false 代表错误不可接受，进行重试
+		return true
+	})
 	if err != nil {
 		resp.StatusMsg = code.ServerErrorMsg
 		resp.StatusCode = code.ServerError
 		l.Errorw("call rpc FeedRpc.ListVideos error ", logx.Field("err", err))
-		return
 	}
+	resp = new(types.ListVideosResp)
 	if res.StatusCode != code.OK {
 		resp.StatusMsg = res.StatusMsg
 		resp.StatusCode = res.StatusCode

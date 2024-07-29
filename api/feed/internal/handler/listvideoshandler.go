@@ -19,7 +19,10 @@ func ListVideosHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		}
 
 		l := logic.NewListVideosLogic(r.Context(), svcCtx)
-		resp, _ := l.ListVideos(&req)
+		resp, err := l.ListVideos(&req)
+		if err != nil {
+
+		}
 		httpx.OkJsonCtx(r.Context(), w, resp)
 	}
 }
