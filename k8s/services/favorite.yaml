@@ -2,29 +2,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: relation-service
+  name: favorite-service
   namespace: tiktok
   labels:
-    app: relation-service
+    app: favorite-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: relation-service
+      app: favorite-service
   template:
     metadata:
-      name: relation-service
+      name: favorite-service
       labels:
-        app: relation-service
+        app: favorite-service
     spec:
+      imagePullSecrets:
+        - name: harborsecret
       containers:
-        - name: relation-service
-          image: min-tiktok
-          imagePullPolicy: Never
+        - name: favorite-service
+          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:1.0
+          imagePullPolicy: IfNotPresent
           command:
-            - ./services/RelationService
+            - ./services/FavoriteService
           ports:
-            - containerPort: 10006
+            - name: service-10004
+              containerPort: 10004
               protocol: TCP
           volumeMounts:
             - name: project-etc-volume
@@ -43,47 +46,34 @@ spec:
             type: DirectoryOrCreate
       restartPolicy: Always
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: relation-service
-  namespace: tiktok
-spec:
-  selector:
-    app: relation-service
-  ports:
-    - name: service-10006
-      port: 10006
-      targetPort: 10006
-      protocol: TCP
-  type: ClusterIP
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: relation-api
+  name: favorite-api
   namespace: tiktok
   labels:
-    app: relation-api
+    app: favorite-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: relation-api
+      app: favorite-api
   template:
     metadata:
-      name: relation-api
+      name: favorite-api
       labels:
-        app: relation-api
+        app: favorite-api
     spec:
+      imagePullSecrets:
+        - name: harborsecret
       containers:
-        - name: relation-api
-          image: min-tiktok
-          imagePullPolicy: Never
+        - name: favorite-api
+          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:1.0
+          imagePullPolicy: IfNotPresent
           command:
-            - ./apis/RelationApi
+            - ./apis/FavoriteApi
           ports:
-            - containerPort: 8894
+            - containerPort: 8892
               protocol: TCP
           volumeMounts:
             - name: project-etc-volume
@@ -104,14 +94,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: relation-api
+  name: favorite-api
   namespace: tiktok
 spec:
   selector:
-    app: relation-api
+    app: favorite-api
   ports:
-    - name: api-8894
-      port: 8894
-      targetPort: 8894
-      protocol: TCP
-  type: ClusterIP
+    - port: 8892
+      targetPort: 8892

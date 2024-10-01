@@ -17,14 +17,18 @@ spec:
       labels:
         app: feedback-service
     spec:
+      imagePullSecrets:
+        - name: harborsecret
       containers:
         - name: feedback-service
-          image: min-tiktok
-          imagePullPolicy: Never
+          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:1.0
+          imagePullPolicy: IfNotPresent
+
           command:
             - ./services/FeedbackService
           ports:
-            - containerPort: 10007
+            - name: service-10007
+              containerPort: 10007
               protocol: TCP
           volumeMounts:
             - name: project-etc-volume
@@ -42,18 +46,4 @@ spec:
             path: /data/logs
             type: DirectoryOrCreate
       restartPolicy: Always
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: feedback-service
-  namespace: tiktok
-spec:
-  selector:
-    app: feedback-service
-  ports:
-    - name: service-10007
-      port: 10007
-      targetPort: 10007
-      protocol: TCP
-  type: ClusterIP
+

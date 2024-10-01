@@ -2,96 +2,84 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: message-service
+  name: feed-service
   namespace: tiktok
   labels:
-    app: message-service
+    app: feed-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: message-service
+      app: feed-service
   template:
     metadata:
-      name: message-service
+      name: feed-service
       labels:
-        app: message-service
+        app: feed-service
     spec:
       containers:
-        - name: message-service
-          image: min-tiktok
-          imagePullPolicy: Never
+        - name: feed-service
+          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:1.0
+          imagePullPolicy: IfNotPresent
           command:
-            - ./services/MessageService
+            - ./services/FeedService
           ports:
-            - containerPort: 10008
+            - name: service-10002
+              containerPort: 10002
               protocol: TCP
           volumeMounts:
             - name: project-etc-volume
               mountPath: /project/etc
             - name: project-logs-volume
               mountPath: /project/logs
+      imagePullSecrets:
+        - name: harborsecret
       volumes:
         - name: project-etc-volume
           hostPath:
             path: /data/etc
-            #            不存在就创建
             type: DirectoryOrCreate
         - name: project-logs-volume
           hostPath:
             path: /data/logs
             type: DirectoryOrCreate
       restartPolicy: Always
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: message-service
-  namespace: tiktok
-spec:
-  selector:
-    app: message-service
-  ports:
-    - name: service-10008
-      port: 10008
-      targetPort: 10008
-      protocol: TCP
-  type: ClusterIP
-
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: message-api
+  name: feed-api
   namespace: tiktok
   labels:
-    app: message-api
+    app: feed-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: message-api
+      app: feed-api
   template:
     metadata:
-      name: message-api
+      name: feed-api
       labels:
-        app: message-api
+        app: feed-api
     spec:
       containers:
-        - name: message-api
-          image: min-tiktok
-          imagePullPolicy: Never
+        - name: feed-api
+          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:1.0
+          imagePullPolicy: IfNotPresent
           command:
-            - ./apis/MessageApi
+            - ./apis/FeedApi
           ports:
-            - containerPort: 8896
+            - containerPort: 8890
               protocol: TCP
           volumeMounts:
             - name: project-etc-volume
               mountPath: /project/etc
             - name: project-logs-volume
               mountPath: /project/logs
+      imagePullSecrets:
+        - name: harborsecret
       volumes:
         - name: project-etc-volume
           hostPath:
@@ -106,14 +94,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: message-api
+  name: feed-api
   namespace: tiktok
 spec:
   selector:
-    app: message-api
+    app: feed-api
   ports:
-    - name: api-8896
-      port: 8896
-      targetPort: 8896
-      protocol: TCP
-  type: ClusterIP
+    -
+      port: 8890
+      targetPort: 8890

@@ -2,29 +2,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: favorite-service
+  name: message-service
   namespace: tiktok
   labels:
-    app: favorite-service
+    app: message-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: favorite-service
+      app: message-service
   template:
     metadata:
-      name: favorite-service
+      name: message-service
       labels:
-        app: favorite-service
+        app: message-service
     spec:
+      imagePullSecrets:
+        - name: harborsecret
       containers:
-        - name: favorite-service
-          image: min-tiktok
-          imagePullPolicy: Never
+        - name: message-service
+          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:1.0
+          imagePullPolicy: IfNotPresent
           command:
-            - ./services/FavoriteService
+            - ./services/MessageService
           ports:
-            - containerPort: 10000
+            - name: service-10008
+              containerPort: 10008
               protocol: TCP
           volumeMounts:
             - name: project-etc-volume
@@ -35,55 +38,42 @@ spec:
         - name: project-etc-volume
           hostPath:
             path: /data/etc
-#            不存在就创建
             type: DirectoryOrCreate
         - name: project-logs-volume
           hostPath:
             path: /data/logs
             type: DirectoryOrCreate
       restartPolicy: Always
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: favorite-service
-  namespace: tiktok
-spec:
-  selector:
-    app: favorite-service
-  ports:
-    - name: service-10004
-      port: 10004
-      targetPort: 10004
-      protocol: TCP
-  type: ClusterIP
+
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: favorite-api
+  name: message-api
   namespace: tiktok
   labels:
-    app: favorite-api
+    app: message-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: favorite-api
+      app: message-api
   template:
     metadata:
-      name: favorite-api
+      name: message-api
       labels:
-        app: favorite-api
+        app: message-api
     spec:
+      imagePullSecrets:
+        - name: harborsecret
       containers:
-        - name: favorite-api
-          image: min-tiktok
-          imagePullPolicy: Never
+        - name: message-api
+          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:1.0
+          imagePullPolicy: IfNotPresent
           command:
-            - ./apis/FavoriteApi
+            - ./apis/MessageApi
           ports:
-            - containerPort: 8892
+            - containerPort: 8896
               protocol: TCP
           volumeMounts:
             - name: project-etc-volume
@@ -104,14 +94,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: favorite-api
+  name: message-api
   namespace: tiktok
 spec:
   selector:
-    app: favorite-api
+    app: message-api
   ports:
-    - name: api-8892
-      port: 8892
-      targetPort: 8892
-      protocol: TCP
-  type: ClusterIP
+    - port: 8896
+      targetPort: 8896

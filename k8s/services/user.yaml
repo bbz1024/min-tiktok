@@ -19,12 +19,13 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: min-tiktok
-          imagePullPolicy: Never
+          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:1.0
+          imagePullPolicy: IfNotPresent
           command:
             - ./services/UserService
           ports:
-            - containerPort: 10001
+            - name: service-10001
+              containerPort: 10001
               protocol: TCP
           volumeMounts:
             - name: project-etc-volume
@@ -41,21 +42,8 @@ spec:
             path: /data/logs
             type: DirectoryOrCreate
       restartPolicy: Always
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: user-service
-  namespace: tiktok
-spec:
-  selector:
-    app: user-service
-  ports:
-    -
-      port: 10001
-      targetPort: 10001
-      protocol: TCP
-  type: ClusterIP
+      imagePullSecrets:
+        - name: harborsecret
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -77,8 +65,8 @@ spec:
     spec:
       containers:
         - name: user-api
-          image: min-tiktok
-          imagePullPolicy: Never
+          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:1.0
+          imagePullPolicy: IfNotPresent
           command:
             - ./apis/UserApi
           ports:
@@ -100,6 +88,8 @@ spec:
             path: /data/logs
             type: DirectoryOrCreate
       restartPolicy: Always
+      imagePullSecrets:
+        - name: harborsecret
 ---
 apiVersion: v1
 kind: Service
@@ -110,8 +100,5 @@ spec:
   selector:
     app: user-api
   ports:
-    - name: api-8889
-      port: 8889
+    - port: 8889
       targetPort: 8889
-      protocol: TCP
-  type: ClusterIP

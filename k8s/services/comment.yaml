@@ -17,14 +17,17 @@ spec:
       labels:
         app: comment-service
     spec:
+      imagePullSecrets:
+        - name: harborsecret
       containers:
         - name: comment-service
-          image: min-tiktok
-          imagePullPolicy: Never
+          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:1.0
+          imagePullPolicy: IfNotPresent
           command:
             - ./services/CommentService
           ports:
-            - containerPort: 10005
+            - name: service-10005
+              containerPort: 10005
               protocol: TCP
           volumeMounts:
             - name: project-etc-volume
@@ -42,21 +45,6 @@ spec:
             path: /data/logs
             type: DirectoryOrCreate
       restartPolicy: Always
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: comment-service
-  namespace: tiktok
-spec:
-  selector:
-    app: comment-service
-  ports:
-    - name: service-10005
-      port: 10005
-      targetPort: 10005
-      protocol: TCP
-  type: ClusterIP
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -76,10 +64,12 @@ spec:
       labels:
         app: comment-api
     spec:
+      imagePullSecrets:
+        - name: harborsecret
       containers:
         - name: comment-api
-          image: min-tiktok
-          imagePullPolicy: Never
+          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:1.0
+          imagePullPolicy: IfNotPresent
           command:
             - ./apis/CommentApi
           ports:
@@ -110,8 +100,5 @@ spec:
   selector:
     app: comment-api
   ports:
-    - name: api-8893
-      port: 8893
+    - port: 8893
       targetPort: 8893
-      protocol: TCP
-  type: ClusterIP

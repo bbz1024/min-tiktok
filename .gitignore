@@ -26,4 +26,3 @@ go.work
 .vscode
 logs
 ./test
-/**/publish.yaml

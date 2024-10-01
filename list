@@ -12,6 +12,7 @@ feed-api=8890
 feed-service=10002
 feed-service-health=20002
 feed-api-health=30002
+depend=[feedback,]
 
 publish-api=8891
 publish-service=10003

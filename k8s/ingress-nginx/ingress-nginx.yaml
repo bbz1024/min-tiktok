@@ -7,13 +7,76 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: nginx.min-tiktok.cn
+    - host: nginx.kubernetes-devops.cn
       http:
         paths:
-          - pathType: Prefix
-            path: "/douyin/user/"
+          - pathType: Exact
+            path: "/douyin/user/login/"
             backend:
               service:
                 name: auths-api
                 port:
                   number: 8888
+          - pathType: Exact
+            path: "/douyin/user/register/"
+            backend:
+              service:
+                name: auths-api
+                port:
+                  number: 8888
+          # 用户信息相关
+          - pathType: Prefix
+            path: "/douyin/user/"
+            backend:
+              service:
+                name: user-api
+                port:
+                  number: 8889
+          # 视频流
+          - pathType: Prefix
+            path: "/douyin/feed/"
+            backend:
+              service:
+                name: feed-api
+                port:
+                  number: 8890
+          # 发布视频
+          - pathType: Prefix
+            path: "/douyin/publish/"
+            backend:
+              service:
+                name: publish-api
+                port:
+                  number: 8891
+          # 点赞
+          - pathType: Prefix
+            path: "/douyin/favorite/"
+            backend:
+              service:
+                name: favorite-api
+                port:
+                  number: 8892
+          # 评论
+          - pathType: Prefix
+            path: "/douyin/comment/"
+            backend:
+              service:
+                name: comment-api
+                port:
+                  number: 8893
+          # 关系
+          - pathType: Prefix
+            path: "/douyin/relation/"
+            backend:
+              service:
+                name: relation-api
+                port:
+                  number: 8894
+          # 消息
+          - pathType: Prefix
+            path: "/douyin/message/"
+            backend:
+              service:
+                name: message-api
+                port:
+                  number: 8896

@@ -2,88 +2,76 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: publish-service
+  name: auths-service
   namespace: tiktok
   labels:
-    app: publish-service
+    app: auths-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: publish-service
+      app: auths-service
   template:
     metadata:
-      name: publish-service
+      name: auths-service
       labels:
-        app: publish-service
+        app: auths-service
     spec:
-      
       containers:
-        - name: publish-service
-          image: min-tiktok
-          imagePullPolicy: Never
+        - name: auths-service
+          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:1.0
+          imagePullPolicy: Always
           command:
-            - ./services/PublishService
+            - ./services/AuthsService
           ports:
-            - containerPort: 10003
+            - name: service-10000
+              containerPort: 10000
               protocol: TCP
           volumeMounts:
             - name: project-etc-volume
               mountPath: /project/etc
             - name: project-logs-volume
               mountPath: /project/logs
+      imagePullSecrets:
+        - name: harborsecret
       volumes:
         - name: project-etc-volume
           hostPath:
             path: /data/etc
+#            不存在就创建
             type: DirectoryOrCreate
         - name: project-logs-volume
           hostPath:
             path: /data/logs
             type: DirectoryOrCreate
       restartPolicy: Always
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: publish-service
-  namespace: tiktok
-spec:
-  selector:
-    app: publish-service
-  ports:
-    - name: service-10003
-      port: 10003
-      targetPort: 10003
-      protocol: TCP
-  type: ClusterIP
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: publish-api
+  name: auths-api
   namespace: tiktok
   labels:
-    app: publish-api
+    app: auths-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: publish-api
+      app: auths-api
   template:
     metadata:
-      name: publish-api
+      name: auths-api
       labels:
-        app: publish-api
+        app: auths-api
     spec:
       containers:
-        - name: publish-api
-          image: min-tiktok
-          imagePullPolicy: Never
+        - name: auths-api
+          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:1.0
+          imagePullPolicy: Always
           command:
-            - ./apis/PublishApi
+            - ./apis/AuthsApi
           ports:
-            - containerPort: 8891
+            - containerPort: 8888
               protocol: TCP
           volumeMounts:
             - name: project-etc-volume
@@ -99,19 +87,18 @@ spec:
           hostPath:
             path: /data/logs
             type: DirectoryOrCreate
+      imagePullSecrets:
+        - name: harborsecret
       restartPolicy: Always
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: publish-api
+  name: auths-api
   namespace: tiktok
 spec:
   selector:
-    app: publish-api
+    app: auths-api
   ports:
-    - name: api-8891
-      port: 8891
-      targetPort: 8891
-      protocol: TCP
-  type: ClusterIP
+    - port: 8888
+      targetPort: 8888
