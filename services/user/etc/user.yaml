@@ -1,7 +1,7 @@
 Name: user.rpc
 ListenOn: 0.0.0.0:10001
 Consul:
-  Host: 192.168.241.128:8500 # consul endpoint
+  Host: 124.71.19.46:8500 # consul endpoint
   Key: user.rpc
   Meta:
     Protocol: grpc
@@ -13,17 +13,17 @@ DevServer:
 
 Telemetry:
   Name: user.rpc
-  Endpoint: http://192.168.241.128:14268/api/traces
+  Endpoint: http://124.71.19.46:14268/api/traces
   Batcher: jaeger
   Sampler: 1.0
 Mysql:
-  DataSource: lzb200244:lzb200244@tcp(192.168.241.128:3306)/tiktok?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+  DataSource: lzb200244:lzb200244@tcp(124.71.19.46:3306)/tiktok?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
 CacheConf:
   - NodeConf:
-    Host: 192.168.241.128:6379
+    Host: 124.71.19.46:6379
     Pass: lzb200244
 RabbitMQ:
-  Host: 192.168.241.128
+  Host: 124.71.19.46
   Port: 5672
   User: admin
   Pass: admin
@@ -32,7 +32,7 @@ Gpt:
   ApiKey: 116d0a63-2b52-4bde-a625-062e1dc227df
   ModelID: ep-20240714140201-b65wt
 Gorse:
-  GorseAddr: http://192.168.241.128:8088
+  GorseAddr: http://124.71.19.46:8088
   GorseApikey: 5105502fc46a411c896aa5b50c31e951
 Log:
   ServiceName: "user-rpc"

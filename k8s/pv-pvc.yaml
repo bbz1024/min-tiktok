@@ -1,0 +1,26 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-pv
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: 121.37.249.205 # nfs 服务器
+    path: "/srv/nfs4/data"
+--- # consul pvc
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: tiktok
+  name: consul-nfs-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi

@@ -1,7 +1,7 @@
 Name: feed.rpc
 ListenOn: 0.0.0.0:10002
 Consul:
-  Host: 192.168.241.128:8500 # consul endpoint
+  Host: 124.71.19.46:8500 # consul endpoint
   Key: feed.rpc
   Meta:
     Protocol: grpc
@@ -10,14 +10,14 @@ Consul:
     - rpc
 Telemetry:
   Name: feed.rpc
-  Endpoint: http://192.168.241.128:14268/api/traces
+  Endpoint: http://124.71.19.46:14268/api/traces
   Batcher: jaeger
   Sampler: 1.0
 Mysql:
-  DataSource: lzb200244:lzb200244@tcp(192.168.241.128:3306)/tiktok?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+  DataSource: lzb200244:lzb200244@tcp(124.71.19.46:3306)/tiktok?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
 CacheConf:
   - NodeConf:
-    Host: 192.168.241.128:6379
+    Host: 124.71.19.46:6379
     Pass: lzb200244
 DevServer:
   Port: 20002
@@ -29,15 +29,15 @@ Log:
   Path: "./logs/feed-rpc"
 
 RabbitMQ:
-  Host: 192.168.241.128
+  Host: 124.71.19.46
   Port: 5672
   User: admin
   Pass: admin
   VHost: /
 # rcp
 UserRpc: # 需要与config保持一致
-  Target: consul://192.168.241.128:8500/user.rpc?wait=14s
+  Target: consul://124.71.19.46:8500/user.rpc?wait=14s
   NonBlock: true
 FeedBackRpc:
-  Target: consul://192.168.241.128:8500/feedback.rpc?wait=14s
+  Target: consul://124.71.19.46:8500/feedback.rpc?wait=14s
   NonBlock: true

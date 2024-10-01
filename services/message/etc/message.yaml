@@ -1,7 +1,7 @@
 Name: message.rpc
 ListenOn: 0.0.0.0:10008
 Consul:
-  Host: 192.168.241.128:8500 # consul endpoint
+  Host: 124.71.19.46:8500 # consul endpoint
   Key: message.rpc
   Meta:
     Protocol: grpc
@@ -10,11 +10,11 @@ Consul:
     - rpc
 Telemetry:
   Name: message.rpc
-  Endpoint: http://192.168.241.128:14268/api/traces
+  Endpoint: http://124.71.19.46:14268/api/traces
   Batcher: jaeger
   Sampler: 1.0
 Mysql:
-  DataSource: lzb200244:lzb200244@tcp(192.168.241.128:3306)/tiktok?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+  DataSource: lzb200244:lzb200244@tcp(124.71.19.46:3306)/tiktok?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
 
 DevServer:
   Port: 20008
@@ -26,11 +26,11 @@ Log:
   Path: "./logs/message-rpc"
 
 RabbitMQ:
-  Host: 192.168.241.128
+  Host: 124.71.19.46
   Port: 5672
   User: admin
   Pass: admin
   VHost: /
 RelationRpc:
-  Target: consul://192.168.241.128:8500/relation.rpc?wait=14s
+  Target: consul://124.71.19.46:8500/relation.rpc?wait=14s
   NonBlock: true

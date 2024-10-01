@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: tiktok
+  name: consul
+spec:
+  ports:
+    - port: 8500
+      name: http
+    - port: 8301
+      name: serflan
+    - port: 8302
+      name: serfwan
+    - port: 8600
+      name: dns
+  clusterIP: None
+  selector:
+    app: consul
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: tiktok
+  name: consul
+spec:
+  serviceName: "consul"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: consul
+  template:
+    metadata:
+      labels:
+        app: consul
+    spec:
+      containers:
+        - name: consul
+          image: consul:1.8.8
+          command: ["consul", "agent", "-server", "-bootstrap-expect=1", "-ui", "-client=0.0.0.0", "-data-dir=/consul/data"]
+          ports:
+            - containerPort: 8500
+              name: http
+            - containerPort: 8301
+              name: serflan
+            - containerPort: 8302
+              name: serfwan
+            - containerPort: 8600
+              name: dns
+          volumeMounts:
+            - name: data
+              mountPath: /consul/data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: consul-nfs-pvc

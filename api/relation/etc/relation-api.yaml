@@ -4,7 +4,7 @@ Port: 8894
 
 # register center
 Consul:
-  Host: 192.168.241.128:8500
+  Host: 124.71.19.46:8500
   Key: relation.rpc
 
 # middle
@@ -14,13 +14,13 @@ Middlewares:
 #  trace
 Telemetry:
   Name: relation.api
-  Endpoint: http://192.168.241.128:14268/api/traces
+  Endpoint: http://124.71.19.46:14268/api/traces
   Batcher: jaeger
   Sampler: 1.0
 
 # mysql
 Mysql:
-  DataSource: lzb200244:lzb200244@tcp(192.168.241.128:3306)/tiktok?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+  DataSource: lzb200244:lzb200244@tcp(124.71.19.46:3306)/tiktok?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
 
 # metrics
 DevServer:
@@ -36,11 +36,11 @@ Log:
 
 # rpc
 AuthsRpc: # 需要与config保持一致
-  Target: consul://192.168.241.128:8500/auths.rpc?wait=14s
+  Target: consul://124.71.19.46:8500/auths.rpc?wait=14s
   NonBlock: true
 RelationRpc:
-  Target: consul://192.168.241.128:8500/relation.rpc?wait=14s
+  Target: consul://124.71.19.46:8500/relation.rpc?wait=14s
   NonBlock: true
 UserRpc:
-  Target: consul://192.168.241.128:8500/user.rpc?wait=14s
+  Target: consul://124.71.19.46:8500/user.rpc?wait=14s
   NonBlock: true

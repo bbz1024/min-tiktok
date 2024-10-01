@@ -1,7 +1,7 @@
 Name: favorite.rpc
 ListenOn: 0.0.0.0:10004
 Consul:
-  Host: 192.168.241.128:8500 # consul endpoint
+  Host: 124.71.19.46:8500 # consul endpoint
   Key: favorite.rpc
   Meta:
     Protocol: grpc
@@ -13,12 +13,12 @@ DevServer:
 
 Telemetry:
   Name: favorite.rpc
-  Endpoint: http://192.168.241.128:14268/api/traces
+  Endpoint: http://124.71.19.46:14268/api/traces
   Batcher: jaeger
   Sampler: 1.0
 CacheConf:
   - NodeConf:
-    Host: 192.168.241.128:6379
+    Host: 124.71.19.46:6379
     Pass: lzb200244
 Log:
   ServiceName: "favorite-rpc"
@@ -27,8 +27,8 @@ Log:
   Level: "error"
   Path: "./logs/favorite-rpc"
 FeedRpc:
-  Target: consul://192.168.241.128:8500/feed.rpc?wait=14s
+  Target: consul://124.71.19.46:8500/feed.rpc?wait=14s
   NonBlock: true
 FeedBackRpc:
-  Target: consul://192.168.241.128:8500/feedback.rpc?wait=14s
+  Target: consul://124.71.19.46:8500/feedback.rpc?wait=14s
   NonBlock: true

@@ -1,7 +1,7 @@
 Name: relation.rpc
 ListenOn: 0.0.0.0:10006
 Consul:
-  Host: 192.168.241.128:8500 # consul endpoint
+  Host: 124.71.19.46:8500 # consul endpoint
   Key: relation.rpc
   Meta:
     Protocol: grpc
@@ -13,14 +13,14 @@ DevServer:
 
 Telemetry:
   Name: relation.rpc
-  Endpoint: http://192.168.241.128:14268/api/traces
+  Endpoint: http://124.71.19.46:14268/api/traces
   Batcher: jaeger
   Sampler: 1.0
 Mysql:
-  DataSource: lzb200244:lzb200244@tcp(192.168.241.128:3306)/tiktok?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+  DataSource: lzb200244:lzb200244@tcp(124.71.19.46:3306)/tiktok?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
 CacheConf:
   - NodeConf:
-    Host: 192.168.241.128:6379
+    Host: 124.71.19.46:6379
     Pass: lzb200244
 Log:
   ServiceName: "relation-rpc"
@@ -29,5 +29,5 @@ Log:
   Level: "error"
   Path: "./logs/relation-rpc"
 UserRpc:
-  Target: consul://192.168.241.128:8500/user.rpc?wait=14s
+  Target: consul://124.71.19.46:8500/user.rpc?wait=14s
   NonBlock: true

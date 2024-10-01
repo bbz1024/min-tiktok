@@ -1,0 +1,19 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-nginx
+  namespace: tiktok
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: nginx.min-tiktok.cn
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/douyin/user/"
+            backend:
+              service:
+                name: auths-api
+                port:
+                  number: 8888

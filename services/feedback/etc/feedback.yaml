@@ -1,7 +1,7 @@
 Name: feedback.rpc
 ListenOn: 0.0.0.0:10007
 Consul:
-  Host: 192.168.241.128:8500 # consul endpoint
+  Host: 124.71.19.46:8500 # consul endpoint
   Key: feedback.rpc
   Meta:
     Protocol: grpc
@@ -11,12 +11,12 @@ Consul:
 
 Telemetry:
   Name: feedback.rpc
-  Endpoint: http://192.168.241.128:14268/api/traces
+  Endpoint: http://124.71.19.46:14268/api/traces
   Batcher: jaeger
   Sampler: 1.0
 CacheConf:
   - NodeConf:
-    Host: 192.168.241.128:6379
+    Host: 124.71.19.46:6379
     Pass: lzb200244
 DevServer:
   Port: 20007
@@ -28,11 +28,11 @@ Log:
   Path: "./logs/feedback-rpc"
 
 RabbitMQ:
-  Host: 192.168.241.128
+  Host: 124.71.19.46
   Port: 5672
   User: admin
   Pass: admin
   VHost: /
 Gorse:
-  GorseAddr: http://192.168.241.128:8088
+  GorseAddr: http://124.71.19.46:8088
   GorseApikey: 5105502fc46a411c896aa5b50c31e951

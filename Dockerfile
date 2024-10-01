@@ -13,9 +13,10 @@ RUN go mod tidy
 RUN bash ./scripts/build.sh
 
 FROM alpine:3.19
-RUN apk update && apk add tzdata # 时区 https://segmentfault.com/a/1190000040524996
-ENV TZ Asia/Shanghai  #panic: unknown time zone Asia/Shanghai
-
+# use aliyun
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+RUN apk update && apk add tzdata
+ENV TZ Asia/Shanghai
 WORKDIR /project
 
 COPY --from=builder /usr/share/zoneinfo/Asia/Shanghai /etc/localtime

@@ -4,7 +4,7 @@
  Source Server         : master
  Source Server Type    : MySQL
  Source Server Version : 80038 (8.0.38)
- Source Host           : 192.168.241.128:3306
+ Source Host           : 124.71.19.46:3306
  Source Schema         : gorse
 
  Target Server Type    : MySQL

@@ -19,18 +19,21 @@ spec:
     spec:
       containers:
         - name: auths-service
-          image: min-tiktok
-          imagePullPolicy: Never
+          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:1.0
+          imagePullPolicy: Always
           command:
             - ./services/AuthsService
           ports:
-            - containerPort: 10000
+            - name: service-10000
+              containerPort: 10000
               protocol: TCP
           volumeMounts:
             - name: project-etc-volume
               mountPath: /project/etc
             - name: project-logs-volume
               mountPath: /project/logs
+      imagePullSecrets:
+        - name: harborsecret
       volumes:
         - name: project-etc-volume
           hostPath:
@@ -42,21 +45,6 @@ spec:
             path: /data/logs
             type: DirectoryOrCreate
       restartPolicy: Always
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: auths-service
-  namespace: tiktok
-spec:
-  selector:
-    app: auths-service
-  ports:
-    - name: service-10000
-      port: 10000
-      targetPort: 10000
-      protocol: TCP
-  type: ClusterIP
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -78,8 +66,8 @@ spec:
     spec:
       containers:
         - name: auths-api
-          image: min-tiktok
-          imagePullPolicy: Never
+          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:1.0
+          imagePullPolicy: Always
           command:
             - ./apis/AuthsApi
           ports:
@@ -90,6 +78,7 @@ spec:
               mountPath: /project/etc
             - name: project-logs-volume
               mountPath: /project/logs
+
       volumes:
         - name: project-etc-volume
           hostPath:
@@ -99,6 +88,8 @@ spec:
           hostPath:
             path: /data/logs
             type: DirectoryOrCreate
+      imagePullSecrets:
+        - name: harborsecret
       restartPolicy: Always
 ---
 apiVersion: v1
@@ -110,8 +101,5 @@ spec:
   selector:
     app: auths-api
   ports:
-    - name: api-8888
-      port: 8888
+    - port: 8888
       targetPort: 8888
-      protocol: TCP
-  type: ClusterIP
