@@ -16,12 +16,13 @@ spec:
       name: favorite-service
       labels:
         app: favorite-service
+        version: "BUILD_HASH"
     spec:
       imagePullSecrets:
         - name: harborsecret
       containers:
         - name: favorite-service
-          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:1.0
+          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:latest
           imagePullPolicy: IfNotPresent
           command:
             - ./services/FavoriteService
@@ -63,12 +64,13 @@ spec:
       name: favorite-api
       labels:
         app: favorite-api
+        version: "BUILD_HASH"
     spec:
       imagePullSecrets:
         - name: harborsecret
       containers:
         - name: favorite-api
-          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:1.0
+          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:latest
           imagePullPolicy: IfNotPresent
           command:
             - ./apis/FavoriteApi

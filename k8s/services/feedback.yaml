@@ -16,12 +16,13 @@ spec:
       name: feedback-service
       labels:
         app: feedback-service
+        version: "BUILD_HASH"
     spec:
       imagePullSecrets:
         - name: harborsecret
       containers:
         - name: feedback-service
-          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:1.0
+          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:latest
           imagePullPolicy: IfNotPresent
 
           command:

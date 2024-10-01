@@ -16,11 +16,12 @@ spec:
       name: auths-service
       labels:
         app: auths-service
+        version: "BUILD_HASH"
     spec:
       containers:
         - name: auths-service
-          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:1.0
-          imagePullPolicy: Always
+          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:latest
+          imagePullPolicy: IfNotPresent
           command:
             - ./services/AuthsService
           ports:
@@ -63,11 +64,12 @@ spec:
       name: auths-api
       labels:
         app: auths-api
+        version: "BUILD_HASH"
     spec:
       containers:
         - name: auths-api
-          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:1.0
-          imagePullPolicy: Always
+          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:latest
+          imagePullPolicy: IfNotPresent
           command:
             - ./apis/AuthsApi
           ports:
@@ -99,6 +101,7 @@ metadata:
 spec:
   selector:
     app: auths-api
+
   ports:
     - port: 8888
       targetPort: 8888
