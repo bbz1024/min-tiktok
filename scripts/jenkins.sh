@@ -46,5 +46,5 @@ sh ./scripts/collect-etc.sh
 # 传输
 scp -r /data/etc root@k8s-worker1:/data
 scp -r /data/etc root@k8s-worker2:/data
-scp -r ./k8s/* root@k8s-master:/project/min-tiktok/k8s
+scp -r ./k8s root@k8s-master:/project/min-tiktok
 echo "collect done"

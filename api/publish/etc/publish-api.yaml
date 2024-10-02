@@ -8,12 +8,13 @@ Timeout: 30000
 Consul:
   Host: 124.71.19.46:8500
   Key: publish.rpc
-#  trace
+
 Telemetry:
   Name: publish.api
   Endpoint: http://124.71.19.46:14268/api/traces
   Batcher: jaeger
   Sampler: 1.0
+
 Mysql:
   DataSource: lzb200244:lzb200244@tcp(124.71.19.46:3306)/tiktok?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
 
@@ -21,14 +22,12 @@ Mysql:
 DevServer:
   Port: 30003
 
-
 Log:
   ServiceName: "publish-api"
-  Mode: 'console'
+  Mode: 'file'
   Encoding: "json"
   Level: error
   Path: "./logs/publish-api"
-
 
 ################# rpc
 PublishRpc: # 需要与config保持一致
@@ -38,6 +37,8 @@ PublishRpc: # 需要与config保持一致
 AuthsRpc: # 需要与config保持一致
   Target: consul://124.71.19.46:8500/auths.rpc?wait=14s
   NonBlock: true # 启动时是否阻塞 , 即使rpc服务没有启动也不会影响客户端的启动
+  Timeout: 5000
 UserRpc:
   Target: consul://124.71.19.46:8500/user.rpc?wait=14s
   NonBlock: true # 启动时是否阻塞 , 即使rpc服务没有启动也不会影响客户端的启动
+  Timeout: 5000

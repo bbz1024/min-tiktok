@@ -4,10 +4,13 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/olivere/elastic/v7"
 	"github.com/streadway/amqp"
 	"github.com/zeromicro/go-zero/core/logx"
 	"min-tiktok/common/consts/variable"
+	"min-tiktok/common/consts/variable/es"
 	"min-tiktok/common/util/transform"
 	"min-tiktok/services/publish/internal/svc"
 )
@@ -15,8 +18,8 @@ import (
 type ExtractVideoText struct {
 	Channel *amqp.Channel
 	nsl     *transform.NlsTask
-
-	svcCtx *svc.ServiceContext
+	es      *elastic.Client
+	svcCtx  *svc.ServiceContext
 }
 type ExtractVideoTextReq struct {
 	VideoID uint32 `json:"video_id"`
@@ -28,6 +31,8 @@ func InitExtractVideo(svcCtx *svc.ServiceContext, maxPrefetchCnt, consumerCnt in
 	extractText = &ExtractVideoText{
 		svcCtx: svcCtx,
 	}
+
+	// mq
 	conn, err := amqp.Dial(svcCtx.Config.RabbitMQ.Dns())
 	if err != nil {
 		return err
@@ -40,6 +45,17 @@ func InitExtractVideo(svcCtx *svc.ServiceContext, maxPrefetchCnt, consumerCnt in
 	if err := channel.Qos(maxPrefetchCnt, 0, false); err != nil {
 		return err
 	}
+	// es
+	extractText.es, err = elastic.NewClient(
+		elastic.SetURL(svcCtx.Config.Es.Addr),
+		elastic.SetSniff(false),
+		elastic.SetHealthcheck(false),
+		elastic.SetGzip(true),
+	)
+	if err != nil {
+		return err
+	}
+	// declare
 	if err := extractText.declare(); err != nil {
 		return err
 	}
@@ -49,6 +65,7 @@ func InitExtractVideo(svcCtx *svc.ServiceContext, maxPrefetchCnt, consumerCnt in
 		svcCtx.Config.AlibabaNsl.AccessKeySecret,
 		svcCtx.Config.AlibabaNsl.AppKey,
 	)
+
 	for i := 0; i < consumerCnt; i++ {
 		name := i
 		go extractText.Consumer(name)
@@ -86,6 +103,23 @@ func (s *ExtractVideoText) declare() error {
 		nil,
 	); err != nil {
 		return err
+	}
+
+	// es
+
+	do, err := s.es.IndexExists(es.VideoTextIndex).Do(context.TODO())
+	if err != nil {
+		return err
+	}
+	if do {
+		return nil
+	}
+	result, err := s.es.CreateIndex(es.VideoTextIndex).BodyJson(es.VideoTextMapping).Do(context.TODO())
+	if err != nil {
+		return err
+	}
+	if !result.Acknowledged {
+		return errors.New("es create index failed")
 	}
 	return nil
 }
@@ -136,6 +170,29 @@ func (s *ExtractVideoText) Consumer(consumerName int) {
 		// 5. extract task
 		if err := GetChatVideo().Product(ChatVideoReq{VideoID: msg.VideoID}); err != nil {
 			logx.Errorf("extract task error: %v", err)
+			continue
+		}
+
+		// 6. to es
+		// TODO ES
+		do, err := s.es.Index().
+			Index(es.VideoTextIndex).
+			Id(fmt.Sprintf("%d", msg.VideoID)).
+			BodyJson(map[string]interface{}{
+				"video_id":  msg.VideoID,
+				"title":     v.Title,
+				"user_id":   v.Userid,
+				"play_url":  v.Playurl,
+				"content":   v.Content.String,
+				"create_at": v.CreatedAt.Format("2006-01-02 15:04:05"),
+			}).
+			Do(context.Background())
+		if err != nil {
+			logx.Errorf("es error: %v", err)
+			continue
+		}
+		if do.Result != "created" {
+			logx.Errorf("es error: %v", err)
 			continue
 		}
 		if err = s.Channel.Ack(res.DeliveryTag, false); err != nil {

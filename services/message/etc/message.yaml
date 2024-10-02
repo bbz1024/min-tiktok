@@ -1,5 +1,6 @@
 Name: message.rpc
 ListenOn: 0.0.0.0:10008
+Timeout: 10000
 Consul:
   Host: 124.71.19.46:8500 # consul endpoint
   Key: message.rpc
@@ -20,9 +21,9 @@ DevServer:
   Port: 20008
 Log:
   ServiceName: "message-rpc"
-  Mode: 'console'
+  Mode: 'file'
   Encoding: "json"
-  Level: "error"
+  Level: "info"
   Path: "./logs/message-rpc"
 
 RabbitMQ:
@@ -34,3 +35,4 @@ RabbitMQ:
 RelationRpc:
   Target: consul://124.71.19.46:8500/relation.rpc?wait=14s
   NonBlock: true
+  Timeout: 10000

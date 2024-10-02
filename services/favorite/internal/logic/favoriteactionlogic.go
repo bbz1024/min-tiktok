@@ -97,6 +97,7 @@ func (l *FavoriteActionLogic) FavoriteAction(in *favorite.FavoriteRequest) (*fav
 		}
 		increment = -1
 	}
+	// TODO consistency
 	// 2. incr/dec user favorite count
 	if _, err := l.svcCtx.Rdb.HincrbyCtx(l.ctx, userKey, keys.FavoriteCount, increment); err != nil && !errors.Is(err, redis.Nil) {
 		return nil, err
@@ -109,6 +110,8 @@ func (l *FavoriteActionLogic) FavoriteAction(in *favorite.FavoriteRequest) (*fav
 	if _, err := l.svcCtx.Rdb.HincrbyCtx(l.ctx, videoInfoKey, keys.VideoFavoriteCount, increment); err != nil && !errors.Is(err, redis.Nil) {
 		return nil, err
 	}
+
+	l.Infow("favorite action success", logx.Field("videoId", in.VideoId), logx.Field("actorId", in.ActorId))
 
 	return &favorite.FavoriteResponse{}, nil
 }

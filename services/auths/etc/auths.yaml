@@ -29,9 +29,9 @@ DevServer:
   Port: 20000
 Log:
   ServiceName: "auths-rpc"
-  Mode: 'console'
+  Mode: 'file'
   Encoding: "json"
-  Level: "error"
+  Level: "info"
   Path: "./logs/auths-rpc"
 Gorse:
   GorseAddr: http://124.71.19.46:8088

@@ -48,9 +48,12 @@ func (l *ListMessageChatLogic) ListMessageChat(req *types.MessageChatReq) (resp 
 		exist = res.Exist
 		return nil
 	})
+	resp = new(types.MessageChatResp)
 	if err != nil {
+		resp.StatusCode = code.ServerError
+		resp.StatusMsg = code.ServerErrorMsg
 		l.Errorw("call rpc UserRpc.CheckUserExist failed", logx.Field("err", err), logx.Field("user_id", req.ToUserID))
-		return nil, err
+		return resp, err
 	}
 	if !exist {
 		return &types.MessageChatResp{
@@ -58,14 +61,17 @@ func (l *ListMessageChatLogic) ListMessageChat(req *types.MessageChatReq) (resp 
 			StatusMsg:  code.UserNotFoundMsg,
 		}, nil
 	}
+
 	res, err := l.svcCtx.MessageRpc.MessageList(l.ctx, &messageclient.MessageListRequest{
 		ToUserId:   req.ToUserID,
 		ActorId:    req.ActorId,
 		PreMsgTime: req.PreMsgTime,
 	})
 	if err != nil {
-		l.Errorw("call rpc MessageRpc.MessageList failed")
-		return nil, err
+		resp.StatusCode = code.ServerError
+		resp.StatusMsg = code.ServerErrorMsg
+		l.Errorw("call rpc MessageRpc.MessageList failed", logx.Field("err", err))
+		return resp, err
 	}
 	resp = new(types.MessageChatResp)
 	resp.MessageList = make([]*types.Message, 0, len(res.MessageList))

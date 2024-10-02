@@ -31,9 +31,12 @@ func (l *RelationFollowListLogic) RelationFollowList(req *types.RelationFollowLi
 	exist, err := l.svcCtx.UserRpc.CheckUserExist(l.ctx, &userclient.UserExistRequest{
 		UserId: req.UserID,
 	})
+	resp = new(types.RelationFollowListResponse)
 	if err != nil {
+		resp.StatusCode = code.ServerError
+		resp.StatusMsg = code.ServerErrorMsg
 		l.Errorw("call rpc UserRpc.CheckUserExist", logx.Field("err", err))
-		return nil, err
+		return
 	}
 	if !exist.Exist {
 		l.Infow("user not found", logx.Field("user_id", req.UserID))
@@ -48,15 +51,14 @@ func (l *RelationFollowListLogic) RelationFollowList(req *types.RelationFollowLi
 			ActorId: req.ActorID,
 			UserId:  req.UserID,
 		})
-	resp = new(types.RelationFollowListResponse)
 	if err != nil {
 		resp.StatusCode = code.ServerError
 		resp.StatusMsg = code.ServerErrorMsg
+		l.Errorw("call rpc RelationRpc.GetFollowList", logx.Field("err", err))
 		return
 	}
-	resp = new(types.RelationFollowListResponse)
 	if res.StatusCode != code.OK {
-		resp.StatusCode = uint32(res.StatusCode)
+		resp.StatusCode = res.StatusCode
 		resp.StatusMsg = res.StatusMsg
 		return
 	}

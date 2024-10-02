@@ -2,6 +2,8 @@ Name: feed-api
 Host: 0.0.0.0
 Port: 8890
 Mode: dev
+Timeout: 10000
+
 
 Consul:
   Host: 124.71.19.46:8500
@@ -9,7 +11,6 @@ Consul:
 
 Middlewares:
   Metrics: true
-
 
 #  trace
 Telemetry:
@@ -28,7 +29,7 @@ DevServer:
 # log
 Log:
   ServiceName: "feed-api"
-  Mode: 'console'
+  Mode: 'file'
   Encoding: "json"
   Level: "error"
   Path: "./logs/feed-api"
@@ -37,6 +38,8 @@ Log:
 FeedRpc: # 需要与config保持一致
   Target: consul://124.71.19.46:8500/feed.rpc?wait=14s
   NonBlock: true # 启动时是否阻塞 , 即使rpc服务没有启动也不会影响客户端的启动
+  Timeout: 10000
 AuthsRpc: # 需要与config保持一致
   Target: consul://124.71.19.46:8500/auths.rpc?wait=14s
   NonBlock: true # 启动时是否阻塞 , 即使rpc服务没有启动也不会影响客户端的启动
+  Timeout: 10000

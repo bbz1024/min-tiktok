@@ -19,4 +19,5 @@ type Config struct {
 	AlibabaNsl config.AlibabaNslStructure
 	Gpt        config.GptStructure
 	Gorse      config.GorseStructure
+	Es         config.EsStructure
 }

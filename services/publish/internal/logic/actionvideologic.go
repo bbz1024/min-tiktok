@@ -81,10 +81,13 @@ func (l *ActionVideoLogic) ActionVideo(in *publish.ActionVideoReq) (*publish.Act
 		logx.Errorw("set video author id ", logx.Field("err", err))
 		return nil, err
 	}
+
+	// -------------------- async --------------------
 	// 6. put mq  extract video summery by gpt
 	if err := mq.GetExtractVideoText().Product(mq.ExtractVideoTextReq{VideoID: uint32(videoID)}); err != nil {
 		logx.Errorw("extract video summery by gpt with queue ", logx.Field("err", err))
 		return nil, err
 	}
+	l.Infow("upload video success", logx.Field("video_id", videoID), logx.Field("video_url", url))
 	return &publish.ActionVideoResp{}, nil
 }

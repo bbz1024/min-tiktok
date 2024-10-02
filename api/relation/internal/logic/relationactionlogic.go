@@ -30,9 +30,12 @@ func (l *RelationActionLogic) RelationAction(req *types.RealtionActionReuqest) (
 	exist, err := l.svcCtx.UserRpc.CheckUserExist(l.ctx, &userclient.UserExistRequest{
 		UserId: req.UserID,
 	})
+	resp = new(types.RealtionActionResponse)
 	if err != nil {
+		resp.StatusCode = code.ServerError
+		resp.StatusMsg = code.ServerErrorMsg
 		l.Errorw("call rpc UserRpc.CheckUserExist", logx.Field("err", err))
-		return nil, err
+		return
 	}
 	if !exist.Exist {
 		l.Infow("user not found", logx.Field("user_id", req.UserID))
@@ -61,19 +64,18 @@ func (l *RelationActionLogic) RelationAction(req *types.RealtionActionReuqest) (
 		res, err = l.svcCtx.RelationRpc.Unfollow(l.ctx, actionReq)
 	}
 
-	resp = new(types.RealtionActionResponse)
 	if err != nil {
 		resp.StatusCode = code.ServerError
 		resp.StatusMsg = code.ServerErrorMsg
 		return
 	}
 	if res.StatusCode != code.OK {
-		resp.StatusCode = uint32(res.StatusCode)
+		resp.StatusCode = res.StatusCode
 		resp.StatusMsg = res.StatusMsg
 		return
 	}
 	return &types.RealtionActionResponse{
-		StatusCode: uint32(res.StatusCode),
+		StatusCode: res.StatusCode,
 		StatusMsg:  res.StatusMsg,
 	}, nil
 }

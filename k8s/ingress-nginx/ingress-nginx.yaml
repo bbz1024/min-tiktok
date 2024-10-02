@@ -4,6 +4,9 @@ kind: Ingress
 metadata:
   name: ingress-nginx
   namespace: tiktok
+  annotations:
+    nginx.ingress.kubernetes.io/enable-cors: 'true'
+    nginx.ingress.kubernetes.io/proxy-body-size: 50M
 spec:
   ingressClassName: nginx
   rules:

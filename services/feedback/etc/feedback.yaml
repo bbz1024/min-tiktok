@@ -22,7 +22,7 @@ DevServer:
   Port: 20007
 Log:
   ServiceName: "feedback-rpc"
-  Mode: 'console'
+  Mode: 'file'
   Encoding: "json"
   Level: "error"
   Path: "./logs/feedback-rpc"

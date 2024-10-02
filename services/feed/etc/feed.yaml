@@ -1,5 +1,7 @@
 Name: feed.rpc
 ListenOn: 0.0.0.0:10002
+Timeout: 10000
+
 Consul:
   Host: 124.71.19.46:8500 # consul endpoint
   Key: feed.rpc
@@ -23,9 +25,9 @@ DevServer:
   Port: 20002
 Log:
   ServiceName: "feed-rpc"
-  Mode: 'console'
+  Mode: 'file'
   Encoding: "json"
-  Level: "error"
+  Level: "info"
   Path: "./logs/feed-rpc"
 
 RabbitMQ:
@@ -38,6 +40,8 @@ RabbitMQ:
 UserRpc: # 需要与config保持一致
   Target: consul://124.71.19.46:8500/user.rpc?wait=14s
   NonBlock: true
+  Timeout: 10000
 FeedBackRpc:
   Target: consul://124.71.19.46:8500/feedback.rpc?wait=14s
   NonBlock: true
+  Timeout: 10000

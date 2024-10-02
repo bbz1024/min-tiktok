@@ -30,9 +30,12 @@ func (l *PublishListLogic) PublishList(req *types.PublishListReq) (resp *types.P
 	exist, err := l.svcCtx.UserRpc.CheckUserExist(l.ctx, &userclient.UserExistRequest{
 		UserId: req.UserId,
 	})
+	resp = new(types.PublishListResp)
 	if err != nil {
+		resp.StatusMsg = code.ServerErrorMsg
+		resp.StatusCode = code.ServerError
 		l.Errorw("call rpc UserRpc.CheckUserExist", logx.Field("err", err))
-		return nil, err
+		return
 	}
 	if !exist.Exist {
 		l.Infow("user not found", logx.Field("user_id", req.UserId))
@@ -46,8 +49,6 @@ func (l *PublishListLogic) PublishList(req *types.PublishListReq) (resp *types.P
 		ActorId: req.ActorId,
 		UserId:  req.UserId,
 	})
-	resp = new(types.PublishListResp)
-
 	if err != nil {
 		resp.StatusMsg = code.ServerErrorMsg
 		resp.StatusCode = code.ServerError

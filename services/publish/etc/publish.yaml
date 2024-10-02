@@ -12,7 +12,6 @@ Consul:
     - tag
     - rpc
 
-
 Telemetry:
   Name: publish.rpc
   Endpoint: http://124.71.19.46:14268/api/traces
@@ -30,24 +29,23 @@ CacheConf:
 DevServer:
   Port: 20003
 
-
 QiNiu:
   AccessKey: JfDRw6TYF7B-MXNjIivW1zxcZ6PrSHAHYksBcZOt
   SecretKey: ubXESZ4C3bpTh9P0yKTXmzOPXEbpaBgvzFkecWIu
-  VideoDomain: sg89iek10.hn-bkt.clouddn.com
-  Bucket: min-tiktok-video
+  VideoDomain: skpd88yg8.hn-bkt.clouddn.com
+  Bucket: min-tiktok2
 
 Log:
   ServiceName: "publish-rpc"
-  Mode: 'console'
+  Mode: 'file'
   Encoding: "json"
   Level: "error"
   Path: "./logs/publish-rpc"
-#rpc
 
 FeedRpc:
   Target: consul://124.71.19.46:8500/feed.rpc?wait=14s
   NonBlock: true
+  Timeout: 10000
 
 RabbitMQ:
   Host: 124.71.19.46
@@ -55,15 +53,23 @@ RabbitMQ:
   User: admin
   Pass: admin
   VHost: /
+
 AlibabaNsl:
   AccessKeyId: LTAI5tHNGUZvcSEJc1YMJvkL
   AccessKeySecret: gLjRTfHJctev5WD4mHAv1SDjPyZ6bM
   AppKey: 2FebCdIPD3vb073T
+
 Gpt:
-  ApiKey: 116d0a63-2b52-4bde-a625-062e1dc227df
-  ModelID: ep-20240714140201-b65wt
+  ApiKey: 5b5ab09c-7298-40d7-b60e-433d21314f36
+  ModelID: ep-20241002090911-md25k
+
 Gorse:
   GorseAddr: http://124.71.19.46:8088
   GorseApikey: 5105502fc46a411c896aa5b50c31e951
+
+# single
+Es:
+  Addr: http://124.71.19.46:9200
+
 Middlewares:
   Stat: false

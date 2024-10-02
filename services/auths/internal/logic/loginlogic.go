@@ -58,6 +58,7 @@ func (l *LoginLogic) Login(in *auths.LoginRequest) (*auths.LoginResponse, error)
 		l.Errorw("set token error", logx.Field("err", err))
 		return nil, err
 	}
+	logx.Infow("login success", logx.Field("username", in.Username))
 	return &auths.LoginResponse{
 		UserId: uint32(userinfo.Id),
 		Token:  token,

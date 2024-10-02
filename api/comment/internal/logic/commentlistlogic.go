@@ -31,9 +31,11 @@ func (l *CommentListLogic) CommentList(req *types.CommentListRequest) (resp *typ
 		ActorId: req.ActorID,
 	})
 
+	resp = new(types.CommentListResponse)
 	if err != nil {
 		resp.StatusMsg = code.ServerErrorMsg
 		resp.StatusCode = code.ServerError
+		l.Errorw("call rpc CommentRpc.ListComment error ", logx.Field("err", err))
 		return
 	}
 
@@ -42,7 +44,6 @@ func (l *CommentListLogic) CommentList(req *types.CommentListRequest) (resp *typ
 		resp.StatusCode = res.StatusCode
 		return
 	}
-	resp = new(types.CommentListResponse)
 	for _, v := range res.CommentList {
 		resp.CommentList = append(resp.CommentList, &types.Comment{
 			ID: v.Id,

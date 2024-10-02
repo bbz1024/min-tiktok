@@ -32,7 +32,10 @@ func (l *RelationFollowerListLogic) RelationFollowerList(req *types.RelationFoll
 	exist, err := l.svcCtx.UserRpc.CheckUserExist(l.ctx, &userclient.UserExistRequest{
 		UserId: req.UserID,
 	})
+	resp = new(types.RelationFollowerListResponse)
 	if err != nil {
+		resp.StatusCode = code.ServerError
+		resp.StatusMsg = code.ServerErrorMsg
 		l.Errorw("call rpc UserRpc.CheckUserExist", logx.Field("err", err))
 		return nil, err
 	}
@@ -47,15 +50,15 @@ func (l *RelationFollowerListLogic) RelationFollowerList(req *types.RelationFoll
 		ActorId: req.ActorID,
 		UserId:  req.UserID,
 	})
-	resp = new(types.RelationFollowerListResponse)
 	if err != nil {
 		resp.StatusMsg = code.ServerErrorMsg
 		resp.StatusCode = code.ServerError
+		logx.Errorw("call rpc RelationRpc.GetFollowerList", logx.Field("err", err))
 		return
 	}
 	if res.StatusCode != 0 {
 		resp.StatusMsg = res.StatusMsg
-		resp.StatusCode = uint32(res.StatusCode)
+		resp.StatusCode = res.StatusCode
 		return resp, nil
 	}
 	resp.UserList = make([]*types.User, len(res.UserList))

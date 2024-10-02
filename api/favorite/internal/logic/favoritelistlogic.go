@@ -31,7 +31,10 @@ func (l *FavoriteListLogic) FavoriteList(req *types.ListRequest) (resp *types.Li
 	exist, err := l.svcCtx.UserRpc.CheckUserExist(l.ctx, &userclient.UserExistRequest{
 		UserId: req.UserID,
 	})
+	resp = new(types.ListResponse)
 	if err != nil {
+		resp.StatusCode = code.ServerError
+		resp.StatusMsg = code.ServerErrorMsg
 		l.Errorw("call rpc UserRpc.CheckUserExist", logx.Field("err", err))
 		return nil, err
 	}
@@ -47,7 +50,6 @@ func (l *FavoriteListLogic) FavoriteList(req *types.ListRequest) (resp *types.Li
 		UserId:  req.UserID,
 		ActorId: req.ActorID,
 	})
-	resp = new(types.ListResponse)
 
 	if err != nil {
 		resp.StatusCode = code.ServerError

@@ -2,6 +2,7 @@ Name: message-api
 Host: 0.0.0.0
 Port: 8896
 Mode: dev
+Timeout: 10000
 
 Consul:
   Host: 124.71.19.46:8500
@@ -28,7 +29,7 @@ DevServer:
 # log
 Log:
   ServiceName: "message-api"
-  Mode: 'console'
+  Mode: 'file'
   Encoding: "json"
   Level: "error"
   Path: "./logs/message-api"
@@ -37,9 +38,12 @@ Log:
 MessageRpc:
   Target: consul://124.71.19.46:8500/message.rpc?wait=14s
   NonBlock: true
+  Timeout: 10000
 AuthsRpc:
   Target: consul://124.71.19.46:8500/auths.rpc?wait=14s
   NonBlock: true
+  Timeout: 10000
 UserRpc:
   Target: consul://124.71.19.46:8500/user.rpc?wait=14s
   NonBlock: true
+  Timeout: 10000

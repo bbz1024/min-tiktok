@@ -33,9 +33,11 @@ func (l *CommentActionLogic) CommentAction(req *types.CommentActionRequest) (res
 		CommentText: req.CommentText,
 		CommentId:   req.CommentID,
 	})
+	resp = new(types.CommentActionResponse)
 	if err != nil {
 		resp.StatusMsg = code.ServerErrorMsg
 		resp.StatusCode = code.ServerError
+		l.Errorw("call rpc CommentRpc.ActionComment error ", logx.Field("err", err))
 		return
 	}
 	if res.StatusCode != code.OK {

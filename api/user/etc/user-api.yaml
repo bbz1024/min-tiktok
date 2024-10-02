@@ -1,26 +1,34 @@
 Name: user-api
 Host: 0.0.0.0
 Port: 8889
+Timeout: 10000
+
 Consul:
   Host: 124.71.19.46:8500
   Key: user.rpc
+
 Telemetry:
   Name: user-api
   Endpoint: http://124.71.19.46:14268/api/traces
   Batcher: jaeger
   Sampler: 1.0
+
 Log:
   ServiceName: "user-api"
-  Mode: 'console'
+  Mode: 'file'
   Encoding: "json"
   Level: "error"
   Path: "./logs/user-api"
+
 DevServer:
   Port: 30001
+
 # rpc
 AuthsRpc: # 需要与config保持一致
   Target: consul://124.71.19.46:8500/auths.rpc?wait=14s
   NonBlock: true
+  Timeout: 10000
 UserRpc:
   Target: consul://124.71.19.46:8500/user.rpc?wait=14s
   NonBlock: true
+  Timeout: 10000

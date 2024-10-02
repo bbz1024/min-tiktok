@@ -38,6 +38,7 @@ func (l *SendMessageLogic) SendMessage(req *types.MessageActionReq) (resp *types
 		UserId: req.ToUserID,
 	})
 	if err != nil {
+
 		l.Errorw("call rpc UserRpc.CheckUserExist failed", logx.Field("err", err), logx.Field("user_id", req.ToUserID))
 		return nil, err
 	}
@@ -54,11 +55,14 @@ func (l *SendMessageLogic) SendMessage(req *types.MessageActionReq) (resp *types
 		ActionType: req.ActionType,
 		Content:    req.Content,
 	})
+
+	resp = new(types.MessageActionResp)
 	if err != nil {
 		l.Errorw("call rpc MessageRpc.MessageAction failed", logx.Field("err", err))
-		return nil, err
+		resp.StatusCode = code.ServerError
+		resp.StatusMsg = code.ServerErrorMsg
+		return resp, err
 	}
-	resp = new(types.MessageActionResp)
 	if res.StatusCode != code.OK {
 		resp.StatusCode = res.StatusCode
 		resp.StatusMsg = res.StatusMsg

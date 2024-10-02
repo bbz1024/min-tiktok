@@ -52,22 +52,27 @@ func (l *ListVideosLogic) ListVideos(req *types.ListVideosReq) (resp *types.List
 		}
 		return err
 	}, func(err error) bool {
-		// circuit
-		l.Errorw("open circuit breaker", logx.Field("err", err))
-		// 熔断，快速返回错误
-		res = &feedclient.ListFeedResponse{
-			StatusCode: code.TooManyRequestCode,
-			StatusMsg:  code.TooManyRequestMsg,
-		}
-		// true 代表错误可接受，不会进行重试，false 代表错误不可接受，进行重试
-		return true
+		// TODO 熔断错误
+		//if err != nil {
+		//	// circuit
+		//	l.Errorw("open circuit breaker", logx.Field("err", err))
+		//	// 熔断，快速返回错误
+		//	res = &feedclient.ListFeedResponse{
+		//		StatusCode: code.TooManyRequestCode,
+		//		StatusMsg:  code.TooManyRequestMsg,
+		//	}
+		//	// true 代表错误可接受，不会进行重试，false 代表错误不可接受，进行重试
+		//	return true
+		//}
+		return false
 	})
+	resp = new(types.ListVideosResp)
 	if err != nil {
 		resp.StatusMsg = code.ServerErrorMsg
 		resp.StatusCode = code.ServerError
 		l.Errorw("call rpc FeedRpc.ListVideos error ", logx.Field("err", err))
+		return
 	}
-	resp = new(types.ListVideosResp)
 	if res.StatusCode != code.OK {
 		resp.StatusMsg = res.StatusMsg
 		resp.StatusCode = res.StatusCode

@@ -48,3 +48,6 @@ type GorseStructure struct {
 	GorseAddr   string
 	GorseApikey string
 }
+type EsStructure struct {
+	Addr string
+}

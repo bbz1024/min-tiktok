@@ -86,6 +86,7 @@ func (l *RegisterLogic) Register(in *auths.RegisterRequest) (*auths.RegisterResp
 				logx.Errorw("insert user error: %s", logx.Field("err", err))
 				return nil, err
 			}
+			l.Infow("register success", logx.Field("username", in.Username))
 			return &auths.RegisterResponse{
 				UserId: uint32(userID),
 				Token:  token,

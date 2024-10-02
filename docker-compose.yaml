@@ -108,6 +108,16 @@ services:
         condition: service_healthy
     networks:
       Tiktok:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.2
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    mem_limit: 2g
+    volumes:
+      - ./conf/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    networks:
+      - Tiktok
 networks:
   Tiktok:
 

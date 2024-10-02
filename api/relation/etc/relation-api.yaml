@@ -1,6 +1,7 @@
 Name: relation-api
 Host: 0.0.0.0
 Port: 8894
+Timeout: 10000
 
 # register center
 Consul:
@@ -29,7 +30,7 @@ DevServer:
 # log
 Log:
   ServiceName: "relation-api"
-  Mode: 'console'
+  Mode: 'file'
   Encoding: "json"
   Level: "error" # info==warn ,server==error
   Path: "./logs/relation-api"
@@ -38,9 +39,12 @@ Log:
 AuthsRpc: # 需要与config保持一致
   Target: consul://124.71.19.46:8500/auths.rpc?wait=14s
   NonBlock: true
+  Timeout: 10000
 RelationRpc:
   Target: consul://124.71.19.46:8500/relation.rpc?wait=14s
   NonBlock: true
+  Timeout: 10000
 UserRpc:
   Target: consul://124.71.19.46:8500/user.rpc?wait=14s
   NonBlock: true
+  Timeout: 10000

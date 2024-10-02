@@ -170,7 +170,6 @@ func (v *ChatVideo) Consumer(consumerName int) {
 			logx.Errorf("ack error: %v", err)
 			continue
 		}
-		fmt.Printf("consum vidoeID: %d\n", msg.VideoID)
 		logx.Infof("consum vidoeID: %d", msg.VideoID)
 	}
 }
