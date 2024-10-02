@@ -18,6 +18,8 @@ spec:
         app: user-service
         version: "BUILD_HASH"
     spec:
+      imagePullSecrets:
+        - name: harborsecret
       containers:
         - name: user-service
           image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:latest
@@ -33,6 +35,29 @@ spec:
               mountPath: /project/etc
             - name: project-logs-volume
               mountPath: /project/logs
+          resources:
+            limits:
+              cpu: 2000m
+              memory: 2048Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+        - name: logger
+          image: fluent/fluent-bit:1.8.4
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 20m
+              memory: 100Mi
+            limits:
+              cpu: 100m
+              memory: 200Mi
+          volumeMounts:
+            - mountPath: /fluent-bit/etc
+              name: fluent-bit-conf
+            - mountPath: /project/logs
+              name: project-logs-volume
+          command: [ "/fluent-bit/bin/fluent-bit", "-c", "/fluent-bit/etc/fluent-bit.conf" ]
       volumes:
         - name: project-etc-volume
           hostPath:
@@ -42,9 +67,11 @@ spec:
           hostPath:
             path: /data/logs
             type: DirectoryOrCreate
+        - name: fluent-bit-conf
+          configMap:
+            name: fluent-bit-conf
       restartPolicy: Always
-      imagePullSecrets:
-        - name: harborsecret
+      terminationGracePeriodSeconds: 30
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -65,6 +92,8 @@ spec:
         app: user-api
         version: "BUILD_HASH"
     spec:
+      imagePullSecrets:
+        - name: harborsecret
       containers:
         - name: user-api
           image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:latest
@@ -79,7 +108,29 @@ spec:
               mountPath: /project/etc
             - name: project-logs-volume
               mountPath: /project/logs
-
+          resources:
+            limits:
+              cpu: 2000m
+              memory: 2048Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+        - name: logger
+          image: fluent/fluent-bit:1.8.4
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 20m
+              memory: 100Mi
+            limits:
+              cpu: 100m
+              memory: 200Mi
+          volumeMounts:
+            - mountPath: /fluent-bit/etc
+              name: fluent-bit-conf
+            - mountPath: /project/logs
+              name: project-logs-volume
+          command: [ "/fluent-bit/bin/fluent-bit", "-c", "/fluent-bit/etc/fluent-bit.conf" ]
       volumes:
         - name: project-etc-volume
           hostPath:
@@ -89,9 +140,12 @@ spec:
           hostPath:
             path: /data/logs
             type: DirectoryOrCreate
+        - name: fluent-bit-conf
+          configMap:
+            name: fluent-bit-conf
       restartPolicy: Always
-      imagePullSecrets:
-        - name: harborsecret
+      terminationGracePeriodSeconds: 30
+
 ---
 apiVersion: v1
 kind: Service

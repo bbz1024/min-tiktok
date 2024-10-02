@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluent-bit-conf
+  namespace: tiktok
+data:
+  parsers.conf: |-
+    [PARSER]
+      Name         docker
+      Format       json
+      Time_Key     time
+      Time_Format  %Y-%m-%dT%H:%M:%SZ
+      Time_Keep    On
+
+  fluent-bit.conf: |-
+    
+    [SERVICE]
+      Parsers_File     parsers.conf
+      Daemon           Off
+      Log_Level        info
+      HTTP_Server      off
+      HTTP_Listen      0.0.0.0
+      HTTP_Port        29999
+    
+    [INPUT]
+      Name             tail
+      Tag              tiktok.*
+      Path             /project/logs/*/*.log
+      Path_Key         filename
+      Mem_Buf_Limit    10MB
+      Refresh_Interval 5
+      Ignore_Older     10s
+      Rotate_Wait      5
+    
+    [OUTPUT]
+      Name             es
+      Match            *
+      Host             124.71.19.46
+      Port             9200
+      Logstash_Format  Off
+      Index            tiktok
+      Retry_Limit      False
+      Type             _doc
+      Time_Key         @timestamp
