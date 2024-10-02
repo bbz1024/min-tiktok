@@ -33,17 +33,18 @@ data:
       Rotate_Wait      5
     
     [FILTER]
+      Name             grep
+      Match            *
+      Regex            type api|service
+    
+    [FILTER]
       Name             record_modifier
       Match            *
       Key_name         message
       Record           hostname ${HOSTNAME}
       Record           namespace  tiktok
       Record           environment prod
-    
-    [FILTER]
-      Name             grep
-      Match            *
-      Regex            type api|service
+   
     
     [OUTPUT]
       Name             es
