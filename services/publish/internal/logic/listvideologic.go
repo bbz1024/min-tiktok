@@ -18,7 +18,7 @@ func NewListVideoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListVid
 	return &ListVideoLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
-		Logger: logx.WithContext(ctx),
+		Logger: logx.WithContext(ctx).WithFields(logx.Field("type", "service")),
 	}
 }
 
@@ -30,7 +30,7 @@ func (l *ListVideoLogic) ListVideo(in *publish.ListVideoReq) (*publish.ListVideo
 		ActorId: in.ActorId,
 	})
 	if err != nil {
-		logx.Errorw("query feed error", logx.Field("err", err))
+		l.Errorw("query feed error", logx.Field("err", err))
 		return nil, err
 	}
 	var videos = make([]*publish.Video, 0, len(res.VideoList))

@@ -27,7 +27,7 @@ func NewFavoriteActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Fa
 	return &FavoriteActionLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
-		Logger: logx.WithContext(ctx),
+		Logger: logx.WithContext(ctx).WithFields(logx.Field("type", "service")),
 	}
 }
 
@@ -40,6 +40,7 @@ func (l *FavoriteActionLogic) FavoriteAction(in *favorite.FavoriteRequest) (*fav
 	// get video author
 	id, err := l.svcCtx.Rdb.HgetCtx(l.ctx, videoInfoKey, keys.VideoAuthorID)
 	if err != nil && !errors.Is(err, redis.Nil) {
+		l.Errorw("redis error", logx.Field("err", err))
 		return nil, err
 	}
 	if id == "" {

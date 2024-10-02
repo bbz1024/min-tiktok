@@ -32,7 +32,7 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 	return &RegisterLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
-		Logger: logx.WithContext(ctx),
+		Logger: logx.WithContext(ctx).WithFields(logx.Field("type", "service")),
 	}
 }
 
@@ -76,14 +76,14 @@ func (l *RegisterLogic) Register(in *auths.RegisterRequest) (*auths.RegisterResp
 			token := uid.GenUid(l.ctx, int(userID))
 			key := fmt.Sprintf(keys.UserTokenKey, token)
 			if err := l.svcCtx.Rdb.SetCtx(l.ctx, key, strconv.FormatUint(uint64(userID), 10)); err != nil {
-				logx.Errorw("set token error: %s", logx.Field("err", err))
+				l.Errorw("set token error: %s", logx.Field("err", err))
 				return nil, err
 			}
 			if _, err := l.svcCtx.GorseClient.InsertUser(l.ctx, client.User{
 				UserId:  fmt.Sprintf("%d", userID),
 				Comment: in.Username,
 			}); err != nil {
-				logx.Errorw("insert user error: %s", logx.Field("err", err))
+				l.Errorw("insert user error: %s", logx.Field("err", err))
 				return nil, err
 			}
 			l.Infow("register success", logx.Field("username", in.Username))

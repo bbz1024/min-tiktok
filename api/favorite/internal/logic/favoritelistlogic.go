@@ -20,7 +20,7 @@ type FavoriteListLogic struct {
 
 func NewFavoriteListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *FavoriteListLogic {
 	return &FavoriteListLogic{
-		Logger: logx.WithContext(ctx),
+		Logger: logx.WithContext(ctx).WithFields(logx.Field("type", "api")),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}

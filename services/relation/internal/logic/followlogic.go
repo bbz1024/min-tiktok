@@ -22,7 +22,7 @@ func NewFollowLogic(ctx context.Context, svcCtx *svc.ServiceContext) *FollowLogi
 	return &FollowLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
-		Logger: logx.WithContext(ctx),
+		Logger: logx.WithContext(ctx).WithFields(logx.Field("type", "service")),
 	}
 }
 
@@ -49,6 +49,7 @@ func (l *FollowLogic) Follow(in *relation.RelationActionRequest) (*relation.Rela
 	// check user is follow actor
 	isFollow, err := l.svcCtx.Rdb.SismemberCtx(l.ctx, followKey, in.UserId)
 	if err != nil {
+		l.Errorw("redis error", logx.Field("err", err))
 		return nil, err
 	}
 	if isFollow {

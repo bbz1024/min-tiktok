@@ -20,7 +20,7 @@ func NewListVideosLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListVi
 	return &ListVideosLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
-		Logger: logx.WithContext(ctx),
+		Logger: logx.WithContext(ctx).WithFields(logx.Field("type", "service")),
 	}
 }
 func isUnixMilliTimestamp(s string) (time.Time, bool) {
@@ -52,7 +52,7 @@ func (l *ListVideosLogic) ListVideos(in *feed.ListFeedRequest) (*feed.ListFeedRe
 	// 2. query video list by create time
 	videoList, err := l.svcCtx.VideoModel.ListVideoByCreateTime(l.ctx, latestTime)
 	if err != nil {
-		logx.Errorw("query video list failed", logx.Field("err", err))
+		l.Errorw("query video list failed", logx.Field("err", err))
 		return nil, err
 	}
 

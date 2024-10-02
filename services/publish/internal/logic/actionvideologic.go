@@ -25,7 +25,7 @@ func NewActionVideoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Actio
 	return &ActionVideoLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
-		Logger: logx.WithContext(ctx),
+		Logger: logx.WithContext(ctx).WithFields(logx.Field("type", "service")),
 	}
 }
 
@@ -40,7 +40,7 @@ func (l *ActionVideoLogic) ActionVideo(in *publish.ActionVideoReq) (*publish.Act
 		l.svcCtx.Config.QiNiu.Bucket,
 	)
 	if err != nil {
-		logx.Errorw("upload video to qiniu ", logx.Field("err", err))
+		l.Errorw("upload video to qiniu ", logx.Field("err", err))
 		return nil, err
 	}
 
@@ -56,7 +56,7 @@ func (l *ActionVideoLogic) ActionVideo(in *publish.ActionVideoReq) (*publish.Act
 		UpdatedAt: now,
 	})
 	if err != nil {
-		logx.Errorw("insert video to db ", logx.Field("err", err))
+		l.Errorw("insert video to db ", logx.Field("err", err))
 		return nil, err
 	}
 
@@ -64,28 +64,28 @@ func (l *ActionVideoLogic) ActionVideo(in *publish.ActionVideoReq) (*publish.Act
 	videoID, _ := res.LastInsertId()
 	key := fmt.Sprintf(keys.UserInfoKey, in.ActorId)
 	if _, err := l.svcCtx.Rdb.HincrbyCtx(l.ctx, key, keys.WorkCount, 1); err != nil && !errors.Is(err, redis.Nil) {
-		logx.Errorw("incr user work count ", logx.Field("err", err))
+		l.Errorw("incr user work count ", logx.Field("err", err))
 		return nil, err
 	}
 
 	// 4. add video id to user video list
 	key = fmt.Sprintf(keys.UserWorkKey, in.ActorId)
 	if _, err := l.svcCtx.Rdb.SaddCtx(l.ctx, key, videoID); err != nil {
-		logx.Errorw("add video id to user video list ", logx.Field("err", err))
+		l.Errorw("add video id to user video list ", logx.Field("err", err))
 		return nil, err
 	}
 
 	// 5. get video author
 	videoInfoKey := fmt.Sprintf(keys.VideoInfoKey, videoID)
 	if err := l.svcCtx.Rdb.HsetCtx(l.ctx, videoInfoKey, keys.VideoAuthorID, fmt.Sprintf("%d", in.ActorId)); err != nil {
-		logx.Errorw("set video author id ", logx.Field("err", err))
+		l.Errorw("set video author id ", logx.Field("err", err))
 		return nil, err
 	}
 
 	// -------------------- async --------------------
 	// 6. put mq  extract video summery by gpt
 	if err := mq.GetExtractVideoText().Product(mq.ExtractVideoTextReq{VideoID: uint32(videoID)}); err != nil {
-		logx.Errorw("extract video summery by gpt with queue ", logx.Field("err", err))
+		l.Errorw("extract video summery by gpt with queue ", logx.Field("err", err))
 		return nil, err
 	}
 	l.Infow("upload video success", logx.Field("video_id", videoID), logx.Field("video_url", url))

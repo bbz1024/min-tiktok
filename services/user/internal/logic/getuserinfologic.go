@@ -25,7 +25,7 @@ func NewGetUserInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUs
 	return &GetUserInfoLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
-		Logger: logx.WithContext(ctx),
+		Logger: logx.WithContext(ctx).WithFields(logx.Field("type", "service")),
 	}
 }
 
@@ -98,7 +98,7 @@ func (l *GetUserInfoLogic) GetUserInfo(in *user.UserRequest) (*user.UserResponse
 			res.StatusMsg = code.UserNotFoundMsg
 			return res, nil
 		}
-		logx.Errorw("get user info error", logx.Field("err", err))
+		l.Errorw("get user info error", logx.Field("err", err))
 		return nil, err
 	}
 	res.User = userInfo

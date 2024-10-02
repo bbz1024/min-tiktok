@@ -20,7 +20,7 @@ type RelationFollowListLogic struct {
 
 func NewRelationFollowListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *RelationFollowListLogic {
 	return &RelationFollowListLogic{
-		Logger: logx.WithContext(ctx),
+		Logger: logx.WithContext(ctx).WithFields(logx.Field("type", "api")),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}

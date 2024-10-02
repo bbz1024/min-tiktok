@@ -19,7 +19,7 @@ type RelationActionLogic struct {
 
 func NewRelationActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *RelationActionLogic {
 	return &RelationActionLogic{
-		Logger: logx.WithContext(ctx),
+		Logger: logx.WithContext(ctx).WithFields(logx.Field("type", "api")),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
@@ -67,6 +67,7 @@ func (l *RelationActionLogic) RelationAction(req *types.RealtionActionReuqest) (
 	if err != nil {
 		resp.StatusCode = code.ServerError
 		resp.StatusMsg = code.ServerErrorMsg
+		l.Errorw("call rpc RelationRpc.Follow", logx.Field("err", err))
 		return
 	}
 	if res.StatusCode != code.OK {

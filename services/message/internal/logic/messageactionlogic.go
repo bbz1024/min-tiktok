@@ -23,7 +23,7 @@ func NewMessageActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Mes
 	return &MessageActionLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
-		Logger: logx.WithContext(ctx),
+		Logger: logx.WithContext(ctx).WithFields(logx.Field("type", "service")),
 	}
 }
 
@@ -55,7 +55,7 @@ func (l *MessageActionLogic) MessageAction(in *message.MessageActionRequest) (*m
 		Createdat:      time.Now(),
 	}
 	if _, err := l.svcCtx.MessageModel.Insert(l.ctx, msg); err != nil {
-		logx.Errorw("message insert error", logx.Field("err", err))
+		l.Errorw("message insert error", logx.Field("err", err))
 		return nil, err
 	}
 	return &message.MessageActionResponse{}, nil

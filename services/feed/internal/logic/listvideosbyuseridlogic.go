@@ -19,7 +19,7 @@ func NewListVideosByUserIDLogic(ctx context.Context, svcCtx *svc.ServiceContext)
 	return &ListVideosByUserIDLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
-		Logger: logx.WithContext(ctx),
+		Logger: logx.WithContext(ctx).WithFields(logx.Field("type", "service")),
 	}
 }
 
@@ -43,7 +43,7 @@ func (l *ListVideosByUserIDLogic) ListVideosByUserID(in *feed.ListVideosByUserID
 
 	videoList, err := l.svcCtx.VideoModel.ListVideoByUserId(l.ctx, int64(in.UserId))
 	if err != nil {
-		logx.Errorw("query video list by user_id error", logx.Field("err", err))
+		l.Errorw("query video list by user_id error", logx.Field("err", err))
 		return nil, err
 	}
 

@@ -18,7 +18,7 @@ func NewCheckUserExistLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ch
 	return &CheckUserExistLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
-		Logger: logx.WithContext(ctx),
+		Logger: logx.WithContext(ctx).WithFields(logx.Field("type", "service")),
 	}
 }
 

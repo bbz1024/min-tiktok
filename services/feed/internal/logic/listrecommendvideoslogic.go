@@ -21,7 +21,7 @@ func NewListRecommendVideosLogic(ctx context.Context, svcCtx *svc.ServiceContext
 	return &ListRecommendVideosLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
-		Logger: logx.WithContext(ctx),
+		Logger: logx.WithContext(ctx).WithFields(logx.Field("type", "service")),
 	}
 }
 
@@ -31,7 +31,7 @@ func (l *ListRecommendVideosLogic) ListRecommendVideos(in *feed.ListRecommendReq
 		Count:   video.Count,
 	})
 	if err != nil {
-		logx.Errorf("get recommend error: %v", err)
+		l.Errorf("get recommend error: %v", err)
 		return nil, err
 	}
 	if res.StatusCode != code.OK {
@@ -39,13 +39,13 @@ func (l *ListRecommendVideosLogic) ListRecommendVideos(in *feed.ListRecommendReq
 	}
 	videoSet, err := l.svcCtx.VideoModel.ListVideoByVideoSet(l.ctx, res.GetVideoIds())
 	if err != nil {
-		logx.Errorf("list video by video set error: %v", err)
+		l.Errorf("list video by video set error: %v", err)
 		return nil, err
 	}
 
 	videoList, err := FetchVideoDetails(l.ctx, videoSet, in.ActorId, l.svcCtx.UserRpc, l.svcCtx.Rdb)
 	if err != nil {
-		logx.Errorf("fetch video details error: %v", err)
+		l.Errorf("fetch video details error: %v", err)
 		return nil, err
 	}
 	return &feed.ListFeedResponse{

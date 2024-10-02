@@ -33,23 +33,11 @@ spec:
               mountPath: /project/etc
             - name: project-logs-volume
               mountPath: /project/logs
-          resources:
-            limits:
-              cpu: 2000m
-              memory: 2048Mi
-            requests:
-              cpu: 100m
-              memory: 128Mi
+          
         - name: logger
           image: fluent/fluent-bit:1.8.4
           imagePullPolicy: IfNotPresent
-          resources:
-            requests:
-              cpu: 20m
-              memory: 100Mi
-            limits:
-              cpu: 100m
-              memory: 200Mi
+          
           volumeMounts:
             - mountPath: /fluent-bit/etc
               name: fluent-bit-conf
@@ -106,23 +94,11 @@ spec:
               mountPath: /project/etc
             - name: project-logs-volume
               mountPath: /project/logs
-          resources:
-            limits:
-              cpu: 2000m
-              memory: 2048Mi
-            requests:
-              cpu: 100m
-              memory: 128Mi
+          
         - name: logger
           image: fluent/fluent-bit:1.8.4
           imagePullPolicy: IfNotPresent
-          resources:
-            requests:
-              cpu: 20m
-              memory: 100Mi
-            limits:
-              cpu: 100m
-              memory: 200Mi
+          
           volumeMounts:
             - mountPath: /fluent-bit/etc
               name: fluent-bit-conf

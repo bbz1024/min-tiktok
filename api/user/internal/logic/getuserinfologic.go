@@ -19,7 +19,7 @@ type GetUserInfoLogic struct {
 
 func NewGetUserInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUserInfoLogic {
 	return &GetUserInfoLogic{
-		Logger: logx.WithContext(ctx),
+		Logger: logx.WithContext(ctx).WithFields(logx.Field("type", "api")),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}

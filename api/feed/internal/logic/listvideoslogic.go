@@ -20,7 +20,7 @@ type ListVideosLogic struct {
 
 func NewListVideosLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListVideosLogic {
 	return &ListVideosLogic{
-		Logger: logx.WithContext(ctx),
+		Logger: logx.WithContext(ctx).WithFields(logx.Field("type", "api")),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}

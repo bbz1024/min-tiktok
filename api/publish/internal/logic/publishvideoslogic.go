@@ -17,7 +17,7 @@ type PublishVideosLogic struct {
 
 func NewPublishVideosLogic(ctx context.Context, svcCtx *svc.ServiceContext) *PublishVideosLogic {
 	return &PublishVideosLogic{
-		Logger: logx.WithContext(ctx),
+		Logger: logx.WithContext(ctx).WithFields(logx.Field("type", "api")),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}

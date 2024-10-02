@@ -22,7 +22,7 @@ func NewListCommentLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListC
 	return &ListCommentLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
-		Logger: logx.WithContext(ctx),
+		Logger: logx.WithContext(ctx).WithFields(logx.Field("type", "service")),
 	}
 }
 
@@ -78,6 +78,7 @@ func (l *ListCommentLogic) ListComment(in *comment.ListCommentRequest) (*comment
 	}
 	runner.Wait()
 	if err2 != nil {
+		l.Errorw("get user info error", logx.Field("err", err))
 		return nil, err2
 	}
 	resp.CommentList = comments

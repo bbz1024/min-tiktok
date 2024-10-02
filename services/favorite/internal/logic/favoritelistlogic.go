@@ -23,7 +23,7 @@ func NewFavoriteListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Favo
 	return &FavoriteListLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
-		Logger: logx.WithContext(ctx),
+		Logger: logx.WithContext(ctx).WithFields(logx.Field("type", "service")),
 	}
 }
 
@@ -33,7 +33,7 @@ func (l *FavoriteListLogic) FavoriteList(in *favorite.FavoriteListRequest) (*fav
 	key := fmt.Sprintf(keys.UserFavoriteKey, in.UserId)
 	members, err := l.svcCtx.Rdb.SmembersCtx(l.ctx, key)
 	if err != nil && errors.Is(err, redis.Nil) {
-		logx.Errorw("redis error", logx.Field("err", err))
+		l.Errorw("redis error", logx.Field("err", err))
 		return nil, err
 	}
 	resp := new(favorite.FavoriteListResponse)
@@ -45,7 +45,7 @@ func (l *FavoriteListLogic) FavoriteList(in *favorite.FavoriteListRequest) (*fav
 		ActorId:    in.ActorId,
 	})
 	if err != nil {
-		logx.Errorw("call rpc FeedRpc.ListVideosBySet", logx.Field("err", err))
+		l.Errorw("call rpc FeedRpc.ListVideosBySet", logx.Field("err", err))
 		return nil, err
 	}
 

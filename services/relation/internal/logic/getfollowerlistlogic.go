@@ -19,7 +19,7 @@ func NewGetFollowerListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *G
 	return &GetFollowerListLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
-		Logger: logx.WithContext(ctx),
+		Logger: logx.WithContext(ctx).WithFields(logx.Field("type", "service")),
 	}
 }
 
@@ -30,7 +30,7 @@ func (l *GetFollowerListLogic) GetFollowerList(in *relation.FollowerListRequest)
 	resp := new(relation.FollowerListResponse)
 	userList, err := fetchUserList(l.ctx, userFollowerKey, in.ActorId, l.svcCtx.Rdb, l.svcCtx.UserRpc)
 	if err != nil {
-
+		l.Errorw("fetchUserList failed", logx.Field("err", err))
 		return nil, err
 	}
 	resp.UserList = userList

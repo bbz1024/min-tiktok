@@ -20,7 +20,7 @@ type RelationFollowerListLogic struct {
 
 func NewRelationFollowerListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *RelationFollowerListLogic {
 	return &RelationFollowerListLogic{
-		Logger: logx.WithContext(ctx),
+		Logger: logx.WithContext(ctx).WithFields(logx.Field("type", "api")),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
@@ -53,7 +53,7 @@ func (l *RelationFollowerListLogic) RelationFollowerList(req *types.RelationFoll
 	if err != nil {
 		resp.StatusMsg = code.ServerErrorMsg
 		resp.StatusCode = code.ServerError
-		logx.Errorw("call rpc RelationRpc.GetFollowerList", logx.Field("err", err))
+		l.Errorw("call rpc RelationRpc.GetFollowerList", logx.Field("err", err))
 		return
 	}
 	if res.StatusCode != 0 {

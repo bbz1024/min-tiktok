@@ -20,7 +20,7 @@ func NewIsFriendLogic(ctx context.Context, svcCtx *svc.ServiceContext) *IsFriend
 	return &IsFriendLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
-		Logger: logx.WithContext(ctx),
+		Logger: logx.WithContext(ctx).WithFields(logx.Field("type", "service")),
 	}
 }
 
@@ -28,13 +28,13 @@ func (l *IsFriendLogic) IsFriend(in *relation.IsFriendRequest) (*relation.IsFrie
 	actorKey := fmt.Sprintf(keys.UserFollow, in.ActorId)
 	exist, err := l.svcCtx.Rdb.SismemberCtx(l.ctx, actorKey, in.UserId)
 	if err != nil {
-		logx.Errorf("IsFriend: SismemberCtx error: %v", err)
+		l.Errorf("IsFriend: SismemberCtx error: %v", err)
 		return nil, err
 	}
 	userKey := fmt.Sprintf(keys.UserFollow, in.UserId)
 	exist2, err := l.svcCtx.Rdb.SismemberCtx(l.ctx, userKey, in.ActorId)
 	if err != nil {
-		logx.Errorf("IsFriend: SismemberCtx error: %v", err)
+		l.Errorf("IsFriend: SismemberCtx error: %v", err)
 		return nil, err
 	}
 	return &relation.IsFriendResponse{

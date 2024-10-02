@@ -21,7 +21,7 @@ func NewUnfollowLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Unfollow
 	return &UnfollowLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
-		Logger: logx.WithContext(ctx),
+		Logger: logx.WithContext(ctx).WithFields(logx.Field("type", "service")),
 	}
 }
 
@@ -32,6 +32,7 @@ func (l *UnfollowLogic) Unfollow(in *relation.RelationActionRequest) (*relation.
 	// check user follow user
 	isFollow, err := l.svcCtx.Rdb.SismemberCtx(l.ctx, followKey, in.UserId)
 	if err != nil {
+		l.Errorw("Unfollow: SismemberCtx error", logx.Field("error", err))
 		return nil, err
 	}
 	if !isFollow {
@@ -41,22 +42,26 @@ func (l *UnfollowLogic) Unfollow(in *relation.RelationActionRequest) (*relation.
 		}, nil
 	}
 	if _, err := l.svcCtx.Rdb.SremCtx(l.ctx, followKey, in.UserId); err != nil {
+		l.Errorw("Unfollow: SremCtx error", logx.Field("err", err))
 		return nil, err
 	}
 
 	// remove actor from user follow list
 	followerKey := fmt.Sprintf(keys.UserFollower, in.UserId)
 	if _, err := l.svcCtx.Rdb.SremCtx(l.ctx, followerKey, in.ActorId); err != nil {
+		l.Errorw("Unfollow: SremCtx error", logx.Field("err", err))
 		return nil, err
 	}
 	// user follow count - 1
 	useKey := fmt.Sprintf(keys.UserInfoKey, in.ActorId)
 	if _, err := l.svcCtx.Rdb.HincrbyCtx(l.ctx, useKey, keys.FollowCount, -1); err != nil {
+		logx.Errorw("Unfollow: HincrbyCtx error", logx.Field("err", err))
 		return nil, err
 	}
 	// actor follower count - 1
 	actorKey := fmt.Sprintf(keys.UserInfoKey, in.UserId)
 	if _, err := l.svcCtx.Rdb.HincrbyCtx(l.ctx, actorKey, keys.FollowerCount, -1); err != nil {
+		logx.Errorw("Unfollow: HincrbyCtx error", logx.Field("err", err))
 		return nil, err
 	}
 	return &relation.RelationActionResponse{}, nil

@@ -21,7 +21,7 @@ func NewFeedbackLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Feedback
 	return &FeedbackLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
-		Logger: logx.WithContext(ctx),
+		Logger: logx.WithContext(ctx).WithFields(logx.Field("type", "service")),
 	}
 }
 
