@@ -1,0 +1,29 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+  
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: login docker
+      with:
+        login-server: swr.cn-south-1.myhuaweicloud.com
+        region-id: cn-south-1
+        username: "${{ secrets.REGISTRY_USERNAME }}"
+        password: "${{ secrets.REGISTRY_PASSWORD }}" 
+    - name: build
+      env:
+          IMAGE_TAG: ${{ github.sha }} # 用于标记容器版本号
+      run: |
+        docker build -t  swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:$IMAGE_TAG .
+        docker push swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:$IMAGE_TAG .
+      
