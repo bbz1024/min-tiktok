@@ -4,7 +4,7 @@ WORKDIR /build
 
 ENV CGO_ENABLED 0
 ENV GOPROXY https://goproxy.cn/,direct
-ENV compress 0
+ENV compress 1
 COPY . .
 RUN mv ./pkg/upx upx
 RUN chmod +x ./upx
