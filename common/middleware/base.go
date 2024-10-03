@@ -24,6 +24,7 @@ var WhitePath = []string{
 // OptionPath 可能携带token的path
 var OptionPath = []string{
 	"/douyin/feed",
+	"/douyin/feed/",
 	"/douyin/user/",
 	"/douyin/relation/follow/list/",
 	"/douyin/relation/follower/list/",

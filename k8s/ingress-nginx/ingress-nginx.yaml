@@ -10,7 +10,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: nginx.kubernetes-devops.cn
+    - host: nginx.kubernetes-devops.cn # 当不写host时可以通过服务器+内网穿透技术访问。
       http:
         paths:
           - pathType: Exact

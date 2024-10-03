@@ -18,6 +18,11 @@ spec:
         app: auths-service
         version: "BUILD_HASH"
     spec:
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+
       containers:
         - name: auths-service
           image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:latest
@@ -81,6 +86,10 @@ spec:
     spec:
       imagePullSecrets:
         - name: harborsecret
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
       containers:
         - name: auths-api
           image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:latest
