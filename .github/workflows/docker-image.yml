@@ -11,11 +11,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - name: login docker
-        run: |
-          echo ${{ secrets.REGISTRY_PASSWORD }} | docker login -u ${{ secrets.REGISTRY_USERNAME }} --password-stdin swr.cn-south-1.myhuaweicloud.com
-
+#      - uses: actions/checkout@v4
+#      - name: login docker
+#        run: |
+#          echo ${{ secrets.REGISTRY_PASSWORD }} | docker login -u ${{ secrets.REGISTRY_USERNAME }} --password-stdin swr.cn-south-1.myhuaweicloud.com
+      - uses: actions/checkout@v2 # pull代码到运行服务器上
+      - name: Login to Aliyun Container Registry (ACR)
+        with:
+          login-server: swr.cn-south-1.myhuaweicloud.com # 务必正确填写镜像容器服务的登录地址
+          region-id: cn-south-1 # 务必正确填写镜像容器服务的登录地址
+          username: "${{ secrets.REGISTRY_USERNAME }}" # 引用GitHub repo设置的镜像容器服务用户名
+          password: "${{ secrets.REGISTRY_PASSWORD }}" # 引用GitHub repo设置的镜像容器服务密码
       - name: Build and push
         uses: docker/build-push-action@v4
         env:
