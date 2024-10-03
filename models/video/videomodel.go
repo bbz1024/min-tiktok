@@ -22,6 +22,7 @@ type (
 		ListVideoByVideoSet(ctx context.Context, ids []string) ([]*Video, error)
 		ListVideoByUserId(ctx context.Context, i int64) ([]*Video, error)
 		ListVideoByCreateTime(ctx context.Context, time time.Time) ([]*Video, error)
+		GetVideoIds(ctx context.Context) ([]int, error)
 	}
 
 	customVideoModel struct {
@@ -83,6 +84,18 @@ func (c customVideoModel) ListVideoByVideoSet(ctx context.Context, videoSet []st
 	default:
 		return nil, err
 	}
+}
+func (c customVideoModel) GetVideoIds(ctx context.Context) ([]int, error) {
+	query := fmt.Sprintf("select %s from %s ", "id", c.table)
+	var resp []int
+	err := c.CachedConn.QueryRowsNoCacheCtx(ctx, &resp, query)
+	switch {
+	case err == nil:
+		return resp, nil
+	case errors.Is(err, sqlx.ErrNotFound):
+		return resp, nil
+	}
+	return nil, err
 }
 
 // NewVideoModel returns a model for the database table.

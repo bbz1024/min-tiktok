@@ -1,5 +1,6 @@
 Name: auths.rpc
 ListenOn: 0.0.0.0:10000
+Timeout: 10000
 Consul:
   Host: 124.71.19.46:8500 # consul endpoint
   Key: auths.rpc

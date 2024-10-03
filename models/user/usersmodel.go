@@ -16,6 +16,7 @@ type (
 		usersModel
 		QueryAllUsername(ctx context.Context) ([]string, error)
 		QueryAllUserID(ctx context.Context) ([]string, error)
+		GetAllUser(ctx context.Context) ([]Users, error)
 	}
 
 	customUsersModel struct {
@@ -35,6 +36,14 @@ func (c customUsersModel) QueryAllUserID(ctx context.Context) ([]string, error) 
 func (c customUsersModel) QueryAllUsername(ctx context.Context) ([]string, error) {
 	var res []string
 	query := fmt.Sprintf("select username from %s", c.table)
+	if err := c.CachedConn.QueryRowsNoCacheCtx(ctx, &res, query); err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+func (c customUsersModel) GetAllUser(ctx context.Context) ([]Users, error) {
+	var res []Users
+	query := fmt.Sprintf("select * from %s", c.table)
 	if err := c.CachedConn.QueryRowsNoCacheCtx(ctx, &res, query); err != nil {
 		return nil, err
 	}
