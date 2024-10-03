@@ -15,7 +15,7 @@ jobs:
       - name: login docker
         run: |
           echo ${{ secrets.REGISTRY_PASSWORD }} | docker login -u ${{ secrets.REGISTRY_USERNAME }} --password-stdin swr.cn-south-1.myhuaweicloud.com
-      
+
       - name: Build and push
         uses: docker/build-push-action@v4
         env:
@@ -24,4 +24,4 @@ jobs:
           push: true
           tags: |
             swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:latest
-            swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:$IMAGE_TAG
+            swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:${{ env.IMAGE_TAG }}
