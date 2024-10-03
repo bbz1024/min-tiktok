@@ -11,12 +11,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      -
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
 
       - name: Login docker
         run: |
@@ -24,8 +18,10 @@ jobs:
 
       - name: Build and push
         uses: docker/build-push-action@v4
+        env:
+          IMAGE_TAG: ${{ github.sha }}
         with:
           push: true
           tags: |
             swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:latest
-            swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:${{ github.sha }}
+            swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:${{ env.IMAGE_TAG }}
