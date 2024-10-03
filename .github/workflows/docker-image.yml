@@ -16,6 +16,8 @@ jobs:
         with:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
+        run:
+          echo "login success"
       -
         name: build and push
         user: docker/build-push-action@v4
@@ -26,3 +28,5 @@ jobs:
           tags: |
             swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:latest
             swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:$IMAGE_TAG
+        run:
+          echo "build success"
