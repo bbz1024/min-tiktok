@@ -1,31 +1,25 @@
 name: Docker Image CI
 
 on:
-  workflow_dispatch:
   push:
     branches: [ "main" ]
 
 jobs:
 
-  docker-build:
-    runs-on: ubuntu-latest
-    steps:
-      -
-        name: login docker
-        uses: docker/login-action@v2
-        with:
-          login-server: swr.cn-south-1.myhuaweicloud.com
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
+  build:
 
-      -
-        name: build and push
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: login docker
+        run: |
+          echo ${{ secrets.REGISTRY_PASSWORD }} | docker login -u ${{ secrets.REGISTRY_USERNAME }} --password-stdin swr.cn-south-1.myhuaweicloud.com
+      
+      - name: Build and push
         uses: docker/build-push-action@v4
-        env:
-          IMAGE_TAG: ${{ github.sha }}
         with:
           push: true
           tags: |
             swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:latest
             swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:$IMAGE_TAG
-
