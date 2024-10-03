@@ -24,10 +24,8 @@ jobs:
 
       - name: Build and push
         uses: docker/build-push-action@v4
-        env:
-          IMAGE_TAG: ${{ github.sha }}
         with:
           push: true
           tags: |
             swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:latest
-            swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:${{ env.IMAGE_TAG }}
+            swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:${{ github.sha }}
