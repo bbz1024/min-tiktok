@@ -65,7 +65,7 @@ CREATE TABLE `users`  (
                           PRIMARY KEY (`id`) USING BTREE,
                           UNIQUE INDEX `username`(`username` ASC) USING BTREE,
                           INDEX `idx_username`(`username` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for video

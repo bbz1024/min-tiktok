@@ -30,12 +30,15 @@ data:
       Mem_Buf_Limit    10MB
       Refresh_Interval 5
       Ignore_Older     10s
-      Rotate_Wait      5
+      Rotate_Wait      5    
+      Skip_Long_Lines  On  
+      DB               /var/log/fluentbit.db
     
     [FILTER]
-      Name             grep
-      Match            *
-      Regex            type api|service
+      Name    grep
+      Match   *
+      Regex   log (api|service)
+    
     
     [FILTER]
       Name             record_modifier
@@ -43,9 +46,7 @@ data:
       Key_name         message
       Record           hostname ${HOSTNAME}
       Record           namespace  tiktok
-      Record           environment prod
-   
-    
+      Record           environment prod    
     [OUTPUT]
       Name             es
       Match            *
