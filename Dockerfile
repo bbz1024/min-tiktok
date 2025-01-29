@@ -21,4 +21,3 @@ WORKDIR /project
 
 COPY --from=builder /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 COPY --from=builder  /output .
-COPY --from=builder  /build/scripts/run.sh .
