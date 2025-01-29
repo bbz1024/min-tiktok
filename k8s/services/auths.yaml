@@ -18,14 +18,9 @@ spec:
         app: auths-service
         version: "BUILD_HASH"
     spec:
-      tolerations:
-        - key: node-role.kubernetes.io/master
-          operator: Exists
-          effect: NoSchedule
-
       containers:
         - name: auths-service
-          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:latest
+          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:test
           imagePullPolicy: IfNotPresent
           command:
             - ./services/AuthsService
@@ -39,16 +34,6 @@ spec:
             - name: project-logs-volume
               mountPath: /project/logs
           
-        - name: logger
-          image: fluent/fluent-bit:1.8.4
-          imagePullPolicy: IfNotPresent
-          
-          volumeMounts:
-            - mountPath: /fluent-bit/etc
-              name: fluent-bit-conf
-            - mountPath: /project/logs
-              name: project-logs-volume
-          command: [ "/fluent-bit/bin/fluent-bit", "-c", "/fluent-bit/etc/fluent-bit.conf" ]
       imagePullSecrets:
         - name: harborsecret
       volumes:
@@ -59,9 +44,7 @@ spec:
         - name: project-logs-volume
           hostPath:
             path: /data/logs
-        - name: fluent-bit-conf
-          configMap:
-            name: fluent-bit-conf
+
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
 ---
@@ -86,13 +69,9 @@ spec:
     spec:
       imagePullSecrets:
         - name: harborsecret
-      tolerations:
-        - key: node-role.kubernetes.io/master
-          operator: Exists
-          effect: NoSchedule
       containers:
         - name: auths-api
-          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:latest
+          image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:test
           imagePullPolicy: IfNotPresent
           
           command:
@@ -105,16 +84,6 @@ spec:
               mountPath: /project/etc
             - name: project-logs-volume
               mountPath: /project/logs
-        - name: logger
-          image: fluent/fluent-bit:1.8.4
-          imagePullPolicy: IfNotPresent
-          
-          volumeMounts:
-            - mountPath: /fluent-bit/etc
-              name: fluent-bit-conf
-            - mountPath: /project/logs
-              name: project-logs-volume
-          command: [ "/fluent-bit/bin/fluent-bit", "-c", "/fluent-bit/etc/fluent-bit.conf" ]
       volumes:
         - name: project-etc-volume
           hostPath:
@@ -124,9 +93,6 @@ spec:
           hostPath:
             path: /data/logs
             type: DirectoryOrCreate
-        - name: fluent-bit-conf
-          configMap:
-            name: fluent-bit-conf
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
 ---

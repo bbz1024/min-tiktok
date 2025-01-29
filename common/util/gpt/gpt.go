@@ -15,14 +15,13 @@ type Gpt struct {
 
 func NewGpt(apiKey, modelID string) *Gpt {
 	return &Gpt{
-		apiKey: apiKey,
-
+		apiKey:  apiKey,
 		modelID: modelID,
 	}
 }
 
 func (g *Gpt) ChatWithModel(ctx context.Context,
-	systemMsg, userMsg string) (string, error) {
+systemMsg, userMsg string) (string, error) {
 	client := arkruntime.NewClientWithApiKey(g.apiKey)
 	req := model.ChatCompletionRequest{
 		Model: g.modelID,

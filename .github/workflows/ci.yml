@@ -2,20 +2,15 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "main" ]
-
+    branches: [ "test" ]
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
-
     steps:
 
       - name: Login docker
         run: |
           echo ${{ secrets.REGISTRY_PASSWORD }} | docker login -u ${{ secrets.REGISTRY_USERNAME }} --password-stdin swr.cn-south-1.myhuaweicloud.com
-
       - name: Build and push
         uses: docker/build-push-action@v4
         env:
@@ -23,5 +18,6 @@ jobs:
         with:
           push: true
           tags: |
-            swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:latest
+            swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:test
             swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:${{ env.IMAGE_TAG }}
+            
