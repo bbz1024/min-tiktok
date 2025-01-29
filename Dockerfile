@@ -3,7 +3,7 @@ FROM golang:1.21 as builder
 WORKDIR /build
 
 ENV CGO_ENABLED 0
-ENV GOPROXY https://goproxy.cn/,direct
+#ENV GOPROXY https://goproxy.cn/,direct
 ENV compress 1
 COPY . .
 RUN mv ./pkg/upx upx
