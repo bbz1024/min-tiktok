@@ -7,6 +7,7 @@ require (
 	github.com/disintegration/imaging v1.6.2
 	github.com/google/uuid v1.6.0
 	github.com/qiniu/go-sdk/v7 v7.21.1
+	github.com/robfig/cron v1.2.0
 	github.com/streadway/amqp v1.1.0
 	github.com/u2takey/ffmpeg-go v0.5.0
 	github.com/volcengine/volcengine-go-sdk v1.0.146
@@ -73,7 +74,6 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
-	github.com/olivere/elastic/v7 v7.0.32 // indirect
 	github.com/opentracing/opentracing-go v1.2.1-0.20220228012449-10b1cf09e00b // indirect
 	github.com/openzipkin/zipkin-go v0.4.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
@@ -83,7 +83,6 @@ require (
 	github.com/prometheus/common v0.45.0 // indirect
 	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/redis/go-redis/v9 v9.5.3 // indirect
-	github.com/robfig/cron v1.2.0 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/u2takey/go-utils v0.3.1 // indirect
 	github.com/volcengine/volc-sdk-golang v1.0.23 // indirect
