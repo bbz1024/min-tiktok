@@ -21,7 +21,7 @@ spec:
       containers:
         - name: auths-service
           image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:test
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - ./services/AuthsService
           ports:
@@ -72,8 +72,7 @@ spec:
       containers:
         - name: auths-api
           image: swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:test
-          imagePullPolicy: IfNotPresent
-          
+          imagePullPolicy: Always
           command:
             - ./apis/AuthsApi
           ports:
