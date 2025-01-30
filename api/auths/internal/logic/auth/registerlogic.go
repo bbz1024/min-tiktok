@@ -44,8 +44,6 @@ func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.RegisterRe
 		resp.StatusMsg = res.StatusMsg
 		return
 	}
-	// register success before put in bloom
-	l.svcCtx.UserFilter.Add([]byte(req.UserName))
 	resp.Token = res.Token
 	resp.UserID = res.UserId
 	return

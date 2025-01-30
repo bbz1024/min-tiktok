@@ -11,7 +11,6 @@ require (
 	github.com/streadway/amqp v1.1.0
 	github.com/u2takey/ffmpeg-go v0.5.0
 	github.com/volcengine/volcengine-go-sdk v1.0.146
-	github.com/willf/bloom v2.0.3+incompatible
 	github.com/zeromicro/go-zero v1.6.6
 	github.com/zeromicro/x v0.0.0-20240408115609-8224c482b07e
 	github.com/zeromicro/zero-contrib/zrpc/registry/consul v0.0.0-20231030135404-af9ae855016f
@@ -86,7 +85,6 @@ require (
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/u2takey/go-utils v0.3.1 // indirect
 	github.com/volcengine/volc-sdk-golang v1.0.23 // indirect
-	github.com/willf/bitset v1.1.11 // indirect
 	go.etcd.io/etcd/api/v3 v3.5.14 // indirect
 	go.etcd.io/etcd/client/pkg/v3 v3.5.14 // indirect
 	go.etcd.io/etcd/client/v3 v3.5.14 // indirect

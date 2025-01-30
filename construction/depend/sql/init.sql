@@ -4,4 +4,3 @@ GRANT ALL PRIVILEGES ON *.* TO 'lzb200244'@'%';
 
 create database if not exists tiktok character set utf8mb4;
 
-create database if not exists gorse character set utf8mb4;

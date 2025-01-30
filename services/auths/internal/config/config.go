@@ -12,6 +12,5 @@ type Config struct {
 	Consul    consul.Conf
 	MySQL     config.MysqlStructure
 	CacheConf cache.CacheConf
-	Gorse     config.GorseStructure
 	UserInfo  config.UserInfoStructure
 }

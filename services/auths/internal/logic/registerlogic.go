@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/zhenghaoz/gorse/client"
 	"io"
 	"min-tiktok/common/consts/code"
 	"min-tiktok/common/consts/keys"
@@ -77,13 +76,6 @@ func (l *RegisterLogic) Register(in *auths.RegisterRequest) (*auths.RegisterResp
 			key := fmt.Sprintf(keys.UserTokenKey, token)
 			if err := l.svcCtx.Rdb.SetCtx(l.ctx, key, strconv.FormatUint(uint64(userID), 10)); err != nil {
 				l.Errorw("set token error: %s", logx.Field("err", err))
-				return nil, err
-			}
-			if _, err := l.svcCtx.GorseClient.InsertUser(l.ctx, client.User{
-				UserId:  fmt.Sprintf("%d", userID),
-				Comment: in.Username,
-			}); err != nil {
-				l.Errorw("insert user error: %s", logx.Field("err", err))
 				return nil, err
 			}
 			l.Infow("register success", logx.Field("username", in.Username))
