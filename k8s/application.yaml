@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: myapp-argo-application
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/bbz1024/min-tiktok.git # 仓库地址
+    targetRevision: test
+    path: k8s
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: tiktok
+
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      selfHeal: true
+      prune: true

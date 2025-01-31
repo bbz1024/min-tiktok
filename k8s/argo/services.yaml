@@ -1,0 +1,31 @@
+# 稳定版本 Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: auths-api-stable
+  namespace: tiktok
+spec:
+  ports:
+    - port: 8888
+      targetPort: 8888
+  selector:
+    app: auths-api
+    app.kubernetes.io/name: tiktok
+    app.kubernetes.io/version: v1
+    version: v1
+---
+# 金丝雀版本 Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: auths-api-canary
+  namespace: tiktok
+spec:
+  ports:
+    - port: 8888
+      targetPort: 8888
+  selector:
+    app: auths-api
+    app.kubernetes.io/name: tiktok
+    app.kubernetes.io/version: v1
+    version: v1

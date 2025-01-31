@@ -1,3 +1,4 @@
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -36,13 +37,6 @@ spec:
             - name: auths-service
               containerPort: 10000
               protocol: TCP
-          resources:
-            requests:
-              memory: "256Mi"
-              cpu: "250m"
-            limits:
-              memory: "512Mi"
-              cpu: "500m"
           volumeMounts:
             - name: project-etc-volume
               mountPath: /project/etc
@@ -62,3 +56,4 @@ spec:
             type: DirectoryOrCreate
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
+
