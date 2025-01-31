@@ -1,0 +1,97 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: auths-api
+  namespace: tiktok
+  labels:
+    app: auths-api
+    app.kubernetes.io/name: tiktok
+    app.kubernetes.io/version: v1
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auths-api
+      app.kubernetes.io/name: tiktok
+      app.kubernetes.io/version: v1
+      version: v1
+  template:
+    metadata:
+      name: auths-api
+      labels:
+        app: auths-api
+        app.kubernetes.io/name: tiktok
+        app.kubernetes.io/version: v1
+        version: v1
+      annotations:
+        sidecar.istio.io/inject: 'true'
+    spec:
+      volumes:
+        - name: project-etc-volume
+          hostPath:
+            path: /data/etc
+            type: DirectoryOrCreate
+        - name: project-logs-volume
+          hostPath:
+            path: /data/logs
+            type: DirectoryOrCreate
+      containers:
+        - name: auths-api
+          image: 'swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:test'
+          command:
+            - ./apis/AuthsApi
+          ports:
+            - name: auths-api
+              containerPort: 8888
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 250m
+              memory: 256Mi
+          volumeMounts:
+            - name: project-etc-volume
+              mountPath: /project/etc
+            - name: project-logs-volume
+              mountPath: /project/logs
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      imagePullSecrets:
+        - name: harborsecret
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: auths-api
+  namespace: tiktok
+  labels:
+    app: auths-api
+    app.kubernetes.io/name: tiktok
+    app.kubernetes.io/version: v1
+    version: v1
+spec:
+  ports:
+    - protocol: TCP
+      port: 8888
+      targetPort: 8888
+  selector:
+    app: auths-api
+    app.kubernetes.io/name: tiktok
+    app.kubernetes.io/version: v1
+    version: v1
+

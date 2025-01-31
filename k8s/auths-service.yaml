@@ -1,0 +1,64 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auths-service
+  namespace: tiktok
+  labels:
+    app: auths-service
+    version: v1
+    app.kubernetes.io/name: tiktok
+    app.kubernetes.io/version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auths-service
+      version: v1
+      app.kubernetes.io/name: tiktok
+      app.kubernetes.io/version: v1
+  template:
+    metadata:
+      name: auths-service
+      labels:
+        app: auths-service
+        version: v1
+        app.kubernetes.io/name: tiktok
+        app.kubernetes.io/version: v1
+    spec:
+      containers:
+        - name: auths-service
+          image: 'swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:test'
+          imagePullPolicy: Always
+          command:
+            - ./services/AuthsService
+          ports:
+            - name: auths-service
+              containerPort: 10000
+              protocol: TCP
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          volumeMounts:
+            - name: project-etc-volume
+              mountPath: /project/etc
+            - name: project-logs-volume
+              mountPath: /project/logs
+      
+      imagePullSecrets:
+        - name: harborsecret
+      volumes:
+        - name: project-etc-volume
+          hostPath:
+            path: /data/etc
+            type: DirectoryOrCreate
+        - name: project-logs-volume
+          hostPath:
+            path: /data/logs
+            type: DirectoryOrCreate
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30

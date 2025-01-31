@@ -1,0 +1,21 @@
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: tiktok-ingress
+  namespace: tiktok
+  labels:
+    app.kubernetes.io/name: tiktok
+    app.kubernetes.io/version: v1
+    nginx.ingress.kubernetes.io/upstream-vhost: auths-api.tiktok.svc.cluster.local
+spec:
+  rules:
+    - host: nginx.kubernetes-devops.cn
+      http:
+        paths:
+          - path: /douyin/user/
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: auths-api
+                port:
+                  number: 8888
