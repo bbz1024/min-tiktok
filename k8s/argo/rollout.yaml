@@ -19,13 +19,14 @@ spec:
           stableIngress: tiktok-ingress
       steps: # 发布的节奏
         - setWeight: 20
-        - pause: { } # 会一直暂停
+        - pause: { duration: 10 } # 会一直暂停
         - setWeight: 40
         - pause: { duration: 10 } # 暂停10s
         - setWeight: 60
         - pause: { duration: 10 }
         - setWeight: 80
         - pause: { duration: 10 }
+        - setWeight: 100
   revisionHistoryLimit: 2
   selector:
     matchLabels:
