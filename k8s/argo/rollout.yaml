@@ -53,7 +53,7 @@ spec:
             type: DirectoryOrCreate
       containers:
         - name: auths-api
-          image: 'swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:test'
+          image: 'swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:v1'
           command: ["./apis/AuthsApi"]
           ports:
             - containerPort: 8888
