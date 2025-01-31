@@ -9,6 +9,7 @@ type LoginReq struct {
 type LoginResp struct {
 	Token      string `json:"token"`
 	UserID     uint32 `json:"user_id"`
+	Version    string `json:"version"`
 	StatusCode uint32 `json:"status_code"`
 	StatusMsg  string `json:"status_msg"`
 }

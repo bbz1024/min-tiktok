@@ -21,6 +21,7 @@ func LoginHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		// logic
 		l := auth.NewLoginLogic(r.Context(), svcCtx)
 		resp, _ := l.Login(&req)
+		resp.Version = "v2"
 		httpx.OkJsonCtx(r.Context(), w, resp)
 	}
 }
