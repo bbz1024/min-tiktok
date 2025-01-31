@@ -18,6 +18,6 @@ jobs:
         with:
           push: true
           tags: |
-            swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:test
+            swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:v2
             swr.cn-south-1.myhuaweicloud.com/lzb/min-tiktok:${{ env.IMAGE_TAG }}
             
