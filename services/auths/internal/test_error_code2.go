@@ -11,4 +11,4 @@ func main() {
 
 }
 
-const cccc = []int{}
+const cccc = []string{}

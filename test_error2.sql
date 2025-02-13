@@ -8,5 +8,5 @@ create table `messages`
     `createdat`     cccccc
     primary key (`id`),
     index `idx_conversationid` (`conversationid`)
-) engine = innodb
+) engine = innodb11111111111111111111
   default charset = utf8mb4;

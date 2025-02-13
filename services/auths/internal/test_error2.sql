@@ -5,8 +5,8 @@ create table `messages`
     `fromuserid`     int unsigned not null,
     `conversationid` varchar(255) not null,
     `content`        text         not null,
-    `createdat`     cccccc
+    `createdat`     cccccccccccsasas
     primary key (`id`),
     index `idx_conversationid` (`conversationid`)
-) engine = innodb
+) engine = innodb1
   default charset = utf8mb4;
