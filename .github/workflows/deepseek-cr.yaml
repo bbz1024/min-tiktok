@@ -1,7 +1,7 @@
 name: Code Review
 on:
   pull_request:
-    branches: [ testcr,main]
+    branches: [main]
 
 permissions:
   pull-requests: write
