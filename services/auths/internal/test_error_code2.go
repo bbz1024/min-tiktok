@@ -10,3 +10,5 @@ func main() {
 	fmt.Println(arr[4]) // 编译错误或运行时错误
 
 }
+
+const cccc = []int{}
