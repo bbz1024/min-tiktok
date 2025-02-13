@@ -20,9 +20,5 @@ func main() {
 	arr := [3]int{1, 2, 3}
 	fmt.Println(arr[3]) // 编译错误或运行时错误
 
-	infiniteRecursion()
 }
 
-func infiniteRecursion() {
-	infiniteRecursion()
-}
