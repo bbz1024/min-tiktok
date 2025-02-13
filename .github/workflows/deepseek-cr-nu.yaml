@@ -83,4 +83,3 @@ runs:
           --temperature $temperature
           --include $includePatterns
           --exclude $excludePatterns
-        )
