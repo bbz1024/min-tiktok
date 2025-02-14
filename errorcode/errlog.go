@@ -6,7 +6,7 @@ func init() {
 	logx.Info("errorcode init finished")
 }
 func ccc() {
-	a := 6 / 0
+	a := 8 / 0
 	if a != 1 {
 		logx.Error("error")
 	}
