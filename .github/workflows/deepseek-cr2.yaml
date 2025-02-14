@@ -9,7 +9,7 @@ permissions:
 jobs:
   code-review:
     runs-on: ubuntu-latest
-    name: Code Review
+    name: Code Review2
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
