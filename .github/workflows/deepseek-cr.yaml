@@ -91,5 +91,5 @@ jobs:
               - 修复建议：
               - 总结：
           user-prompt: "请审查以下 Go 文件的代码变更"
-          exclude-patterns: "*.md,*.pd.go,*.yaml,*.yaml,*_test.go,*.conf,*.md,internal/**,**/internal/**"
+          exclude-patterns: "*.md,*.pd.go,*.yaml,*.yaml,*_test.go,*.conf,*.md,*/internal,**/internal"
 
