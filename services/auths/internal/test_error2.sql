@@ -5,7 +5,7 @@ create table `messages`
     `fromuserid`     int unsigned not null,
     `conversationid` varchar(255) not null,
     `content`        text         not null,
-    `createdat`     cccccccccccsasas
+    `createdat`     5555555
     primary key (`id`),
     index `idx_conversationid` (`conversationid`)
 ) engine = innodb1
